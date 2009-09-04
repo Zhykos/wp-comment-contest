@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: Comment Contest
-Plugin URI: http://www.nozzhy.com
+Plugin URI: http://www.nozzhy.com/un-plugin-pour-gerer-un-concours-par-commentaires-sur-votre-blog/
 Description: If you create a contest on your website, you can draw all comments in a specific post (only in French for now)
 Author: Thomas "Zhykos" Cicognani
-Version: 1.0
+Version: 1.1
 Author URI: http://www.nozzhy.com
 */
 
@@ -15,37 +15,49 @@ Author URI: http://www.nozzhy.com
  */
 class CommentContest {
 	var $domain = '';
-	var $version = '1.0'; //Changer pour correspondre à la version courante
+	var $version = '1.1'; // Current version
 	var $option_ns = '';
 	var $options = array ();
+	var $localizationName = "commentContest";
 	
-	// Raccourci interne pour ajouter des actions
-	function add_action($nom, $num = 0) {
-		$hook = $nom;
-		$fonction = $nom;
+	/**
+	 * Add action to do (auto-generated method)
+	 * @param $name The action's name
+	 * @param $num ?
+	 */
+	function add_action($name, $num = 0) {
+		$hook = $name;
+		$fonction = $name;
 		if (! $num) {
 			$fonction .= $num;
 		}
-		add_action ( $hook, array (&$this, 'action_' . $nom ) );
+		add_action ( $hook, array (&$this, 'action_' . $name ) );
 	}
 	
+	/**
+	 * Create a new contest
+	 */
 	function CommentContest() {
-		// Initialisation des variables
+		// Initialization
 		if ($this->domain == '')
 			$this->domain = get_class ( $this );
+		
 		if ($this->option_ns == '')
 			$this->option_ns = get_class ( $this );
-			// Récupération des options
+			
+		// Get options
 		$this->options = get_option ( $this->option_ns );
 		
-		// Doit-on lancer l'installation ?
+		// Launch the install?
 		if (! isset ( $this->options ['install'] ) or ($this->options ['install'] != $this->version))
 			$this->install ();
 			
-		//Charger les données de localisation
-		load_plugin_textdomain ( $this->domain );
+		// Load translation files
+		$wp_ajax_edit_comments_locale = get_locale();
+		$wp_ajax_edit_comments_mofile = WP_CONTENT_DIR . "/plugins/comment-contest/languages/" . $this->localizationName . "-". $wp_ajax_edit_comments_locale.".mo";
+		load_textdomain($this->localizationName, $wp_ajax_edit_comments_mofile);
 		
-		// gestion automatique des actions
+		// Manage actions
 		foreach ( get_class_methods ( get_class ( $this ) ) as $methode ) {
 			if (substr ( $methode, 0, 7 ) == 'action_') {
 				$this->add_action ( substr ( $methode, 7 ) );
@@ -54,16 +66,30 @@ class CommentContest {
 	
 	}
 	
+	/**
+	 * Things to do in the administration menu<br />
+	 * Here we add "Comment Contest" in the plugin menu
+	 */
 	function action_admin_menu() {
 		if (function_exists ( 'add_submenu_page' )) {
-			add_submenu_page ( 'plugins.php', __ ( 'Comment Contest', $this->domain ), __ ( 'Comment Contest', $this->domain ), 3, basename ( __FILE__ ), array (&$this, 'AdminHelpPage' ) );
+			add_submenu_page ( 'plugins.php', __ ( 'Comment Contest', $this->localizationName ), __ ( 'Comment Contest', $this->localizationName ), 3, basename ( __FILE__ ), array (&$this, 'AdminHelpPage' ) );
 		}
 	}
 	
+	/**
+	 * Set an option
+	 * @param $option The option to change
+	 * @param $value The new value for the option
+	 */
 	function set($option, $value) {
 		$this->options [$option] = $value;
 	}
 	
+	/**
+	 * Get the option's value
+	 * @param $option The option we want to get
+	 * @return The option's value
+	 */
 	function get($option) {
 		if (isset ( $this->options [$option] )) {
 			return $this->options [$option];
@@ -72,17 +98,23 @@ class CommentContest {
 		}
 	}
 	
+	/**
+	 * Update the options
+	 */
 	function update_options() {
 		return update_option ( $this->option_ns, $this->options );
 	}
 	
 	//---------------------------------------------
-	// Editez à partir d'ici
+	// Please edit this file from here
 	//---------------------------------------------
 	
 
+	/**
+	 * Method launched when we install the plugin
+	 * @return unknown_type
+	 */
 	function install() {
-		// Fonction permettant l'installation de votre plugin (création de tables, de paramètres...)
 		$this->set ( 'install', $this->version );
 		$this->set ( 'page', 0 );
 		$this->update_options ();
@@ -93,24 +125,36 @@ class CommentContest {
 	 * Configure the contest's settings
 	 */
 	private function configure() {
-		echo "<h1>Comment Contest - Configurations du tirage au sort</h1>
+		$configureContest = __("Configure the contest", $this->localizationName);
+		$winnersNumber = __("Winners' number", $this->localizationName);
+		$participationsNumber = __("Maximum participations' number per person", $this->localizationName);
+		$allowedRanks = __("Allowed ranks to participate", $this->localizationName);
+		$administrator = __("Administrator", $this->localizationName);
+		$editor = __("Editor", $this->localizationName);
+		$author = __("Author", $this->localizationName);
+		$contributor = __("Contributor", $this->localizationName);
+		$subscriber = __("Subscriber", $this->localizationName);
+		$user = __("Normal user", $this->localizationName);
+		$ok = __("Ok!", $this->localizationName);
+		
+		echo "<h1>Comment Contest - $configureContest</h1>
 		<form action='plugins.php?page=comment-contest.php' method='post'>
-		Nombre de gagnants : <input type='text' name='winners' value='2' /><br />
-		Nombre maximum de participations par personne : <input type='text' name='number' value='1' /><br />
+		$winnersNumber: <input type='text' name='winners' value='2' /><br />
+		$participationsNumber: <input type='text' name='number' value='1' /><br />
 		<table>
 			<tr style='vertical-align: top'>
-				<td>Rangs autoris&eacute;s pour participation :</td>
+				<td>$allowedRanks:</td>
 				<td>
-					<input type='checkbox' name='rank[]' value='10' /> Administrateur<br />
-					<input type='checkbox' name='rank[]' value='7' /> &Eacute;diteur<br />
-					<input type='checkbox' name='rank[]' value='2' /> Auteur<br />
-					<input type='checkbox' name='rank[]' value='1' /> Contributeur<br />
-					<input type='checkbox' name='rank[]' value='0' /> Abonn&eacute;<br />
-					<input type='checkbox' name='rank[]' value='-1' checked='checked' /> Utilisateur normal
+					<input type='checkbox' name='rank[]' value='10' /> $administrator<br />
+					<input type='checkbox' name='rank[]' value='7' /> $editor<br />
+					<input type='checkbox' name='rank[]' value='2' /> $author<br />
+					<input type='checkbox' name='rank[]' value='1' /> $contributor<br />
+					<input type='checkbox' name='rank[]' value='0' /> $subscriber<br />
+					<input type='checkbox' name='rank[]' value='-1' checked='checked' /> $user
 				</td>
 			</tr>
 		</table>
-		<br /><input type='submit' name='features' value='Ok !' /></form>";
+		<br /><input type='submit' name='features' value='$ok' /></form>";
 	}
 	
 	/**
@@ -124,7 +168,12 @@ class CommentContest {
 	private function choosePost($currentPage, $ranks, $numWinners, $numParticipation) {
 		global $wpdb;
 		$maxArticles = 20;
-		echo '<h1>Comment Contest - Choisir un article</h1><form id="postForm" action="plugins.php?page=comment-contest.php" method="post">';
+		
+		$choosePost = __("Choose a post", $this->localizationName);
+		$more = __("More...", $this->localizationName);
+		$noPost = __("No post found!", $this->localizationName);
+		
+		echo "<h1>Comment Contest - $choosePost</h1><form id='postForm' action='plugins.php?page=comment-contest.php' method='post'>";
 		$query = "SELECT * FROM $wpdb->posts WHERE post_status = 'publish' AND post_type='post' ORDER BY post_date DESC";
 		$posts = $wpdb->get_results ( $query );
 		if ($posts) {
@@ -139,10 +188,10 @@ class CommentContest {
 			<input type='hidden' name='numParticipation' value='$numParticipation' />
 			<input type='hidden' name='postnumber' id='postnumber' value='' /></form>";
 			if (count ( $posts ) > $maxArticles) {
-				echo "<br /><a href='$url/wp-admin/plugins.php?page=comment-contest.php&amp;pagepost=" . ($currentPage + $maxArticles) . "'>Plus...</a>";
+				echo "<br /><a href='$url/wp-admin/plugins.php?page=comment-contest.php&amp;pagepost=" . ($currentPage + $maxArticles) . "'>$more</a>";
 			}
 		} else {
-			$this->error ( "Aucun article !", array ("home" ) );
+			$this->error ( $noPost, array ("home") );
 		}
 	}
 	
@@ -157,7 +206,11 @@ class CommentContest {
 	private function chooseComments($idPost, $ranks, $numWinners, $numParticipation) {
 		global $wpdb;
 		
-		echo "<h1>Comment Contest - Choisir les commentaires &agrave; inclure dans le concours</h1>";
+		$chooseComments = __("Choose comments to include in the contest", $this->localizationName);
+		$launchContest = __("Launch the contest", $this->localizationName);
+		$noComment = __("No comment found!", $this->localizationName);
+		
+		echo "<h1>Comment Contest - $chooseComments</h1>";
 		
 		$filter = null;
 		foreach ( explode ( ",", $ranks ) as $rank ) {
@@ -212,9 +265,9 @@ class CommentContest {
 			<input type='hidden' name='rank' value='$ranks' />
 			<input type='hidden' name='numWinners' value='$numWinners' />
 			<input type='hidden' name='numParticipation' value='$numParticipation' />
-			<input type='submit' value='Lancer le tirage au sort' /></form>";
+			<input type='submit' value='$launchContest' /></form>";
 		} else {
-			$this->error ( "Aucun commentaire !", array ("home" ) );
+			$this->error ( $noComment, array ("home") );
 		}
 	}
 	
@@ -228,13 +281,17 @@ class CommentContest {
 	private function displayWinners($comments, $numWinners, $numParticipation) {
 		global $wpdb;
 		
+		$winners = __("Winners", $this->localizationName);
+		$commentWord = __("Comment", $this->localizationName);
+		$say = __("says", $this->localizationName);
+		
 		$tab = null;
 		foreach ( $comments as $comment => $value ) {
 			$tab [] = $value;
 		}
 		
 		shuffle ( $tab );
-		echo "<h1>Comment Contest - Les gagnants</h1>";
+		echo "<h1>Comment Contest - $winners</h1>";
 		$stop = false;
 		$i = 1;
 		$author = "";
@@ -247,7 +304,7 @@ class CommentContest {
 			if ($from != $author) {
 				$i ++;
 				$author = $from;
-				echo "<strong>Commentaire de</strong> $from <strong>avec</strong> $c->comment_content <br /><br />";
+				echo "<strong>$commentWord</strong> $from <strong>$say</strong> $c->comment_content <br /><br />";
 			}
 			
 			if ($i > $numWinners) {
@@ -264,18 +321,25 @@ class CommentContest {
 	private function error($message, $args) {
 		$url = get_bloginfo ( 'url' );
 		if ($args [0] == 'post') {
+			$chooseComment = __("Choose comments", $this->localizationName);
+			
 			die ( "$message<br /><br />
 			<form action='plugins.php?page=comment-contest.php' method='post'>
 			<input type='hidden' name='postnumber' value='$args[1]' />
 			<input type='hidden' name='rank' value='$args[2]' />
 			<input type='hidden' name='numWinners' value='$args[3]' />
 			<input type='hidden' name='numParticipation' value='$args[4]' />
-			<input type='submit' value='Rechoisir les commentaires' /></form>" );
+			<input type='submit' value='$chooseComment' /></form>" );
 		} elseif ($args [0] == 'home') {
-			die ( "$message<br /><br /><a href='$url/wp-admin/plugins.php?page=comment-contest.php'>Retour au d&eacute;but</a>" );
+			$back = __("Back", $this->localizationName);
+			
+			die ( "$message<br /><br /><a href='$url/wp-admin/plugins.php?page=comment-contest.php'>$back</a>" );
 		}
 	}
 	
+	/**
+	 * The page to display in the administration menu
+	 */
 	function AdminHelpPage() {
 		if (isset ( $_POST ['postnumber'] )) { // Step 3 : Choose comments
 			$this->chooseComments ( $_POST ['postnumber'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'] );
@@ -283,9 +347,11 @@ class CommentContest {
 			$comments = $_POST ['comments'];
 			
 			if ($comments == null || count ( $comments ) == 0) {
-				$this->error ( "Veuillez s&eacute;lectionner au moins un gagnant !", array ("post", $_POST ['post'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'] ) );
+				$selectOneWinner = __("Please select one winner at least!", $this->localizationName);
+				$this->error ( $selectOneWinner, array ("post", $_POST ['post'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'] ) );
 			} elseif (count ( $comments ) <= $_POST ['numWinners']) {
-				$this->error ( "Veuillez s&eacute;lectionner plus de participants que de gagnants !", array ("post", $_POST ['post'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'] ) );
+				$selectMoreWinner = __("Please select more participants than winners!", $this->localizationName);
+				$this->error ( $selectMoreWinner, array ("post", $_POST ['post'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'] ) );
 			} else {
 				$this->displayWinners ( $comments, $_POST ['numWinners'], $_POST ['numParticipation'] );
 			}
@@ -298,11 +364,14 @@ class CommentContest {
 			$numWinners = intval ( $_POST ['winners'] );
 			$numParticipation = intval ( $_POST ['number'] );
 			if (count ( $_POST ['rank'] ) == 0) {
-				$this->error ( "Veuillez s&eacute;lectionner au moins un rang !", array ("home" ) );
+				$selectOneRank = __("Please select one rank at least!", $this->localizationName);
+				$this->error ( $selectOneRank, array ("home" ) );
 			} elseif ($numWinners == null || $numWinners <= 0) {
-				$this->error ( "Veuillez sp&eacute;cifier un nombre correct de gagnants !", array ("home" ) );
+				$winnerFormat = __("Wrong winners format!", $this->localizationName);
+				$this->error ( $winnerFormat, array ("home" ) );
 			} elseif ($numParticipation == null || $numParticipation <= 0) {
-				$this->error ( "Veuillez sp&eacute;cifier un nombre correct de participations !", array ("home" ) );
+				$participationsFormat = __("Wrong participations format!", $this->localizationName);
+				$this->error ( $participationsFormat, array ("home" ) );
 			} else {
 				$this->choosePost ( $page, implode ( ",", $_POST ['rank'] ), $numWinners, $numParticipation );
 			}
@@ -311,12 +380,16 @@ class CommentContest {
 		}
 	}
 	
-	function action_wp_title($titre) {
-		return $titre;
+	/**
+	 * Change the website's title
+	 * @param $title The new title
+	 */
+	function action_wp_title($title) {
+		return $title;
 	}
 	
 //---------------------------------------------
-// Fin de la partie d'édition
+// Stop edit from here
 //---------------------------------------------
 
 

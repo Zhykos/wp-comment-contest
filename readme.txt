@@ -25,10 +25,18 @@ This section describes how to install the plugin and get it working.
 TODO
 
 == Screenshots ==
-screenshot1.png The first page of the plugin : set the contest's features
+1. The first page of the plugin : set the contest's features
+2. Choose the article in which the contest is running
+3. Choose the comments
+4. The winners are displayed
 
 == Changelog ==
 
 = 1.0 =
 * Release version
 * Only French language is available
+
+= 1.1 =
+* Translation in English and French
+* Comments are included in the source code
+* Screenshots are available in the install

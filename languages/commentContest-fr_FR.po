@@ -1,0 +1,131 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Comment Contest\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-09-04 15:23+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Zhykos <zhykos@nozzhy.com>\n"
+"Language-Team: Zhykos & Nozgarde <contact@nozzhy.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n>1\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: FRANCE\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;_c\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: C:\\wamp\\www\\wordpress\\wp-content\\plugins\\comment-contest\n"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:75
+msgid "Comment Contest"
+msgstr "Comment Contest"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:128
+msgid "Configure the contest"
+msgstr "Configurations du tirage au sort"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:129
+msgid "Winners' number"
+msgstr "Nombre de gagnants "
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:130
+msgid "Maximum participations' number per person"
+msgstr "Nombre maximum de participations par personne "
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:131
+msgid "Allowed ranks to participate"
+msgstr "Rangs autoris&eacute;s pour participation "
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:132
+msgid "Administrator"
+msgstr "Administrateur"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:133
+msgid "Editor"
+msgstr "&Eacute;diteur"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:134
+msgid "Author"
+msgstr "Auteur"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:135
+msgid "Contributor"
+msgstr "Contributeur"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:136
+msgid "Subscriber"
+msgstr "Abonn&eacute;"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:137
+msgid "Normal user"
+msgstr "Utilisateur normal"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:138
+msgid "Ok!"
+msgstr "Ok !"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:172
+msgid "Choose a post"
+msgstr "Choisir un article"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:173
+msgid "More..."
+msgstr "Plus..."
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:174
+msgid "No post found!"
+msgstr "Aucun article !"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:209
+msgid "Choose comments to include in the contest"
+msgstr "Choisir les commentaires &agrave; inclure dans le concours"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:210
+msgid "Launch the contest"
+msgstr "Lancer le tirage au sort"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:211
+msgid "No comment found!"
+msgstr "Aucun commentaire !"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:284
+msgid "Winners"
+msgstr "Les gagnants"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:285
+msgid "Comment"
+msgstr "Commentaire de"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:286
+msgid "says"
+msgstr "avec"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:324
+msgid "Choose comments"
+msgstr "Rechoisir les commentaires"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:334
+msgid "Back"
+msgstr "Retour au d&eacute;but"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:350
+msgid "Please select one winner at least!"
+msgstr "Veuillez s&eacute;lectionner au moins un gagnant !"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:353
+msgid "Please select more participants than winners!"
+msgstr "Veuillez s&eacute;lectionner plus de participants que de gagnants !"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:367
+msgid "Please select one rank at least!"
+msgstr "Veuillez s&eacute;lectionner au moins un rang !"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:370
+msgid "Wrong winners format!"
+msgstr "Veuillez sp&eacute;cifier un nombre correct de gagnants !"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:373
+msgid "Wrong participations format!"
+msgstr "Veuillez sp&eacute;cifier un nombre correct de participations !"
+
