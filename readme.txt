@@ -40,3 +40,6 @@ TODO
 * Translation in English and French
 * Comments are included in the source code
 * Screenshots are available in the install
+
+= 1.1.0.1 =
+* Remove "plugin only in french" in a comment
