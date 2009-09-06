@@ -43,3 +43,6 @@ TODO
 
 = 1.1.0.1 =
 * Remove "plugin only in french" in a comment
+
+= 1.1.1b =
+* Send a mail to the winners at the end. You can choose to do so or not (not tested yet)
