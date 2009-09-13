@@ -22,13 +22,17 @@ This section describes how to install the plugin and get it working.
 3. Go to 'Comment Contest' menu in 'Plugins' menu
 
 == Frequently Asked Questions ==
-TODO
+
+= Which PHP version I need? =
+
+You need PHP version 4 like Wordpress. The plugin is ready to run with PHP5 but it isn't activated.
 
 == Screenshots ==
 1. The first page of the plugin : set the contest's features
 2. Choose the article in which the contest is running
 3. Choose the comments
-4. The winners are displayed
+4. Choose the prizes to win
+5. The winners are displayed
 
 == Changelog ==
 
@@ -46,3 +50,18 @@ TODO
 
 = 1.1.1b =
 * Send a mail to the winners at the end. You can choose to do so or not (not tested yet)
+
+= 1.1.1 =
+* Bug fix : send a mail to winners (tested online)
+* Bug fix : can display other posts
+
+= 1.1.2 =
+* Add the possibility to choose between Normal Contest or Speed Contest. Speed Contest choose winners by sorting them by chronologic order
+
+= 1.2 =
+* Set the prices to win
+* Change PHP version for the main class. I migrate from PHP5 to version 4 because some servers still use PHP4 and PHP4 is the Wordpress recommandation
+
+= 1.3 =
+* Change error message display (now it's the same message as Wordpress). Old values are put in the fields so the user don't have to type again the values
+* New winners display
