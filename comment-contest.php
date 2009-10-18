@@ -4,7 +4,7 @@ Plugin Name: Comment Contest
 Plugin URI: http://www.nozzhy.com/plugins/comment-contest-description/
 Description: If you create a contest on your website, you can draw all comments in a specific post
 Author: Thomas "Zhykos" Cicognani
-Version: 1.3
+Version: 1.35
 Author URI: http://www.nozzhy.com
 */
 
@@ -32,7 +32,7 @@ Author URI: http://www.nozzhy.com
  */
 class CommentContest {
 	/*private*/var $domain = '';
-	/*private*/var $version = '1.3'; // Current version
+	/*private*/var $version = '1.35'; // Current version
 	/*private*/var $option_ns = '';
 	/*private*/var $options = array ();
 	/*private*/var $localizationName = "commentContest";
@@ -151,7 +151,7 @@ class CommentContest {
 	 * @param $ranks Allowed ranks
 	 * @param $email Email to send (<i>null</i> means no email to send)
 	 */
-	function configure($errorCode = null, $previousContestType = null, $numWinners = null, $numParticipation = null, $numPrizes = null, $ranks = null, $email = null) {
+	function step1_configure($errorCode = null, $previousContestType = null, $numWinners = null, $numParticipation = null, $numPrizes = null, $ranks = null, $email = null) {
 		$configureContest = __("Configure the contest", $this->localizationName);
 		$winnersNumber = __("Winners' number", $this->localizationName);
 		$participationsNumber = __("Maximum participations' number per person", $this->localizationName);
@@ -277,23 +277,27 @@ class CommentContest {
 	 * @param $type The contest's type
 	 * @param $prizes Prizes' number
 	 */
-	/*private */function choosePost($currentPage, $ranks, $numWinners, $numParticipation, $email, $type, $prizes) {
+	/*private */function step2_choosePost($currentPage, $ranks, $numWinners, $numParticipation, $email, $type, $prizes) {
 		global $wpdb;
 		$maxArticles = 20;
 		
 		$choosePost = __("Choose a post", $this->localizationName);
 		$more = __("More...", $this->localizationName);
 		$noPost = __("No post found!", $this->localizationName);
+		$comments = __("comment(s)", $this->localizationName);
 		
 		echo "<h1>Comment Contest - $choosePost</h1><form id='postForm' action='plugins.php?page=comment-contest.php' method='post'>";
 		
-		$query = "SELECT * FROM $wpdb->posts WHERE (post_status = 'publish' OR post_status = 'private') AND post_type='post' ORDER BY post_date DESC";
+		// V1.35 - ADD : Only display posts with comments
+		$query = "SELECT * FROM $wpdb->posts WHERE (post_status = 'publish' OR post_status = 'private') AND post_type='post' AND comment_count > 0 ORDER BY post_date DESC";
+		
 		$posts = $wpdb->get_results ( $query );
+		
 		if ($posts) {
 			$url = get_bloginfo ( 'url' );
 			for($i = $currentPage; $i < count ( $posts ) && $i < $maxArticles + $currentPage; $i ++) {
 				$post = $posts [$i];
-				echo "<a href='#' onclick='getElementById(\"postnumber\").value=$post->ID; getElementById(\"postForm\").submit()'>$post->post_title</a><br />";
+				echo "<a href='#' onclick='getElementById(\"postnumber\").value=$post->ID; getElementById(\"postForm\").submit()'>$post->post_title</a>  ($post->comment_count $comments)<br />";
 			}
 			
 			echo "<input type='hidden' name='rank' value='$ranks' />
@@ -328,7 +332,7 @@ class CommentContest {
 	 * @param $errorMessage Error message
 	 * @param $previousComments Comments previously checked
 	 */
-	/*private */function chooseComments($idPost, $ranks, $numWinners, $numParticipation, $email, $type, $prizes, $errorMessage = null, $previousComments = null) {
+	/*private */function step3_chooseComments($idPost, $ranks, $numWinners, $numParticipation, $email, $type, $prizes, $errorMessage = null, $previousComments = null) {
 		global $wpdb;
 
 		$chooseComments = __("Choose comments to include in the contest", $this->localizationName);
@@ -347,26 +351,36 @@ class CommentContest {
 				$queryTemp = "select user_login from $wpdb->usermeta, $wpdb->users where meta_key='wp_user_level' and  meta_value=$rank and user_id=ID";
 				$resultQueryTemp = $wpdb->get_results ( $queryTemp );
 				foreach ( $resultQueryTemp as $resultTemp ) {
-					$filter [] = "comment_author = '$resultTemp->user_login'";
+					// V1.35 - BUG FIX : Simple and double quotes protected because if a pseudo contains quotes, the query bugs (thanks to Kamel from www.yoocom.fr)
+					$filter [] = "comment_author = '" . addslashes($resultTemp->user_login) . "'";
 				}
 			} elseif ($rank == 0) { // Subscriber
 				$queryTemp = "select meta_value from $wpdb->usermeta where meta_key='nickname' and user_id not in(select distinct user_id from $wpdb->usermeta where meta_key='wp_user_level')";
 				$resultQueryTemp = $wpdb->get_results ( $queryTemp );
 				foreach ( $resultQueryTemp as $resultTemp ) {
-					$filter [] = "comment_author = '$resultTemp->meta_value'";
+					// V1.35 - BUG FIX : Simple and double quotes protected because if a pseudo contains quotes, the query bugs (thanks to Kamel from www.yoocom.fr)
+					$filter [] = "comment_author = '" . addslashes($resultTemp->meta_value) . "'";
 				}
 			} else { // User ($rank == -1)
 				$queryTemp = "SELECT comment_author FROM $wpdb->comments WHERE comment_approved = \"1\" and comment_post_id='$idPost' and comment_author not in (select meta_value from $wpdb->usermeta where meta_key='nickname')";
 				$resultQueryTemp = $wpdb->get_results ( $queryTemp );
 				foreach ( $resultQueryTemp as $resultTemp ) {
-					$filter [] = "comment_author = '$resultTemp->comment_author'";
+					// V1.35 - BUG FIX : Simple and double quotes protected because if a pseudo contains quotes, the query bugs (thanks to Kamel from www.yoocom.fr)
+					$filter [] = "comment_author = '" . addslashes($resultTemp->comment_author) . "'";
 				}
 			}
 		}
 		
+		// V1.35 - BUG FIX : If $filter is null, a PHP error occured ==> filter management now here
+		if($filter == null) {
+			$filter = "";
+		} else {
+			$filter = " and (" . implode ( " OR ", $filter ) . ")";
+		}
+
 		$query = "SELECT * FROM $wpdb->comments WHERE comment_approved = \"1\" and comment_post_id='$idPost' and comment_author != (
-			select user_login from $wpdb->users u, $wpdb->posts p where u.ID = post_author and p.ID = $idPost
-			) and (" . implode ( " OR ", $filter ) . ") ORDER BY comment_author";
+			select user_login from $wpdb->users u, $wpdb->posts p where u.ID = post_author and p.ID = '$idPost'
+			)$filter ORDER BY comment_author";
 		$comments = $wpdb->get_results ( $query );
 		
 		if ($comments) {
@@ -427,7 +441,7 @@ class CommentContest {
 	 * @param $previousNames Prizes' names previously typed
 	 * @param $previousTo Prizes' places previously typed
 	 */
-	function choosePrizes($comments, $numWinners, $numParticipation, $email, $type, $prizes, $error = 0, $previousNames = null, $previousTo = null) {
+	function step4_choosePrizes($comments, $numWinners, $numParticipation, $email, $type, $prizes, $error = 0, $previousNames = null, $previousTo = null) {
 		$choosePrizes = __("Prizes' choice", $this->localizationName);
 		$launchContest = __("Launch the contest", $this->localizationName);
 		$prizeName = __("Prize name:", $this->localizationName);
@@ -436,11 +450,16 @@ class CommentContest {
 		
 		echo "<h1>Comment Contest - $choosePrizes</h1>";
 		
-		if($error == 1) {
-			$errorText = __("Please give all prizes!", $this->localizationName);
-			echo "<div id='message' class='error'><p>$errorText</p></div>";
-		} elseif($error == 2) {
-			$errorText = __("Please check all places for each prize", $this->localizationName);
+		// V1.35 - ADD : Different names check and code optimization
+		if($error > 0) {
+			if($error == 1) {
+				$errorText = __("Please give all prizes!", $this->localizationName);
+			} elseif($error == 2) {
+				$errorText = __("Please check all places for each prize", $this->localizationName);
+			} elseif($error == 3) {
+				$errorText = __("Please give different name for each prize", $this->localizationName);
+			}
+			
 			echo "<div id='message' class='error'><p>$errorText</p></div>";
 		}
 			
@@ -504,7 +523,7 @@ class CommentContest {
 	 * @param $prizes Prizes' names
 	 * @param $places Prizes' order
 	 */
-	/*private */function displayWinners($comments, $numWinners, $numParticipation, $email, $type, $prizes, $places) {
+	/*private */function step5_displayWinners($comments, $numWinners, $numParticipation, $email, $type, $prizes, $places) {
 		global $wpdb;
 		
 		$winners = __("Winners", $this->localizationName);
@@ -575,7 +594,7 @@ class CommentContest {
 			$tabTemp[] = $wpdb->get_var ( $query );
 		}
 		array_unique($tabTemp);
-		sort($tabTemp);
+		natcasesort($tabTemp); // V1.35 - UPDATE : Remove case sensitive sort ("natcasesort($array)" replace "sort($array)")
 		echo implode(", ", $tabTemp);
 	}
 	
@@ -583,13 +602,14 @@ class CommentContest {
 	 * Display an error message
 	 * @param $message The error message
 	 * @param $args The message's parameter. <code>$args[0]</code> must be <i>"post"</i> or <i>"home"</i>
+	 * @version 1.35 - UPDATE : Change the message format
 	 */
 	/*private */function error($message, $args) {
 		$url = get_bloginfo ( 'url' );
 		if ($args [0] == 'post') {
 			$chooseComment = __("Choose comments", $this->localizationName);
 			
-			die ( "$message<br /><br />
+			die ( "<div id='message' class='error'><p>$message</p></div><br /><br />
 			<form action='plugins.php?page=comment-contest.php' method='post'>
 			<input type='hidden' name='postnumber' value='$args[1]' />
 			<input type='hidden' name='rank' value='$args[2]' />
@@ -600,7 +620,7 @@ class CommentContest {
 		} elseif ($args [0] == 'home') {
 			$back = __("Back", $this->localizationName);
 			
-			die ( "$message<br /><br /><a href='$url/wp-admin/plugins.php?page=comment-contest.php'>$back</a>" );
+			die ( "<div id='message' class='error'><p>$message</p></div><br /><br /><a href='$url/wp-admin/plugins.php?page=comment-contest.php'>$back</a>" );
 		}
 	}
 	
@@ -615,7 +635,7 @@ class CommentContest {
 		// Check names format
 		$test = false;
 		for($i = 0; $i < count($names); $i++) {
-			if($names[$i] == "") {
+			if($names[$i] == "" || $names[$i] == null) {
 				$test = true;
 			}
 			$names[$i] = strip_tags($names[$i]);
@@ -649,18 +669,27 @@ class CommentContest {
 		if(isset($_POST['prizesSubmit'])) { // Step 5 : Display winners
 			
 			$res = $this->checkPrizes($_POST['prizeName'], $_POST['to'], $_POST['from']);
+			
+			// V1.35 - ADD : Check different names
+			if(is_array($_POST['prizeName'])) {
+				$temp = $_POST['prizeName'];
+				$temp = array_unique($temp);
+				if(count($temp) != count($_POST['prizeName'])) {
+					$res = 3;
+				}
+			}
 
 			if($res == 0) {
-				$this->displayWinners ( $_POST ['comments'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['prizeName'], $_POST['from'] );
+				$this->step5_displayWinners ( $_POST ['comments'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['prizeName'], $_POST['from'] );
 			} else {
-				$this->choosePrizes($_POST ['comments'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'], $res, implode(",", $_POST['prizeName']), implode(",", $_POST['to']));
+				$this->step4_choosePrizes($_POST ['comments'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'], $res, implode(",", $_POST['prizeName']), implode(",", $_POST['to']));
 			}
 
 // ---------------------------------------------------------------------------------
 			
 		}
 		else if (isset ( $_POST ['postnumber'] ) && $_POST ['postnumber'] != -1) { // Step 3 : Choose comments
-			$this->chooseComments ( $_POST ['postnumber'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'] );
+			$this->step3_chooseComments ( $_POST ['postnumber'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'] );
 
 // ---------------------------------------------------------------------------------
 
@@ -669,12 +698,12 @@ class CommentContest {
 			
 			if ($comments == null || count ( $comments ) == 0) {
 				$selectOneWinner = __("Please select one winner at least!", $this->localizationName);
-				$this->chooseComments ( $_POST ['post'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'], $selectOneWinner, null );
+				$this->step3_chooseComments ( $_POST ['post'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'], $selectOneWinner, null );
 			} elseif (count ( $comments ) < $_POST ['numWinners']) {
 				$selectMoreWinner = __("Please select more participants than winners!", $this->localizationName);
-				$this->chooseComments ( $_POST ['post'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'], $selectMoreWinner, $comments );
+				$this->step3_chooseComments ( $_POST ['post'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'], $selectMoreWinner, $comments );
 			} else {
-				$this->choosePrizes(implode(",", $comments), $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes']);
+				$this->step4_choosePrizes(implode(",", $comments), $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes']);
 			}
 // ---------------------------------------------------------------------------------
 
@@ -697,32 +726,32 @@ class CommentContest {
 
 			if (count ( $_POST ['rank'] ) == 0) {
 				$selectOneRank = __("Please select one rank at least!", $this->localizationName);
-				$this->configure ($selectOneRank, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, null, $email);
+				$this->step1_configure ($selectOneRank, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, null, $email);
 			} elseif ($numWinners == null || $numWinners <= 0) {
 				$winnerFormat = __("Wrong winners format!", $this->localizationName);
-				$this->configure ($winnerFormat, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email);
+				$this->step1_configure ($winnerFormat, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email);
 			} elseif ($numParticipation == null || $numParticipation <= 0) {
 				$participationsFormat = __("Wrong participations format!", $this->localizationName);
-				$this->configure ($participationsFormat, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email);
+				$this->step1_configure ($participationsFormat, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email);
 			} elseif($email == $emailContentTest) {
 				$emailContentError = __("Please change the email's content!", $this->localizationName);
-				$this->configure ($emailContentError, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email);
+				$this->step1_configure ($emailContentError, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email);
 			} elseif ($numPrizes == null || $numPrizes <= 0 || $numPrizes > $numWinners) {
 				$prizesFormat = __("Wrong prizes number format! Or choose more winners than prizes!", $this->localizationName);
-				$this->configure ($prizesFormat, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email);
+				$this->step1_configure ($prizesFormat, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email);
 			} else {
 				if(is_array($_POST ['rank'])) {
 					$tab = implode ( ",", $_POST ['rank'] );
 				} else {
 					$tab = $_POST ['rank'];
 				}
-				$this->choosePost ( $page, $tab, $numWinners, $numParticipation, $email, $_POST['contestType'], $numPrizes );
+				$this->step2_choosePost ( $page, $tab, $numWinners, $numParticipation, $email, $_POST['contestType'], $numPrizes );
 			}
 			
 // ---------------------------------------------------------------------------------
 
 		} else { // Step 1 : Configure the contest
-			$this->configure ();
+			$this->step1_configure ();
 		}
 	}
 	

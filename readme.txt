@@ -65,3 +65,12 @@ You need PHP version 4 like Wordpress. The plugin is ready to run with PHP5 but 
 = 1.3 =
 * Change error message display (now it's the same message as Wordpress). Old values are put in the fields so the user don't have to type again the values
 * New winners display
+
+= 1.35 =
+* Only display posts with comments
+* BUG FIX : Simple and double quotes protected because if a pseudo contains quotes, some query bug (thanks to Kamel from www.yoocom.fr)
+* BUG FIX : Change the place of a check value (bug if the value was null)
+* Different names check for prizes and code optimization
+* Remove case sensitive sort for displaying all the participants
+* Change error message format in certain cases
+* Change localization message in French

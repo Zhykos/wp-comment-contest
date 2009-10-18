@@ -2,9 +2,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Comment Contest\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-09-13 20:04+0100\n"
+"POT-Creation-Date: 2009-10-18 17:39+0100\n"
 "PO-Revision-Date: \n"
-"Last-Translator: Zhykos <zhykos@nozzhy.com>\n"
+"Last-Translator: Thomas Cicognani <zhykos@nozzhy.com>\n"
 "Language-Team: Zhykos & Nozgarde <contact@nozzhy.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -15,187 +15,195 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-KeywordsList: __;_e;_c\n"
 "X-Poedit-Basepath: .\n"
-"X-Poedit-SearchPath-0: C:\\wamp\\www\\wordpress\\wp-content\\plugins\\comment-contest\n"
+"X-Poedit-SearchPath-0: C:\\wamp\\www\\wordpress\\wordpress\\wp-content\\plugins\\comment-contest\n"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:95
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:95
 msgid "Comment Contest"
 msgstr "Comment Contest"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:155
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:155
 msgid "Configure the contest"
 msgstr "Configurations du tirage au sort"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:156
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:156
 msgid "Winners' number"
 msgstr "Nombre de gagnants "
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:157
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:157
 msgid "Maximum participations' number per person"
 msgstr "Nombre maximum de participations par personne "
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:158
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:158
 msgid "Allowed ranks to participate"
 msgstr "Rangs autoris&eacute;s pour participation "
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:159
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:159
 msgid "Administrator"
 msgstr "Administrateur"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:160
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:160
 msgid "Editor"
 msgstr "&Eacute;diteur"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:161
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:161
 msgid "Author"
 msgstr "Auteur"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:162
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:162
 msgid "Contributor"
 msgstr "Contributeur"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:163
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:163
 msgid "Subscriber"
 msgstr "Abonn&eacute;"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:164
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:164
 msgid "Normal user"
 msgstr "Utilisateur normal"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:165
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:165
 msgid "Automaticaly send a mail to winners"
 msgstr "Envoyer automatiquement un email aux gagnants"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:166
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:696
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:166
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:722
 msgid "Email's content (HTML possible)"
 msgstr "Contenu de l'email (HTML possible)"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:167
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:167
 msgid "Contest type"
 msgstr "Type de concours"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:168
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:432
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:168
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:339
 msgid "Ok!"
 msgstr "Ok !"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:169
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:169
 msgid "Normal contest (random winners)"
 msgstr "Concours normal (gagnants aléatoire)"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:170
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:170
 msgid "Speed contest (first comments win)"
 msgstr "Concours rapide (les premiers commentaires gagnent)"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:171
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:171
 msgid "Number of different prizes"
-msgstr "Nombre de lots à gagner"
+msgstr "Nombre de lots différents à gagner"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:284
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:284
 msgid "Choose a post"
 msgstr "Choisir un article"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:285
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:285
 msgid "More..."
 msgstr "Plus..."
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:286
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:286
 msgid "No post found!"
 msgstr "Aucun article !"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:334
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:287
+msgid "comment(s)"
+msgstr "commentaire(s)"
+
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:338
 msgid "Choose comments to include in the contest"
 msgstr "Choisir les commentaires &agrave; inclure dans le concours"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:335
-msgid "Launch the contest"
-msgstr "Lancer le tirage au sort"
-
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:336
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:340
 msgid "No comment found!"
 msgstr "Aucun commentaire !"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:431
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:445
 msgid "Prizes' choice"
 msgstr "Choix des lots"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:433
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:446
+msgid "Launch the contest"
+msgstr "Lancer le tirage au sort"
+
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:447
 msgid "Prize name:"
 msgstr "Nom du lot :"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:434
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:448
 msgid "From"
 msgstr "De"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:435
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:449
 msgid "to"
 msgstr "à"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:440
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:456
 msgid "Please give all prizes!"
 msgstr "Veuillez préciser tous les lots !"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:443
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:458
 msgid "Please check all places for each prize"
 msgstr "Veuillez vérifier toutes les places pour chaque lot !"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:510
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:460
+msgid "Please give different name for each prize"
+msgstr "Veuillez donner un nom différent pour chaque lot"
+
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:529
 msgid "Winners"
 msgstr "Les gagnants"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:511
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:530
 msgid "Comment"
 msgstr "Commentaire de"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:512
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:531
 msgid "says"
 msgstr "avec"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:513
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:532
 msgid "You win a contest"
 msgstr "Vous avez gagné un concours"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:537
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:556
 msgid "Prize won:"
 msgstr "Lot gagné :"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:570
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:589
 msgid "List of all participants:"
 msgstr "Liste des participants au concours :"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:590
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:610
 msgid "Choose comments"
 msgstr "Rechoisir les commentaires"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:601
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:621
 msgid "Back"
 msgstr "Retour au d&eacute;but"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:671
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:697
 msgid "Please select one winner at least!"
 msgstr "Veuillez s&eacute;lectionner au moins un gagnant !"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:674
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:700
 msgid "Please select more participants than winners!"
 msgstr "Veuillez s&eacute;lectionner plus de participants que de gagnants !"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:699
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:725
 msgid "Please select one rank at least!"
 msgstr "Veuillez s&eacute;lectionner au moins un rang !"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:702
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:728
 msgid "Wrong winners format!"
 msgstr "Veuillez sp&eacute;cifier un nombre correct de gagnants !"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:705
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:731
 msgid "Wrong participations format!"
 msgstr "Veuillez sp&eacute;cifier un nombre correct de participations !"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:708
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:734
 msgid "Please change the email's content!"
 msgstr "Veuillez changer le contenu de l'email"
 
-#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:711
+#: C:\wamp\www\wordpress\wordpress\wp-content\plugins\comment-contest/comment-contest.php:737
 msgid "Wrong prizes number format! Or choose more winners than prizes!"
-msgstr "Mauvais format pour les places !"
+msgstr "Mauvais format pour le nombre de prix ! Ou choisissez plus de gagnants que de prix !"
 
