@@ -4,7 +4,7 @@ Plugin Name: Comment Contest
 Plugin URI: http://www.nozzhy.com/plugins/comment-contest-description/
 Description: If you create a contest on your website, you can draw all comments in a specific post
 Author: Thomas "Zhykos" Cicognani
-Version: 1.35
+Version: 1.36
 Author URI: http://www.nozzhy.com
 */
 
@@ -32,7 +32,7 @@ Author URI: http://www.nozzhy.com
  */
 class CommentContest {
 	/*private*/var $domain = '';
-	/*private*/var $version = '1.35'; // Current version
+	/*private*/var $version = '1.36'; // Current version
 	/*private*/var $option_ns = '';
 	/*private*/var $options = array ();
 	/*private*/var $localizationName = "commentContest";
@@ -334,7 +334,6 @@ class CommentContest {
 	 */
 	/*private */function step3_chooseComments($idPost, $ranks, $numWinners, $numParticipation, $email, $type, $prizes, $errorMessage = null, $previousComments = null) {
 		global $wpdb;
-
 		$chooseComments = __("Choose comments to include in the contest", $this->localizationName);
 		$ok = __("Ok!", $this->localizationName);
 		$noComment = __("No comment found!", $this->localizationName);
@@ -350,20 +349,41 @@ class CommentContest {
 			if ($rank != - 1 && $rank != 0) {
 				$queryTemp = "select user_login from $wpdb->usermeta, $wpdb->users where meta_key='wp_user_level' and  meta_value=$rank and user_id=ID";
 				$resultQueryTemp = $wpdb->get_results ( $queryTemp );
+
 				foreach ( $resultQueryTemp as $resultTemp ) {
 					// V1.35 - BUG FIX : Simple and double quotes protected because if a pseudo contains quotes, the query bugs (thanks to Kamel from www.yoocom.fr)
 					$filter [] = "comment_author = '" . addslashes($resultTemp->user_login) . "'";
 				}
 			} elseif ($rank == 0) { // Subscriber
-				$queryTemp = "select meta_value from $wpdb->usermeta where meta_key='nickname' and user_id not in(select distinct user_id from $wpdb->usermeta where meta_key='wp_user_level')";
+				// V1.36 - Remove sub-query & add a new temporary query
+				$subQueryTemp = "select distinct user_id from $wpdb->usermeta where meta_key='wp_user_level'";
+				$resultSubQueryTemp = $wpdb->get_results ( $subQueryTemp );
+				$resultTempString = null;
+				foreach($resultSubQueryTemp as $r) {
+					$resultTempString[] = $r->user_id;
+				}
+				
+				//$queryTemp = "select meta_value from $wpdb->usermeta where meta_key='nickname' and user_id not in(select distinct user_id from $wpdb->usermeta where meta_key='wp_user_level')";
+				$queryTemp = "select meta_value from $wpdb->usermeta where meta_key='nickname' and user_id not in(" . implode(",", $resultTempString) . ")";
 				$resultQueryTemp = $wpdb->get_results ( $queryTemp );
+
 				foreach ( $resultQueryTemp as $resultTemp ) {
 					// V1.35 - BUG FIX : Simple and double quotes protected because if a pseudo contains quotes, the query bugs (thanks to Kamel from www.yoocom.fr)
 					$filter [] = "comment_author = '" . addslashes($resultTemp->meta_value) . "'";
 				}
 			} else { // User ($rank == -1)
-				$queryTemp = "SELECT comment_author FROM $wpdb->comments WHERE comment_approved = \"1\" and comment_post_id='$idPost' and comment_author not in (select meta_value from $wpdb->usermeta where meta_key='nickname')";
+				// V1.36 - Remove sub-query & add a new temporary query
+				$subQueryTemp = "select meta_value from $wpdb->usermeta where meta_key='nickname'";
+				$resultSubQueryTemp = $wpdb->get_results ( $subQueryTemp );
+				$resultTempString = null;
+				foreach($resultSubQueryTemp as $r) {
+					$resultTempString[] = "\"" . addslashes($r->meta_value) . "\"";
+				}
+				
+				//$queryTemp = "SELECT comment_author FROM $wpdb->comments WHERE comment_approved = \"1\" and comment_post_id='$idPost' and comment_author not in (select meta_value from $wpdb->usermeta where meta_key='nickname')";
+				$queryTemp = "SELECT comment_author FROM $wpdb->comments WHERE comment_approved = \"1\" and comment_post_id='$idPost' and comment_author not in (" . implode(",", $resultTempString) . ")";
 				$resultQueryTemp = $wpdb->get_results ( $queryTemp );
+
 				foreach ( $resultQueryTemp as $resultTemp ) {
 					// V1.35 - BUG FIX : Simple and double quotes protected because if a pseudo contains quotes, the query bugs (thanks to Kamel from www.yoocom.fr)
 					$filter [] = "comment_author = '" . addslashes($resultTemp->comment_author) . "'";
@@ -377,12 +397,16 @@ class CommentContest {
 		} else {
 			$filter = " and (" . implode ( " OR ", $filter ) . ")";
 		}
-
-		$query = "SELECT * FROM $wpdb->comments WHERE comment_approved = \"1\" and comment_post_id='$idPost' and comment_author != (
-			select user_login from $wpdb->users u, $wpdb->posts p where u.ID = post_author and p.ID = '$idPost'
-			)$filter ORDER BY comment_author";
-		$comments = $wpdb->get_results ( $query );
 		
+		// V1.36 - Remove sub-query & add a new temporary query
+		$query = "select user_login from $wpdb->users u, $wpdb->posts p where u.ID = post_author and p.ID = '$idPost'";
+		$postAuthor = $wpdb->get_results ( $query );
+		$postAuthor = addslashes($postAuthor[0] -> user_login);
+		
+		//$query = "SELECT * FROM $wpdb->comments WHERE comment_approved = '1' and comment_post_id='$idPost' and comment_author != (select user_login from $wpdb->users u, $wpdb->posts p where u.ID = post_author and p.ID = '$idPost') $filter ORDER BY comment_author";
+		$query = "SELECT * FROM $wpdb->comments WHERE comment_approved = '1' and comment_post_id='$idPost' and comment_author != '$postAuthor' $filter ORDER BY comment_author";
+		$comments = $wpdb->get_results ( $query );
+
 		if ($comments) {
 			echo "<form action='plugins.php?page=comment-contest.php' method='post'>";
 			$author = "";
