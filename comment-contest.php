@@ -4,7 +4,7 @@ Plugin Name: Comment Contest
 Plugin URI: http://www.nozzhy.com/plugins/comment-contest-description/
 Description: If you create a contest on your website, you can draw all comments in a specific post
 Author: Thomas "Zhykos" Cicognani
-Version: 1.36
+Version: 1.4
 Author URI: http://www.nozzhy.com
 */
 
@@ -32,7 +32,7 @@ Author URI: http://www.nozzhy.com
  */
 class CommentContest {
 	/*private*/var $domain = '';
-	/*private*/var $version = '1.36'; // Current version
+	/*private*/var $version = '1.4'; // Current version
 	/*private*/var $option_ns = '';
 	/*private*/var $options = array ();
 	/*private*/var $localizationName = "commentContest";
@@ -150,8 +150,9 @@ class CommentContest {
 	 * @param $numPrizes Prizes' number
 	 * @param $ranks Allowed ranks
 	 * @param $email Email to send (<i>null</i> means no email to send)
+	 * @param $mailsubject [string] Email subject
 	 */
-	function step1_configure($errorCode = null, $previousContestType = null, $numWinners = null, $numParticipation = null, $numPrizes = null, $ranks = null, $email = null) {
+	function step1_configure($errorCode = null, $previousContestType = null, $numWinners = null, $numParticipation = null, $numPrizes = null, $ranks = null, $email = null, $mailsubject = null) {
 		$configureContest = __("Configure the contest", $this->localizationName);
 		$winnersNumber = __("Winners' number", $this->localizationName);
 		$participationsNumber = __("Maximum participations' number per person", $this->localizationName);
@@ -163,13 +164,33 @@ class CommentContest {
 		$subscriber = __("Subscriber", $this->localizationName);
 		$user = __("Normal user", $this->localizationName);
 		$sendmail = __("Automaticaly send a mail to winners", $this->localizationName);
-		$mailcontent = __("Email's content (HTML possible)", $this->localizationName);
+		$mailcontent = __("Email's content", $this->localizationName);
 		$contestType = __("Contest type", $this->localizationName);
 		$ok = __("Ok!", $this->localizationName);
 		$normalContest = __("Normal contest (random winners)", $this->localizationName);
 		$speedContest = __("Speed contest (first comments win)", $this->localizationName);
 		$prizeContest = __("Number of different prizes", $this->localizationName);
+		$mailSubjectTranslation = __("Email subject", $this->localizationName);
+		$sTip1Translation = __("Tip 1", $this->localizationName);
+		$sTip2Translation = __("Tip 2", $this->localizationName);
+		$sTip1ContentTranslation = __("Put a \"More\" tag and write the message for the loosers after!", $this->localizationName);
+		$sTip2ContentTranslation = __("Write \"%prize%\" (without quotes) and I will automatically replace it with the real name of the price!", $this->localizationName);
 		
+		// V1.4 - ADD : Include Wordpress Editor to write the email
+		// BEGIN V1.4
+		add_filter('admin_head','zd_multilang_tinymce');
+		wp_admin_css('thickbox');
+		wp_print_scripts('jquery-ui-core');
+		wp_print_scripts('jquery-ui-tabs');
+		wp_print_scripts('post');
+		wp_print_scripts('editor');
+		add_thickbox();
+		wp_print_scripts('media-upload');
+		if (function_exists('wp_tiny_mce')) {
+			wp_tiny_mce();
+		}
+		// END V1.4
+
 		echo "<h1>Comment Contest - $configureContest</h1>";
 		
 		if($errorCode != null) {
@@ -229,13 +250,13 @@ class CommentContest {
 		
 		if($email != null) {
 			$emailChecked = " checked='checked'";
-			$mailcontent = stripslashes(html_entity_decode($email));
+			$mailcontent = stripslashes(base64_decode($email));
 		} else {
 			$emailChecked = "";
 		}
 		
 		echo "<form action='plugins.php?page=comment-contest.php' method='post'>
-		<table style='margin-left: -2px'>
+			<table style='margin-left: -2px'>
 			<tr style='vertical-align: top'>
 				<td>$contestType:</td>
 				<td>
@@ -260,9 +281,16 @@ class CommentContest {
 				</td>
 			</tr>
 		</table>
-		<br />
-		<input type='checkbox' name='sendmail'$emailChecked /> $sendmail<br />
-		<textarea name='mailcontent' rols='10' cols='40'>$mailcontent</textarea>
+		<br /><hr />
+		<input type='checkbox' name='sendmail'$emailChecked /> $sendmail<br /><br />
+		<div style=\"width: 800px;\">
+		$mailSubjectTranslation : <input type=\"text\" name=\"mailsubject\" value=\"$mailsubject\" size=\"80\" maxlength=\"80\" /><br /><br />";
+		
+		the_editor($mailcontent, "mailcontent", "mailcontent", false); // V1.4 : ADD - Display the editor. Also update HTML Content above and under
+		
+		echo "</div><br />
+		<b>$sTip1Translation</b> : $sTip1ContentTranslation<br />
+		<b>$sTip2Translation</b> : $sTip2ContentTranslation
 		<br /><br /><input type='submit' name='features' value='$ok' /></form>";
 	}
 	
@@ -276,8 +304,9 @@ class CommentContest {
 	 * @param $email Email's content
 	 * @param $type The contest's type
 	 * @param $prizes Prizes' number
+	 * @param $mailsubject [string] Email subject
 	 */
-	/*private */function step2_choosePost($currentPage, $ranks, $numWinners, $numParticipation, $email, $type, $prizes) {
+	/*private */function step2_choosePost($currentPage, $ranks, $numWinners, $numParticipation, $email, $type, $prizes, $mailsubject) {
 		global $wpdb;
 		$maxArticles = 20;
 		
@@ -306,7 +335,8 @@ class CommentContest {
 			<input type='hidden' name='email' value='$email' />
 			<input type='hidden' name='contestType' value='$type' />
 			<input type='hidden' name='numPrizes' value='$prizes' />
-			<input type='hidden' name='postnumber' id='postnumber' value='' />";
+			<input type='hidden' name='postnumber' id='postnumber' value='' />
+			<input type='hidden' name='mailsubject' id='mailsubject' value='$mailsubject' />";
 			
 			if (count ( $posts ) > $maxArticles) {
 				echo "<br /><input type='hidden' name='pagepost' value='" . ($currentPage + $maxArticles) . "' />
@@ -329,10 +359,11 @@ class CommentContest {
 	 * @param $email Email's content
 	 * @param $type The contest's type
 	 * @param $prizes Prizes' number
+	 * @param $mailsubject [string] Email subject
 	 * @param $errorMessage Error message
 	 * @param $previousComments Comments previously checked
 	 */
-	/*private */function step3_chooseComments($idPost, $ranks, $numWinners, $numParticipation, $email, $type, $prizes, $errorMessage = null, $previousComments = null) {
+	/*private */function step3_chooseComments($idPost, $ranks, $numWinners, $numParticipation, $email, $type, $prizes, $mailsubject, $errorMessage = null, $previousComments = null) {
 		global $wpdb;
 		$chooseComments = __("Choose comments to include in the contest", $this->localizationName);
 		$ok = __("Ok!", $this->localizationName);
@@ -446,6 +477,7 @@ class CommentContest {
 			<input type='hidden' name='email' value='$email' />
 			<input type='hidden' name='contestType' value='$type' />
 			<input type='hidden' name='numPrizes' value='$prizes' />
+			<input type='hidden' name='mailsubject' value='$mailsubject' />
 			<input type='submit' value='$ok' /></form>";
 		} else {
 			$this->error ( $noComment, array ("home") );
@@ -461,11 +493,12 @@ class CommentContest {
 	 * @param $email Email's content
 	 * @param $type The contest's type
 	 * @param $prizes Prizes' number
+	 * @param $mailsubject [string] Email subject
 	 * @param $error Error code
 	 * @param $previousNames Prizes' names previously typed
 	 * @param $previousTo Prizes' places previously typed
 	 */
-	function step4_choosePrizes($comments, $numWinners, $numParticipation, $email, $type, $prizes, $error = 0, $previousNames = null, $previousTo = null) {
+	function step4_choosePrizes($comments, $numWinners, $numParticipation, $email, $type, $prizes, $mailsubject, $error = 0, $previousNames = null, $previousTo = null) {
 		$choosePrizes = __("Prizes' choice", $this->localizationName);
 		$launchContest = __("Launch the contest", $this->localizationName);
 		$prizeName = __("Prize name:", $this->localizationName);
@@ -532,6 +565,7 @@ class CommentContest {
 			<input type='hidden' name='numParticipation' value='$numParticipation' />
 			<input type='hidden' name='email' value='$email' />
 			<input type='hidden' name='contestType' value='$type' />
+			<input type='hidden' name='mailsubject' value='$mailsubject' />
 			<input type='hidden' name='numPrizes' value='$prizes' /><br />
 			<input type='submit' name='prizesSubmit' value='$launchContest' /></form>";
 	}
@@ -546,14 +580,17 @@ class CommentContest {
 	 * @param $type The contest's type
 	 * @param $prizes Prizes' names
 	 * @param $places Prizes' order
+	 * @param $mailsubject [string] Email subject
 	 */
-	/*private */function step5_displayWinners($comments, $numWinners, $numParticipation, $email, $type, $prizes, $places) {
+	/*private */function step5_displayWinners($comments, $numWinners, $numParticipation, $email, $type, $prizes, $places, $mailsubject) {
 		global $wpdb;
 		
 		$winners = __("Winners", $this->localizationName);
 		$commentWord = __("Comment", $this->localizationName);
 		$say = __("says", $this->localizationName);
-		$winSubject = __("You win a contest", $this->localizationName);
+		$emailNotSendTranslation = __("Email cannot be sent to :", $this->localizationName);
+		$winnersEmailPhraseTranslation = __("Winners emails", $this->localizationName);
+		$loosersEmailPhraseTranslation = __("Loosers emails", $this->localizationName);
 		
 		$blogname = get_option('blogname');
 		$adminEmail = get_option("admin_email");
@@ -574,44 +611,70 @@ class CommentContest {
 		}
 		
 		echo "<h1>Comment Contest - $winners</h1>";
-		$stop = false;
 		$i = 1; $k = 1;
 		$author = "";
 		$prizeName = __("Prize won:", $this->localizationName);
 		
 		if(!is_array($prizes)) {
-			echo "<h2>$prizeName " . stripslashes($prizes) . "</h2>";
+			$sThePrize = stripslashes($prizes);
 		} else {
-			echo "<h2>$prizeName " . stripslashes($prizes[0]) . "</h2>";
+			$sThePrize = stripslashes($prizes[0]);
 		}
 		
-		for($j = 0; $j < count ( $tab ) && ! $stop; $j ++) {
+		echo "<h2>$prizeName $sThePrize</h2>";
+		
+		$allWinnersEmail = null;
+		$allLoosersEmail = null;
+		
+		// V1.4 - ADD : Separate loosers and winners emails
+		// BEGIN V1.4
+		$sEmailAllContent = base64_decode($email);
+		$asEmailAllContent = split("<!--more-->", $sEmailAllContent);
+		$sEmailWinnersContent = $asEmailAllContent[0];
+		$sEmailLoosersContent = $asEmailAllContent[1];
+		// END V1.4
+		
+		// V1.37 - UPDATE : Update the whole loop to save emails of all participants, to display them later
+		// V1.4 - ADD : Update the whole loop to send emails to winners and loosers
+		for($j = 0; $j < count ( $tab ); $j ++) {
 			$query = "SELECT * FROM $wpdb->comments WHERE comment_approved = '1' and comment_id='$tab[$j]'";
 			$comment = $wpdb->get_results ( $query );
 			$c = $comment [0];
 			$from = $c->comment_author;
+			$authorEmail = $c->comment_author_email;
 			
-			if ($from != $author) {
+			if ($from != $author && $i <= $numWinners) {
 				$i ++;
 				$author = $from;
 				
 				if(is_array($prizes) && $j + 1 == $places[$k]) {
-					echo "<h2>$prizeName " . stripslashes($prizes[$k++]) . "</h2>";
+					$sThePrize = stripslashes($prizes[$k++]);
+					echo "<h2>$prizeName $sThePrize</h2>";
 				}
 				
 				echo "<strong>$commentWord</strong> $from <strong>$say</strong> $c->comment_content <br /><br />";
+				$allWinnersEmail[] = $authorEmail;
+				
 				if($email != null) {
-					@wp_mail($c->comment_author_email, $winSubject, html_entity_decode($email), $message_headers);
+					if(!wp_mail($authorEmail, $mailsubject, str_replace("%prize%", $sThePrize, $sEmailWinnersContent), $message_headers)) {
+						echo "<br /><b>$emailNotSendTranslation $authorEmail</b><br />";
+					}
 				}
 			}
 			
-			if ($i > $numWinners) {
-				$stop = true;
+			if ($j >= $numWinners) {
+				$allLoosersEmail[] = $authorEmail;
+				
+				if($email != null) { // V1.4 - ADD : Send email to loosers
+					if(!wp_mail($authorEmail, $mailsubject, $sEmailLoosersContent, $message_headers)) {
+						echo "<br /><b>$emailNotSendTranslation $authorEmail</b><br />";
+					}
+				}
 			}
 		}
 		
 		$allParticipants = __("List of all participants:", $this->localizationName);
-		echo "<br /><br />$allParticipants ";
+		echo "<br /><hr /><br />$allParticipants ";
 		$tabTemp = null;
 		for($j = 0; $j < count ( $tab ); $j ++) {
 			$query = "SELECT comment_author FROM $wpdb->comments WHERE comment_approved = '1' and comment_id='$tab[$j]'";
@@ -620,6 +683,14 @@ class CommentContest {
 		array_unique($tabTemp);
 		natcasesort($tabTemp); // V1.35 - UPDATE : Remove case sensitive sort ("natcasesort($array)" replace "sort($array)")
 		echo implode(", ", $tabTemp);
+		
+		// V1.37 - ADD : Display participants emails
+		// BEGIN 1.37
+		echo "<br /><hr /><b>$winnersEmailPhraseTranslation :</b> " . implode(",", $allWinnersEmail) . "<br />";
+		if(count($allLoosersEmail) > 0) {
+			echo "<br /><b>$loosersEmailPhraseTranslation :</b> " . implode(",", $allLoosersEmail) . "<br />";
+		}
+		// END 1.37
 	}
 	
 	/**
@@ -704,16 +775,16 @@ class CommentContest {
 			}
 
 			if($res == 0) {
-				$this->step5_displayWinners ( $_POST ['comments'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['prizeName'], $_POST['from'] );
+				$this->step5_displayWinners ( $_POST ['comments'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['prizeName'], $_POST['from'], $_POST['mailsubject'] );
 			} else {
-				$this->step4_choosePrizes($_POST ['comments'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'], $res, implode(",", $_POST['prizeName']), implode(",", $_POST['to']));
+				$this->step4_choosePrizes($_POST ['comments'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'], $_POST['mailsubject'], $res, implode(",", $_POST['prizeName']), implode(",", $_POST['to']));
 			}
 
 // ---------------------------------------------------------------------------------
 			
 		}
 		else if (isset ( $_POST ['postnumber'] ) && $_POST ['postnumber'] != -1) { // Step 3 : Choose comments
-			$this->step3_chooseComments ( $_POST ['postnumber'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'] );
+			$this->step3_chooseComments ( $_POST ['postnumber'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'], $_POST["mailsubject"] );
 
 // ---------------------------------------------------------------------------------
 
@@ -722,12 +793,12 @@ class CommentContest {
 			
 			if ($comments == null || count ( $comments ) == 0) {
 				$selectOneWinner = __("Please select one winner at least!", $this->localizationName);
-				$this->step3_chooseComments ( $_POST ['post'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'], $selectOneWinner, null );
+				$this->step3_chooseComments ( $_POST ['post'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'], $_POST['mailsubject'], $selectOneWinner, null );
 			} elseif (count ( $comments ) < $_POST ['numWinners']) {
 				$selectMoreWinner = __("Please select more participants than winners!", $this->localizationName);
-				$this->step3_chooseComments ( $_POST ['post'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'], $selectMoreWinner, $comments );
+				$this->step3_chooseComments ( $_POST ['post'], $_POST ['rank'], $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'], $_POST['mailsubject'], $selectMoreWinner, $comments );
 			} else {
-				$this->step4_choosePrizes(implode(",", $comments), $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes']);
+				$this->step4_choosePrizes(implode(",", $comments), $_POST ['numWinners'], $_POST ['numParticipation'], $_POST ['email'], $_POST['contestType'], $_POST['numPrizes'], $_POST['mailsubject']);
 			}
 // ---------------------------------------------------------------------------------
 
@@ -741,35 +812,44 @@ class CommentContest {
 			$numPrizes = intval ( $_POST ['numPrizes'] );
 			
 			if(isset($_POST['sendmail'])) {
-				$email = stripslashes(htmlentities($_POST['mailcontent']));
+				$email = base64_encode($_POST['mailcontent']); // V1.36 - UPDATE : Better protection for this field
 			} else {
 				$email = null;
 			}
 			
-			$emailContentTest = __("Email's content (HTML possible)", $this->localizationName);
+			$mailsubject = strip_tags($_POST["mailsubject"]);
+			
+			$emailContentTest = base64_encode(addslashes(__("Email's content", $this->localizationName)));
 
+			$asEmailAllContent = split("<!--more-->", $_POST['mailcontent']);
+			$sEmailWinnersContent = $asEmailAllContent[0];
+			$sEmailLoosersContent = $asEmailAllContent[1];
+				
 			if (count ( $_POST ['rank'] ) == 0) {
 				$selectOneRank = __("Please select one rank at least!", $this->localizationName);
-				$this->step1_configure ($selectOneRank, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, null, $email);
+				$this->step1_configure ($selectOneRank, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, null, $email, $mailsubject);
 			} elseif ($numWinners == null || $numWinners <= 0) {
 				$winnerFormat = __("Wrong winners format!", $this->localizationName);
-				$this->step1_configure ($winnerFormat, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email);
+				$this->step1_configure ($winnerFormat, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email, $mailsubject);
 			} elseif ($numParticipation == null || $numParticipation <= 0) {
 				$participationsFormat = __("Wrong participations format!", $this->localizationName);
-				$this->step1_configure ($participationsFormat, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email);
-			} elseif($email == $emailContentTest) {
+				$this->step1_configure ($participationsFormat, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email, $mailsubject);
+			} elseif(isset($_POST['sendmail']) && ($email == $emailContentTest || $mailsubject == null || $mailsubject == "")) {
 				$emailContentError = __("Please change the email's content!", $this->localizationName);
-				$this->step1_configure ($emailContentError, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email);
+				$this->step1_configure ($emailContentError, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email, $mailsubject);
+			} elseif(isset($_POST['sendmail']) && (strpos($_POST['mailcontent'], "<!--more-->") === false || $sEmailWinnersContent == null || $sEmailWinnersContent == "" || $sEmailLoosersContent == null || $sEmailLoosersContent == "")) {
+				$sEmailContentMoreErrorTranslation = __("Please put a \"More\" tag and a message for the loosers!", $this->localizationName);
+				$this->step1_configure ($sEmailContentMoreErrorTranslation, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email, $mailsubject);
 			} elseif ($numPrizes == null || $numPrizes <= 0 || $numPrizes > $numWinners) {
 				$prizesFormat = __("Wrong prizes number format! Or choose more winners than prizes!", $this->localizationName);
-				$this->step1_configure ($prizesFormat, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email);
+				$this->step1_configure ($prizesFormat, $_POST['contestType'], $numWinners, $numParticipation, $numPrizes, $_POST ['rank'], $email, $mailsubject);
 			} else {
 				if(is_array($_POST ['rank'])) {
 					$tab = implode ( ",", $_POST ['rank'] );
 				} else {
 					$tab = $_POST ['rank'];
 				}
-				$this->step2_choosePost ( $page, $tab, $numWinners, $numParticipation, $email, $_POST['contestType'], $numPrizes );
+				$this->step2_choosePost ( $page, $tab, $numWinners, $numParticipation, $email, $_POST['contestType'], $numPrizes, $mailsubject );
 			}
 			
 // ---------------------------------------------------------------------------------

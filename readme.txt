@@ -3,7 +3,7 @@ Contributors: zhykos
 Donate link: http://www.nozzhy.com
 Tags: comments contest nozzhy nozgarde zhykos concours commentaire
 Requires at least: 2.8.4
-Tested up to: 2.8.6
+Tested up to: 2.9.2
 Stable tag: trunk
 
 If you create a contest on your website, you can draw all comments in a specific post.
@@ -77,3 +77,13 @@ You need PHP version 4 like Wordpress. The plugin is ready to run with PHP5 but 
 
 = 1.36 =
 * If you use MySQL version 4.0, the plugin doesn't work because sub-querys are not compatible with MySQL 4.0. You have to use MySQL 4.1.xxx at least but some website provider don't allow us to choose our version. Sub-querys are now removed.
+
+= 1.37 =
+* Some little improvements
+
+= 1.4 =
+* Tests with Wordpress 2.9.2
+* Add an editor to write the email
+* Add a message to send to loosers
+* Email subject can be changed
+* Display winners and loosers emails at the end (in case automatic email fails for example)
