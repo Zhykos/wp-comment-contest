@@ -13,6 +13,8 @@ If you create a contest on your website, you can draw all comments in a specific
 If you want to organize a contest on your blog (some goodies, games ... to win), use this plugin. Comment Contest works only with comments.
 You choose some comments, set some features (winners' number ...) and the system chooses the winners.
 
+Thanks to P.C. from http://pc.de for the Belorussian translation.
+
 == Installation ==
 
 This section describes how to install the plugin and get it working.
@@ -26,6 +28,9 @@ This section describes how to install the plugin and get it working.
 = Which PHP version I need? =
 
 You need PHP version 4 like Wordpress. The plugin is ready to run with PHP5 but it isn't activated.
+
+= What are the available languages? =
+English (by Zhykos) ; French (by Zhykos) ; Belorussian (by P.C.)
 
 == Screenshots ==
 1. The first page of the plugin : set the contest's features
@@ -87,3 +92,6 @@ You need PHP version 4 like Wordpress. The plugin is ready to run with PHP5 but 
 * Add a message to send to loosers
 * Email subject can be changed
 * Display winners and loosers emails at the end (in case automatic email fails for example)
+
+= 1.40.1 =
+* Add Belorussian language. Thanks to P.C from http://pc.de for this contribution!
