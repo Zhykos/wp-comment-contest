@@ -4,11 +4,11 @@ Plugin Name: Comment Contest
 Plugin URI: http://www.nozzhy.com/plugins/comment-contest-description/
 Description: If you create a contest on your website, you can draw all comments in a specific post
 Author: Thomas "Zhykos" Cicognani
-Version: 1.40.1
+Version: 1.41
 Author URI: http://www.nozzhy.com
 */
 
-/*  Copyright 2009  Comment Contest plugin for Wordpress by Thomas "Zhykos" Cicognani  (email : zhykos@nozzhy.com)
+/*  Copyright 2009 - 2010 Comment Contest plugin for Wordpress by Thomas "Zhykos" Cicognani  (email : zhykos@nozzhy.com)
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ Author URI: http://www.nozzhy.com
  */
 class CommentContest {
 	/*private*/var $domain = '';
-	/*private*/var $version = '1.40.1'; // Current version
+	/*private*/var $version = '1.41'; // Current version
 	/*private*/var $option_ns = '';
 	/*private*/var $options = array ();
 	/*private*/var $localizationName = "commentContest";
@@ -686,9 +686,9 @@ class CommentContest {
 		
 		// V1.37 - ADD : Display participants emails
 		// BEGIN 1.37
-		echo "<br /><hr /><b>$winnersEmailPhraseTranslation :</b> " . implode(",", $allWinnersEmail) . "<br />";
+		echo "<br /><hr /><b>$winnersEmailPhraseTranslation :</b> " . implode(", ", $allWinnersEmail) . "<br />"; // V1.41 - UPDATE : Change display
 		if(count($allLoosersEmail) > 0) {
-			echo "<br /><b>$loosersEmailPhraseTranslation :</b> " . implode(",", $allLoosersEmail) . "<br />";
+			echo "<br /><b>$loosersEmailPhraseTranslation :</b> " . implode(", ", $allLoosersEmail) . "<br />"; // V1.41 - UPDATE : Change display
 		}
 		// END 1.37
 	}

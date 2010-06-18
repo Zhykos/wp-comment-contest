@@ -3,7 +3,7 @@ Contributors: zhykos
 Donate link: http://www.nozzhy.com
 Tags: comments contest nozzhy nozgarde zhykos concours commentaire
 Requires at least: 2.8.4
-Tested up to: 2.9.2
+Tested up to: 3.0
 Stable tag: trunk
 
 If you create a contest on your website, you can draw all comments in a specific post.
@@ -95,3 +95,7 @@ English (by Zhykos) ; French (by Zhykos) ; Belorussian (by P.C.)
 
 = 1.40.1 =
 * Add Belorussian language. Thanks to P.C from http://pc.de for this contribution!
+
+= 1.41 =
+* Change display of the winners and loosers list at the end
+* Compatibility tests with Wordpress 3.0
