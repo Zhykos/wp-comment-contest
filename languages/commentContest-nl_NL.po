@@ -1,0 +1,245 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Comment Contest 1.41\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-04-29 23:04+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Rene <info@wpwebshop.com>\n"
+"Language-Team: Translation by WordPressWebshop.com <info@wpwebshop.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Poedit-Language: Dutch\n"
+"X-Poedit-Country: NETHERLANDS\n"
+"X-Poedit-KeywordsList: __;_e;_c\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-SearchPath-0: C:\\wamp\\www\\wordpress\\wp-content\\plugins\\comment-contest\n"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:95
+msgid "Comment Contest"
+msgstr "Comment Contest"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:156
+msgid "Configure the contest"
+msgstr "Configureer de wedstrijd"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:157
+msgid "Winners' number"
+msgstr "Winnaars' getal"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:158
+msgid "Maximum participations' number per person"
+msgstr "Maximum aantal deelnemingen per persoon"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:159
+msgid "Allowed ranks to participate"
+msgstr "Toegestane rang om deel te nemen"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:160
+msgid "Administrator"
+msgstr "Beheerder"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:161
+msgid "Editor"
+msgstr "Editor"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:162
+msgid "Author"
+msgstr "Auteur"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:163
+msgid "Contributor"
+msgstr "Bijdrager"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:164
+msgid "Subscriber"
+msgstr "Abonnee"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:165
+msgid "Normal user"
+msgstr "Normale gebruiker"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:166
+msgid "Automaticaly send a mail to winners"
+msgstr "Stuur automatisch een mail naar winnaars"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:167
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:826
+msgid "Email's content"
+msgstr "Email inhoud"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:168
+msgid "Contest type"
+msgstr "Type wedstrijd"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:169
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:369
+msgid "Ok!"
+msgstr "Ok!"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:170
+msgid "Normal contest (random winners)"
+msgstr "Normale wedstrijd (willekeurige winnaars)"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:171
+msgid "Speed contest (first comments win)"
+msgstr "Snelle wedstrijd (eerste reacties winnen)"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:172
+msgid "Number of different prizes"
+msgstr "Aantal verschillende prijzen"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:173
+msgid "Email subject"
+msgstr "Email onderwerp"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:174
+msgid "Tip 1"
+msgstr "Tip 1"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:175
+msgid "Tip 2"
+msgstr "Tip 2"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:176
+msgid "Put a \"More\" tag and write the message for the loosers after!"
+msgstr "Plaats een \"Meer\" tag en schrijf een boodschap voor de verliezers!"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:177
+msgid "Write \"%prize%\" (without quotes) and I will automatically replace it with the real name of the price!"
+msgstr "Schrijf \"%prijs%\" (zonder aanhalingstekens) en ik zal het automatisch vervangen met de echte naam van de prijs!"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:313
+msgid "Choose a post"
+msgstr "Kies een bericht"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:314
+msgid "More..."
+msgstr "Meer..."
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:315
+msgid "No post found!"
+msgstr "Geen bericht gevonden!"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:316
+msgid "comment(s)"
+msgstr "Reactie(s)"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:368
+msgid "Choose comments to include in the contest"
+msgstr "Kies reacties om toe te voegen in de wedstrijd"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:370
+msgid "No comment found!"
+msgstr "Geen reactie gevonden!"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:502
+msgid "Prizes' choice"
+msgstr "Prijzen keuze"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:503
+msgid "Launch the contest"
+msgstr "Lanceer de wedstrijd"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:504
+msgid "Prize name:"
+msgstr "Naam prijs:"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:505
+msgid "From"
+msgstr "Van"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:506
+msgid "to"
+msgstr "aan"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:513
+msgid "Please give all prizes!"
+msgstr "Geef aub alle prijzen!"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:515
+msgid "Please check all places for each prize"
+msgstr "Controleer aub alle plaatsen voor elke prijs"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:517
+msgid "Please give different name for each prize"
+msgstr "Geef aub een verschillende naam voor elke prijs"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:588
+msgid "Winners"
+msgstr "Winnaars"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:589
+msgid "Comment"
+msgstr "Reactie"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:590
+msgid "says"
+msgstr "zegt"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:591
+msgid "Email cannot be sent to :"
+msgstr "Email kan niet verzonden worden naar:"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:592
+msgid "Winners emails"
+msgstr "Emails winnaars"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:593
+msgid "Loosers emails"
+msgstr "Emails verliezers"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:616
+msgid "Prize won:"
+msgstr "Gewonnen prijs:"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:680
+msgid "List of all participants:"
+msgstr "Lijst van alle deelnemers:"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:709
+msgid "Choose comments"
+msgstr "Kies reacties"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:720
+msgid "Back"
+msgstr "Terug"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:799
+msgid "Please select one winner at least!"
+msgstr "Selecteer tenminste één winnaar!"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:802
+msgid "Please select more participants than winners!"
+msgstr "Selecteer meer deelnemers dan winnaars!"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:833
+msgid "Please select one rank at least!"
+msgstr "Selecteer tenminste één rang!"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:836
+msgid "Wrong winners format!"
+msgstr "Verkeerd winnaars format!"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:839
+msgid "Wrong participations format!"
+msgstr "Verkeerd deelnemingen format!"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:842
+msgid "Please change the email's content!"
+msgstr "Verander de email's inhoud!"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:845
+msgid "Please put a \"More\" tag and a message for the loosers!"
+msgstr "Plaats een \"Meer\" tag en boodschap voor de verliezers!"
+
+#: C:\wamp\www\wordpress\wp-content\plugins\comment-contest/comment-contest.php:848
+msgid "Wrong prizes number format! Or choose more winners than prizes!"
+msgstr "Verkeerde prijzen getal format! Of kies meer winnaars dan prijzen!"
+
+#~ msgid "Please put a \"More\" tag!"
+#~ msgstr "Please put a \"More\" tag!"
+
+#~ msgid "You win a contest"
+#~ msgstr "You win a contest"
