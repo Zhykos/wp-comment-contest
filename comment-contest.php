@@ -4,7 +4,7 @@ Plugin Name: Comment Contest
 Plugin URI: http://www.nozzhy.com/plugins/comment-contest-description/
 Description: If you create a contest on your website, you can draw all comments in a specific post
 Author: Thomas "Zhykos" Cicognani
-Version: 1.41
+Version: 1.41.1
 Author URI: http://www.nozzhy.com
 */
 
@@ -32,7 +32,7 @@ Author URI: http://www.nozzhy.com
  */
 class CommentContest {
 	/*private*/var $domain = '';
-	/*private*/var $version = '1.41'; // Current version
+	/*private*/var $version = '1.41.1'; // Current version
 	/*private*/var $option_ns = '';
 	/*private*/var $options = array ();
 	/*private*/var $localizationName = "commentContest";
