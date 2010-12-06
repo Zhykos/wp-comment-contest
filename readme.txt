@@ -3,7 +3,7 @@ Contributors: zhykos
 Donate link: http://www.nozzhy.com
 Tags: comments contest nozzhy nozgarde zhykos concours commentaire
 Requires at least: 2.8.4
-Tested up to: 3.0
+Tested up to: 3.0.2
 Stable tag: trunk
 
 If you create a contest on your website, you can draw all comments in a specific post.
@@ -30,7 +30,7 @@ This section describes how to install the plugin and get it working.
 You need PHP version 4 like Wordpress. The plugin is ready to run with PHP5 but it isn't activated.
 
 = What are the available languages? =
-English (by Zhykos) ; French (by Zhykos) ; Belorussian (by P.C.)
+English (by Zhykos) ; French (by Zhykos) ; Belorussian (by P.C.) ; Dutch (by Rene)
 
 == Screenshots ==
 1. The first page of the plugin : set the contest's features
@@ -99,3 +99,7 @@ English (by Zhykos) ; French (by Zhykos) ; Belorussian (by P.C.)
 = 1.41 =
 * Change display of the winners and loosers list at the end
 * Compatibility tests with Wordpress 3.0
+
+= 1.41.1 =
+* Add Dutch language. Thanks to Rene from http://wpwebshop.com/premium-wordpress-themes/ for this contribution!
+* Compatibility tests with Wordpress 3.0.2
