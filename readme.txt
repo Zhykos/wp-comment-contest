@@ -3,7 +3,7 @@ Contributors: zhykos
 Donate link: http://wp-comment-contest.zhyweb.org/
 Tags: comments, contest, concours, commentaire, zhykos, zhyweb
 Requires at least: 3.3
-Tested up to: 3.5.1
+Tested up to: 3.6
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -42,10 +42,19 @@ You need PHP version 5 like Wordpress.
 2. Choose the article for the contest
 3. Manage the comments
 4. Choose to delete a comment from the contest
-5. You can restore deleted comments
-6. Result table with winner(s)
+5. You can restore deleted comments (deleted comments are red)
+6. Cheat: this comment will win! (cheating comments are green)
+7. Result table with winner(s)
 
 == Changelog ==
+
+= 2.1 =
+* Fix: Result array wasn't sorted (most recent comment was always on the top)
+* New: Add cheat. Selected comments always win
+* New: Add help
+* Update: Only use one table to choose comments
+* Misc: Check compatibility with Wordpress 3.6
+* Misc: Minimize Javascript and CSS
 
 = 2.0 =
 * All new architecture : more "Wordpress" compliant
@@ -121,7 +130,13 @@ You need PHP version 5 like Wordpress.
 * All new architecture.
 * Compatibility with Wordpress 3.5.1
 
+= 2.1 =
+* New table
+* Cheat and help added
+* Compatibility with Wordpress 3.6
+
 == Credits ==
 
 = Images =
 * Comment contest icon is based on http://www.iconfinder.com/icondetails/49848/128/media_random_shuffle_icon and http://www.iconfinder.com/icondetails/33565/64/chat_comment_talk_icon
+* Help icon by http://www.visualpharm.com/

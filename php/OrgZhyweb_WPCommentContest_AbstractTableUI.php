@@ -247,9 +247,8 @@ abstract class OrgZhyweb_WPCommentContest_AbstractTableUI extends WP_List_Table 
         echo '<div class="row-actions">';
         foreach ($actions as $action => $link) {
             ++$i;
-            if ($i == 1) {
-                $sep = '';
-            } else {
+            $sep = '';
+            if ($i == 3) {
                 $sep = ' | ';
             }
             echo "<span class='$action'>$sep$link</span>";

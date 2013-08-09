@@ -4,7 +4,7 @@
   Plugin URI: http://wp-comment-contest.zhyweb.org/
   Description: If you create a contest on your website, you can draw all comments in a specific post
   Author: Thomas "Zhykos" Cicognani
-  Version: 2.0
+  Version: 2.1
   Author URI: http://www.zhyweb.org/
  */
 
@@ -68,12 +68,19 @@ class CommentContest {
      * Wordpress Action : admin_enqueue_scripts.
      */
     public function orgZhyweb_wpCommentContest_loadJsCSS() {
-        // Comment Contest Javascript file (needs jQuery)
-        wp_register_script('OrgZhywebWPCommentContest.js', plugins_url('/js/OrgZhyweb_WPCommentContest_jQuery.js', __FILE__), array('jquery', 'jquery-ui-core', 'jquery-ui-dialog'));
+        // Comment Contest Javascript file (needs jQuery, jQueryUI and jQueryUI Dialog)
+        wp_register_script('OrgZhywebWPCommentContest.js', plugins_url('/js/OrgZhyweb_WPCommentContest_jQuery.min.js', __FILE__), array('jquery', 'jquery-ui-core', 'jquery-ui-dialog'));
         wp_enqueue_script('OrgZhywebWPCommentContest.js');
+                
+        // Tooltips by TipTip (needs jQuery)
+        wp_register_script('TipTip.js', plugins_url('/js/jquery.tipTip.minified.js', __FILE__), array('jquery'));
+        wp_enqueue_script('TipTip.js');
         
         // jQueryUI Dialog style
         wp_enqueue_style('wp-jquery-ui-dialog');
+        
+        // Plugin CSS
+        wp_enqueue_style('comment-contest.css', plugins_url('/css/comment-contest.min.css', __FILE__));
     }
     
     /**
@@ -98,7 +105,6 @@ class CommentContest {
     }
     
     /**
-     * Modify the posts table.
      * Display the content of the contest column. It's a link to contest page.
      * If no comment posted, cannot launch contest.
      * Wordpress Action : manage_post_posts_custom_column.

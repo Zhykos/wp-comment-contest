@@ -38,17 +38,22 @@ class OrgZhyweb_WPCommentContest_TableUI extends OrgZhyweb_WPCommentContest_Abst
 
     protected function getActions($commentID) {
          $actions = array(
-            'delete' => "<a href='javascript:;' onclick='commentContestDelete($commentID)' class='delete'>" . __('Delete', "comment-contest") . '</a>');
+            'delete' => "<a href='javascript:;' onclick='commentContestDelete($commentID)' id='deleteLink-$commentID' class='delete'>" . __('Delete', "comment-contest") . '</a>',
+            'restore' => "<a href='javascript:;' onclick='commentContestRestore($commentID)' id='restoreLink-$commentID' class='restoreLink'>" . __('Restore', "comment-contest") . '</a>',
+            'cheat' => "<a href='javascript:;' onclick='commentContestCheat($commentID)' id='cheatLink-$commentID' class='cheatLink'>" . __('Cheat', "comment-contest") . '</a>',
+            'stopcheat' => "<a href='javascript:;' onclick='commentContestStopCheat($commentID)' id='stopCheatLink-$commentID' class='stopCheatLink'>" . __('Stop cheating', "comment-contest") . '</a>');
          return $actions;
     }
     
     public function get_bulk_actions() {
-	$actions = array('delete' => __('Delete', "comment-contest"));
+	$actions = array(
+            'delete' => __('Delete', "comment-contest"),
+            'restore' => __('Restore', "comment-contest"));
         return $actions;
     }
 
     protected function getViewFunction($roleID) {
-        return "selectRoleInContest(\"$roleID\")";
+        return "selectRole(\"$roleID\")";
     }
 }
 ?>

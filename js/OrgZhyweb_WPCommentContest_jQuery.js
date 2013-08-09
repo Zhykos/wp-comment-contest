@@ -16,50 +16,64 @@
  */
 
 /*
- * Display/Hide empty messages in table (messages shown because there isn't any comment in the table)
- */
-function updateEmptyTableMessages() {
-    // Display/Hide "no comment found" message in Contest table
-    if (jQuery('#the-list-contest tr:visible').size() <= 0) {
-        jQuery("#comment-contest-not-found-tr").show();
-    } else {
-        jQuery("#comment-contest-not-found-tr").hide();
-    }
-    
-    // Display/Hide "no comment found" message in Removed Comments table
-    if (jQuery('#the-list-no-contest tr:visible').size() <= 0) {
-        jQuery("#comment-no-contest-not-found-tr").show();
-    } else {
-        jQuery("#comment-no-contest-not-found-tr").hide();
-    }
-}
-
-/*
- * Move comment into Removed Comments (table with comment which wont be used for contest)
+ * Selected comment won't be used for contest
+ * @param commentID Comment ID
+ * @since 2.0
  */
 function commentContestDelete(commentID) {
-    jQuery("#comment-contest-" + commentID).hide();
-    jQuery("#comment-no-contest-" + commentID).show();
+    jQuery("#comment-contest-" + commentID).removeClass("cheatComment");
+    jQuery("#comment-contest-" + commentID).addClass("removedComment");
+    jQuery("#restoreLink-" + commentID).show();
+    jQuery("#deleteLink-" + commentID).hide();
     
-    updateEmptyTableMessages();
+    jQuery("#stopCheatLink-" + commentID).hide();
+    jQuery("#cheatLink-" + commentID).show();
 }
 
 /*
- * Move comment into Removed Comments (table with comment which wont be used for contest)
+ * Selected comment must be used for contest
+ * @param commentID Comment ID
+ * @since 2.0
  */
 function commentContestRestore(commentID) {
-    jQuery("#comment-contest-" + commentID).show();
-    jQuery("#comment-no-contest-" + commentID).hide();
-    
-    updateEmptyTableMessages();
+    jQuery("#comment-contest-" + commentID).removeClass("removedComment");
+    jQuery("#deleteLink-" + commentID).show();
+    jQuery("#restoreLink-" + commentID).hide();
+}
+
+/**
+ * Selected comment will win (if winners number greater than cheating comments number)
+ * @param commentID Comment ID
+ * @since 2.1
+ */
+function commentContestCheat(commentID) {
+    jQuery("#comment-contest-" + commentID).removeClass("removedComment");
+    jQuery("#comment-contest-" + commentID).addClass("cheatComment");
+    jQuery("#stopCheatLink-" + commentID).show();
+    jQuery("#cheatLink-" + commentID).hide();
+
+    jQuery("#deleteLink-" + commentID).show();
+    jQuery("#restoreLink-" + commentID).hide();
+}
+
+/**
+ * Selected comment won't win anymore (except if it will be randomly choosen during the contest last step)
+ * @param commentID Comment ID
+ * @since 2.1
+ */
+function commentContestStopCheat(commentID) {
+    jQuery("#comment-contest-" + commentID).removeClass("cheatComment");
+    jQuery("#stopCheatLink-" + commentID).hide();
+    jQuery("#cheatLink-" + commentID).show();
 }
 
 /*
  * Select all comments in the table which have the role "roleID"
+ * @since 2.1
  */
-function selectRoleInTable(roleID, tableID) {
+function selectRole(roleID) {
     // Browse all table lines
-    jQuery('#' + tableID + ' tr').each(function() {
+    jQuery('#contestForm tr').each(function() {
         var line = jQuery(this);
         
         // Search for span tag with class zhyweb_comment_contest_role" which is equal to "roleID"
@@ -77,23 +91,10 @@ function selectRoleInTable(roleID, tableID) {
 }
 
 /*
- * Select all comments (in the contest table) which have the role "roleID"
- */
-function selectRoleInContest(roleID) {
-    selectRoleInTable(roleID, "inContestForm");
-}
-
-/*
- * Select all comments (in the deleted comments table) which have the role "roleID"
- */
-function selectRoleInNoContest(roleID) {
-    selectRoleInTable(roleID, "outContestForm");
-}
-
-/*
  * Shuffle an array
  * @param myArray Array to shuffle
  * @see http://sedition.com/perl/javascript-fy.html
+ * @since 2.0
  */
 function fisherYates(myArray) {
     var i = myArray.length;
@@ -112,9 +113,33 @@ function fisherYates(myArray) {
 // jQuery ready document
 
 jQuery(document).ready(function() {
-    // ------------------------ DELETE COMMENTS FROM CONTEST -------------------------------
+    
+    // ------------------------ Tooltips (Help) --------------------------------
+
+    // Code from BackWPup - WordPress Backup Plugin
+    // http://marketpress.com/product/backwpup-pro/
+    
+    jQuery('.help').tipTip({
+            'attribute': 'title',
+            'fadeIn': 50,
+            'fadeOut': 50,
+            'keepAlive': true,
+            'activation': 'hover',
+            'maxWidth': 400
+    });
+
+    jQuery(".help").tipTip();
+    
+    // ------------------------ END Tooltips (Help) ----------------------------
+
+
+    // ------------------------ DELETE COMMENTS FROM CONTEST -------------------
+    /**
+     * Remove all checked comments
+     * @since 2.0
+     */
     function deleteSelectedComments() {
-        jQuery('#inContestForm input[id^="cb-select"]:checked').each(function(index, domElem) {
+        jQuery('#contestForm input[id^="cb-select"]:checked').each(function(index, domElem) {
             if (domElem.id.indexOf("-all-") == -1) {
                 commentContestDelete(jQuery(this).val());
             } else {
@@ -123,23 +148,27 @@ jQuery(document).ready(function() {
         });
     }
     
-    jQuery("#inContestForm #doaction").click(function() {
-        if (jQuery('#inContestForm select[name="action"]').val() == 'delete') {
+    jQuery("#contestForm #doaction").click(function() {
+        if (jQuery('#contestForm select[name="action"]').val() == 'delete') {
             deleteSelectedComments();
         }
     });
     
-    jQuery("#inContestForm #doaction2").click(function() {
-        if (jQuery('#inContestForm select[name="action2"]').val() == 'delete') {
+    jQuery("#contestForm #doaction2").click(function() {
+        if (jQuery('#contestForm select[name="action2"]').val() == 'delete') {
             deleteSelectedComments();
         }
     });
-    // ------------------------ end DELETE COMMENTS FROM CONTEST ---------------------------
+    // ------------------------ end DELETE COMMENTS FROM CONTEST ---------------
     
     
-    // ------------------------ RESTORE COMMENTS FOR CONTEST -------------------------------
+    // ------------------------ RESTORE COMMENTS FOR CONTEST -------------------
+    /**
+     * Restore all checked comments
+     * @since 2.0
+     */
     function restoreSelectedComments() {
-        jQuery('#outContestForm input[id^="cb-select"]:checked').each(function(index, domElem) {
+        jQuery('#contestForm input[id^="cb-select"]:checked').each(function(index, domElem) {
             if (domElem.id.indexOf("-all-") == -1) {
                 commentContestRestore(jQuery(this).val());
             } else {
@@ -148,21 +177,21 @@ jQuery(document).ready(function() {
         });
     }
     
-    jQuery("#outContestForm #doaction").click(function() {
-        if (jQuery('#outContestForm select[name="action"]').val() == 'restore') {
+    jQuery("#contestForm #doaction").click(function() {
+        if (jQuery('#contestForm select[name="action"]').val() == 'restore') {
             restoreSelectedComments();
         }
     });
     
-    jQuery("#outContestForm #doaction2").click(function() {
-        if (jQuery('#outContestForm select[name="action2"]').val() == 'restore') {
+    jQuery("#contestForm #doaction2").click(function() {
+        if (jQuery('#contestForm select[name="action2"]').val() == 'restore') {
             restoreSelectedComments();
         }
     });
-    // ------------------------ end RESTORE COMMENTS FOR CONTEST ---------------------------
+    // ------------------------ end RESTORE COMMENTS FOR CONTEST ---------------
     
     
-    // ------------------------ CHECK FORM VALUES -------------------------------
+    // ------------------------ RESULT TABLE -----------------------------------
     jQuery("#dialog-modal-winners").dialog({
         height: 500,
         width: 800,
@@ -170,16 +199,26 @@ jQuery(document).ready(function() {
         autoOpen: false,
         dialogClass: 'wp-dialog',
         open: function() {
+            // While opening the result dialog...
+            var nbWinners = jQuery('#zwpcc_nb_winners').val();
+            var commentsNormal = new Array();
+            var commentsCheat = new Array();
+            
             // Get all comments ID which are used for the contest
-            var comments = new Array();
-            jQuery('#inContestForm tr').each(function() {
+            jQuery('#contestForm tr').each(function() {
                 var line = jQuery(this);
-                if (line.css("display") != "none") {
-                    // Get only displayed lines
+                
+                // Get only normal et cheating lines
+                if (!line.hasClass("removedComment")) {
                     var commentID = line.find('.zhyweb_comment_contest_id').html();
-                    if (commentID != null && commentID != "") {
-                        // Don't get table header and footer
-                        comments.push(commentID);
+
+                    // Don't get table header and footer
+                    if (commentID != null && commentID != "") {                        
+                        if (line.hasClass("cheatComment")) {
+                            commentsCheat.push(commentID);
+                        } else {
+                            commentsNormal.push(commentID);
+                        }
                     }
                 }
             });
@@ -189,17 +228,26 @@ jQuery(document).ready(function() {
                 jQuery(this).hide();
             });
             
-            // Randomize array
-            fisherYates(comments);
+            // Randomize arrays
+            fisherYates(commentsCheat);
+            if (commentsCheat.length < nbWinners) {
+                // Optimisation
+                fisherYates(commentsNormal);
+            }
             
-            // Display winners
-            var nbWinners = jQuery('#zwpcc_nb_winners').val();
-            for (var i = 0; i < nbWinners; i++) {
+            // Show winners
+            var comments = jQuery.merge(commentsCheat, commentsNormal);
+            for (var i = 0; i < nbWinners && i < comments.length; i++) {
                 jQuery("#result-comment-contest-" + comments[i]).show();
+                if (i >= 1) {
+                    // Sort table
+                    jQuery("#result-comment-contest-" + comments[i - 1]).after(jQuery("#result-comment-contest-" + comments[i]));
+                }
             }
         }
     });
     
+    // Launch contest Button
     jQuery("#zwpcc_form").submit(function() {
         launch = true;
         
@@ -222,6 +270,6 @@ jQuery(document).ready(function() {
 
         return false;
     });
-    // ------------------------ end CHECK FORM VALUES -------------------------------
+    // ------------------------ end RESULT TABLE -------------------------------
     
 });

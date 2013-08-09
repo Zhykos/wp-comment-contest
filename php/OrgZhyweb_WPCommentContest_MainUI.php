@@ -17,7 +17,6 @@
  */
 
 require_once 'OrgZhyweb_WPCommentContest_TableUI.php';
-require_once 'OrgZhyweb_WPCommentContest_TableRemoveUI.php';
 require_once 'OrgZhyweb_WPCommentContest_TableResults.php';
 
 /**
@@ -70,7 +69,8 @@ class OrgZhyweb_WPCommentContest_MainUI {
 
             // Contest parameters
             echo "<div id=\"zwpcc_error_message\" style=\"color: red\"></div>"
-               . __('Number of winners:', "comment-contest") . " <input type=\"text\" id=\"zwpcc_nb_winners\" value=\"1\"/><br /><br />"
+               . __('Number of winners:', "comment-contest") . " <input type=\"text\" id=\"zwpcc_nb_winners\" value=\"1\"/>"
+               . "<img src=\"$this->pluginDir/img/help.png\" alt=\"Help\" class=\"help\" title=\"". __('Number of comments used to determine winners', "comment-contest") . "\" /><br /><br />"
                . "<input type=\"submit\" class=\"button action\" value=\"" . __('Launch contest', "comment-contest") . "\" />";
 
             echo "</form>";
@@ -105,22 +105,18 @@ class OrgZhyweb_WPCommentContest_MainUI {
             // Comments found
             $this->displayHeaderPage($postID);
             
-            echo "<br /><br /><hr /><h3>" . __('Comments used for the contest:', "comment-contest") . "</h3>
-                <div id='inContestForm'>";
+            echo "<br /><br /><hr /><h3 style=\"float: left;\">" . __('Comments used for the contest:', "comment-contest") . "</h3>
+                <img src=\"$this->pluginDir/img/help.png\" alt=\"Help\" class=\"help\" id=\"mainHelp\" title=\"". __("The table below shows all available comments. You have to choose which ones you want for the contest.<br />"
+                . " - You can select users who have the same Wordpress role (see User page).<br />"
+                . " - You can remove comments from contest (don't be used to determine winners). Removed comments still are visible with red background color.<br />"
+                . " - You can also cheat by adding comments into a cheating list. All cheating comments will always win! (only if the cheating list length is less than the winners number). Cheating comments still are visible with green background color.<br />"
+                . " - The other comments (white/grey background) are only used if there isn't enough cheating comments.", "comment-contest") . "\" />
+                <div id='contestForm'>";
                         
             $list = new OrgZhyweb_WPCommentContest_TableUI($postID);
             $list->prepare_items();
             $list->views();
             $list->display();
-            
-            echo "</div><br /><hr />
-                <h3>" . __('Not used comments:', "comment-contest") . "</h3>
-                    <div id='outContestForm'>";
-            
-            $list2 = new OrgZhyweb_WPCommentContest_TableRemoveUI($postID);
-            $list2->prepare_items();
-            $list2->views();
-            $list2->display();
             
             echo "</div>";
             
