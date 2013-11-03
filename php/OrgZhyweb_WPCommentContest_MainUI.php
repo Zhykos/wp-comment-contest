@@ -37,9 +37,9 @@ class OrgZhyweb_WPCommentContest_MainUI {
      * URL must have 'post' parameter as integer.
      */
     public function display() {
-        $getPostID = $_GET['post'];
+        $getPostID = $_GET['postID'];
         if (isset($getPostID)) {
-            $postID = intval($_GET['post']);
+            $postID = intval($_GET['postID']);
             if (current_user_can(10)) {
                 if ($postID > 0) {
                     $this->displayComments($postID);
@@ -138,6 +138,7 @@ class OrgZhyweb_WPCommentContest_MainUI {
         echo    "<h3>" . sprintf(__("To use the plug-in, go to <a href=\"%s\">articles page</a> then you'll find a link to launch contests", "comment-contest"), admin_url('edit.php')) . "</h3>
                     <br />
                     " . __("Support:", "comment-contest") . " tcicognani@zhyweb.org<br />
+                    " . __("Official page:", "comment-contest") . " <a href=\"http://wordpress.org/plugins/comment-contest/\">http://wordpress.org/plugins/comment-contest/</a><br />
                     " . __("Official page:", "comment-contest") . " <a href=\"http://wp-comment-contest.zhyweb.org/\">http://wp-comment-contest.zhyweb.org/</a>";
         
         if ($debug != NULL) {

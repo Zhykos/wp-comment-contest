@@ -4,7 +4,7 @@
   Plugin URI: http://wp-comment-contest.zhyweb.org/
   Description: If you create a contest on your website, you can draw all comments in a specific post
   Author: Thomas "Zhykos" Cicognani
-  Version: 2.1
+  Version: 2.1.1
   Author URI: http://www.zhyweb.org/
  */
 
@@ -114,7 +114,7 @@ class CommentContest {
     public function orgZhyweb_wpCommentContest_column_content($columnID, $postID) {
         if ($columnID == ORG_ZHYWEB_WP_COMMENT_CONTEST_PAGE_ID) {
             if (get_comments_number($postID) > 0) {
-                echo sprintf('<a href="%s?page=%s&amp;post=%d">%s</a>',
+                echo sprintf('<a href="%s?page=%s&amp;postID=%d">%s</a>',
                         admin_url('edit-comments.php'),
                         ORG_ZHYWEB_WP_COMMENT_CONTEST_PAGE_ID,
                         $postID,
