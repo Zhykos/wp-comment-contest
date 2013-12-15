@@ -61,7 +61,6 @@ class OrgZhyweb_WPCommentContest_MainUI {
         // Titles
         echo    "<div class=\"wrap\">
                     <form id=\"zwpcc_form\">
-                        <img class=\"icon32\" src=\"$this->pluginDir/img/comment-contest.png\" alt=\"" . __("Comment Contest", "comment-contest") . "\">
                         <h2>" . __("Comment Contest", "comment-contest") . "</h2>";
         
         if ($postID != NULL) {
