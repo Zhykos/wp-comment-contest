@@ -4,7 +4,7 @@
   Plugin URI: http://wp-comment-contest.zhyweb.org/
   Description: If you create a contest on your website, you can draw all comments in a specific post
   Author: Thomas "Zhykos" Cicognani
-  Version: 2.1.3
+  Version: 2.2
   Author URI: http://www.zhyweb.org/
  */
 
@@ -68,16 +68,16 @@ class CommentContest {
      * Wordpress Action : admin_enqueue_scripts.
      */
     public function orgZhyweb_wpCommentContest_loadJsCSS() {
-        // Comment Contest Javascript file (needs jQuery, jQueryUI and jQueryUI Dialog)
-        wp_register_script('OrgZhywebWPCommentContest.js', plugins_url('/js/OrgZhyweb_WPCommentContest_jQuery.min.js', __FILE__), array('jquery', 'jquery-ui-core', 'jquery-ui-dialog'));
+        // Comment Contest Javascript file (needs jQuery, jQueryUI, jQueryUI Dialog and jQueryUI DatePicker)
+        wp_register_script('OrgZhywebWPCommentContest.js', plugins_url('/js/OrgZhyweb_WPCommentContest_jQuery.min.js', __FILE__), array('jquery', 'jquery-ui-core', 'jquery-ui-dialog', 'jquery-ui-datepicker'));
         wp_enqueue_script('OrgZhywebWPCommentContest.js');
                 
         // Tooltips by TipTip (needs jQuery)
         wp_register_script('TipTip.js', plugins_url('/js/jquery.tipTip.minified.js', __FILE__), array('jquery'));
         wp_enqueue_script('TipTip.js');
         
-        // jQueryUI Dialog style
-        wp_enqueue_style('wp-jquery-ui-dialog');
+        // jQuery UI style
+        wp_enqueue_style('jquery-style', 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.min.css');
         
         // Plugin CSS
         wp_enqueue_style('comment-contest.css', plugins_url('/css/comment-contest.min.css', __FILE__));

@@ -207,6 +207,15 @@ abstract class OrgZhyweb_WPCommentContest_AbstractTableUI extends WP_List_Table 
         
         // Add comment ID (used to get winners)
         echo '<span style="display:none" class="zhyweb_comment_contest_id">' . $comment->comment_ID . '</span>';
+        
+        // Add comment timestamp post
+        echo '<span style="display:none" class="zhyweb_comment_contest_timestamp">' . get_comment_date('YmdHi', $comment->comment_ID) . '</span>';
+        
+        // Add comment IP address
+        echo '<span style="display:none" class="zhyweb_comment_contest_ip">' . get_comment_author_IP($comment->comment_ID) . '</span>';
+        
+        // Add comment email
+        echo '<span style="display:none" class="zhyweb_comment_contest_email">' . $comment->comment_author_email . '</span>';
     }
     
     /**

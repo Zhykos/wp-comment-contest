@@ -31,11 +31,11 @@ You need PHP version 5 like Wordpress.
 
 = What are the available languages? =
 
-* English by Thomas "Zhykos" Cicognani ;
-* French by Thomas "Zhykos" Cicognani ;
-* Spanish by Andrew Kurtis ;
-* Belorussian by P.C. (partial since 2.0) ;
-* Dutch by Rene (partial since 2.0)
+* English by Thomas "Zhykos" Cicognani (since 1.1) ;
+* French by Thomas "Zhykos" Cicognani (since 1.0) ;
+* Spanish by Andrew Kurtis (since 2.1.3 / partial since 2.2) ;
+* Belorussian by P.C. (since 1.40.1 / partial since 2.0) ;
+* Dutch by Rene (since 1.41.1 / partial since 2.0)
 
 == Screenshots ==
 
@@ -45,9 +45,15 @@ You need PHP version 5 like Wordpress.
 4. Choose to delete a comment from the contest
 5. You can restore deleted comments (deleted comments are red)
 6. Cheat: this comment will win! (cheating comments are green)
-7. Result table with winner(s)
+7. Filters
+8. Help
+9. Result table
 
 == Changelog ==
+
+= 2.2 =
+* New: Add filters to select comments posted after a date, to select comments with same IP address or email
+* Misc: New screenshots
 
 = 2.1.3 =
 * Misc: Add Spanish language. Thanks to Andrew from http://www.webhostinghub.com/ for this contribution!
@@ -148,7 +154,11 @@ You need PHP version 5 like Wordpress.
 * Cheat and help added
 * Compatibility with Wordpress 3.6
 
+= 2.2 =
+* New features to filter comments
+
 == Credits ==
 
 = Images =
 * Help icon by http://www.visualpharm.com/
+* Plus and Minus icons by http://www.yanlu.de 

@@ -51,6 +51,12 @@
     clear: both;
 }
 
+#filters {
+    border-left: 1px dotted black;
+    padding-left: 10px;
+    margin-bottom: 20px;
+}
+
 /* ===================== TipTip CSS - Version 1.3 ============================*/
 
 /* Code from BackWPup - WordPress Backup Plugin */

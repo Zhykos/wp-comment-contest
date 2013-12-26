@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Comment Contest v2.0\n"
+"Project-Id-Version: Comment Contest v2.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-09 18:37+0100\n"
-"PO-Revision-Date: 2013-08-09 18:38+0100\n"
+"POT-Creation-Date: 2013-12-26 18:23+0100\n"
+"PO-Revision-Date: 2013-12-26 18:26+0100\n"
 "Last-Translator: Thomas \"Zhykos\" Cicognani <tcicognani@zhyweb.org>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -15,132 +15,113 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
 "_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
-"X-Poedit-Basepath: \n"
+"X-Poedit-Basepath: D:\\www\\zhyweb\\wordpress\\wp-content\\plugins\\comment-"
+"contest\n"
 "X-Textdomain-Support: yes\n"
 "X-Poedit-SearchPath-0: .\n"
 
 # @ comment-contest
 #: comment-contest.php:92 php/OrgZhyweb_WPCommentContest_MainUI.php:64
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:65
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/comment-contest.php:92
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:64
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:65
 msgid "Comment Contest"
 msgstr "Comment Contest"
 
 # @ comment-contest
 #: comment-contest.php:103
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/comment-contest.php:103
 msgid "Contest"
 msgstr "Concours"
 
 # @ comment-contest
-#: comment-contest.php:121 php/OrgZhyweb_WPCommentContest_MainUI.php:74
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/comment-contest.php:121
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:74
+#: comment-contest.php:121 php/OrgZhyweb_WPCommentContest_MainUI.php:73
 msgid "Launch contest"
 msgstr "Lancer le concours"
 
 # @ comment-contest
 #: comment-contest.php:123
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/comment-contest.php:123
 msgid "No comment"
 msgstr "Aucun commentaire"
 
 # @ comment-contest
 #: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:65
 #: php/OrgZhyweb_WPCommentContest_TableResults.php:33
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:65
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_TableResults.php:33
 msgid "Author"
 msgstr "Auteur"
 
 # @ comment-contest
 #: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:66
 #: php/OrgZhyweb_WPCommentContest_TableResults.php:34
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:66
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_TableResults.php:34
 msgid "Comment"
 msgstr "Commentaire"
 
 # @ comment-contest
 #: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:102
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:102
 #, php-format
 msgid "Select: %s"
 msgstr "Sélectionner : %s"
 
 # @ comment-contest
 #: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:135
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:135
 msgid "Select comment"
 msgstr "Sélectionner le commentaire"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:221
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:221
+#: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:230
 #, php-format
 msgid "Submitted on <a href=\"%1$s\">%2$s at %3$s</a>"
 msgstr "Soumis le <a href=\"%1$s\">%2$s à %3$s</a>"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:222
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:222
+#: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:231
 msgid "Y/m/d"
 msgstr "d / m / Y"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:229
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:229
+#: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:238
 #, php-format
 msgid "In reply to <a href=\"%1$s\">%2$s</a>."
 msgstr "En réponse à <a href=\"%1$s\">%2$s</a>."
 
 # @ comment-contest
 #: php/OrgZhyweb_WPCommentContest_MainUI.php:47
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:47
 msgid "URL must have 'post' parameter as integer"
 msgstr "Le paramètre 'post' dans l'URL doit être un nombre entier"
 
 # @ comment-contest
 #: php/OrgZhyweb_WPCommentContest_MainUI.php:50
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:50
 msgid "You have to be administrator to access this page"
 msgstr ""
 "Vous devez disposer de droits d'administrateur pour accéder à cette page"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:68
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:68
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:67
 #, php-format
 msgid "Contest on post \"%s\""
 msgstr "Concours pour l'article \"%s\""
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:72
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:72
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:70
+msgid "Number of winners error"
+msgstr "Erreur pour le nombre de gagnants"
+
+# @ comment-contest
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:71
 msgid "Number of winners:"
 msgstr "Nombre de gagnants :"
 
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:73
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:73
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:72
 msgid "Number of comments used to determine winners"
 msgstr "Nombre de commentaires utilisés pour déterminer les gagnants"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:79
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:79
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:78
 msgid "Winners"
 msgstr "Gagnants"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:108
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:108
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:107
 msgid "Comments used for the contest:"
 msgstr "Commentaires utilisés pour le concours :"
 
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:109
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:109
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:110
 msgid ""
 "The table below shows all available comments. You have to choose which ones "
 "you want for the contest.<br /> - You can select users who have the same "
@@ -165,15 +146,63 @@ msgstr ""
 "avec un fond vert.<br /> - Les autres comentaires (fond blanc/gris) ne sont "
 "utilisés que s'il n'a pas assez de commentaire de triche."
 
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:120
+msgid "Filters"
+msgstr "Filtres"
+
 # @ comment-contest
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:123
+msgid "Contest deadline"
+msgstr "Date limite du concours"
+
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:124
+msgid "Wrong date format!"
+msgstr "Mauvais format de date !"
+
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:125
+msgid "Date:"
+msgstr "Date :"
+
 #: php/OrgZhyweb_WPCommentContest_MainUI.php:126
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:126
+msgid "Hour (24h format):"
+msgstr "Heure (format 24h) :"
+
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:126
+msgid "h"
+msgstr "h"
+
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:126
+msgid "min"
+msgstr "min"
+
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:127
+msgid "Select comments after this deadline"
+msgstr "Sélectionner tous les commentaires postés après cette date"
+
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:130
+msgid "IP address"
+msgstr "Adresse IP"
+
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:131
+msgid "Select all comments with the same IP address"
+msgstr ""
+"Sélectionner tous les commentaires ayant été postés avec la même adresse IP"
+
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:134
+msgid "Email address"
+msgstr "Adresses email"
+
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:135
+msgid "Select all comments with the same email"
+msgstr "Sélectionner tous les commentaires ayant été postés avec le même email"
+
+# @ comment-contest
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:151
 msgid "URL 'post' parameter has to be valid"
 msgstr "Le paramètre 'post' dans l'URL n'est pas valide"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:138
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:138
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:163
 #, php-format
 msgid ""
 "To use the plug-in, go to <a href=\"%s\">articles page</a> then you'll find "
@@ -183,45 +212,37 @@ msgstr ""
 "puis cliquez sur le lien dédié au lancement de concours"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:140
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:140
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:165
 msgid "Support:"
 msgstr "Support :"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:141
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:141
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:166
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:167
 msgid "Official page:"
 msgstr "Page officielle :"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:145
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:145
+#: php/OrgZhyweb_WPCommentContest_MainUI.php:171
 msgid "Debug:"
 msgstr "Debug :"
 
 # @ comment-contest
 #: php/OrgZhyweb_WPCommentContest_TableUI.php:41
 #: php/OrgZhyweb_WPCommentContest_TableUI.php:50
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:41
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:50
 msgid "Delete"
 msgstr "Supprimer"
 
 # @ comment-contest
 #: php/OrgZhyweb_WPCommentContest_TableUI.php:42
 #: php/OrgZhyweb_WPCommentContest_TableUI.php:51
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:42
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:51
 msgid "Restore"
 msgstr "Restaurer"
 
 #: php/OrgZhyweb_WPCommentContest_TableUI.php:43
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:43
 msgid "Cheat"
 msgstr "Tricher"
 
 #: php/OrgZhyweb_WPCommentContest_TableUI.php:44
-#: D:\www\zhyweb\wp-content\plugins\comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:44
 msgid "Stop cheating"
 msgstr "Ne plus tricher"

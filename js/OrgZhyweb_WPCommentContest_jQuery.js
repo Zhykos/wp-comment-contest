@@ -76,7 +76,7 @@ function selectRole(roleID) {
     jQuery('#contestForm tr').each(function() {
         var line = jQuery(this);
         
-        // Search for span tag with class zhyweb_comment_contest_role" which is equal to "roleID"
+        // Search for span tag with class "zhyweb_comment_contest_role" which is equal to "roleID"
         // A user can have several roles, separated by a pipe (|)
         var rolesStr = line.find('.zhyweb_comment_contest_role').text();
         var roles = rolesStr.split('|');
@@ -109,10 +109,142 @@ function fisherYates(myArray) {
     }
 }
 
+/**
+ * Open / Hide filters DIV component
+ * @since 2.2
+ */
+function toggleFilters(pluginURL) {
+    var filtersDIV = jQuery('#filters');
+    
+    filtersDIV.fadeToggle("slow", "linear", function() {
+        if (filtersDIV.is(':visible')) {
+            jQuery('#filtersImg').attr('src', pluginURL + '/img/minus.png');
+        } else {
+            jQuery('#filtersImg').attr('src', pluginURL + '/img/plus.png');
+        }
+    });
+}
+
+/**
+ * Select duplicated lines in the table.
+ * Lines are duplicated when a certain line parameter is the same in two lines.
+ * @param cssClassParameter [string] CSS class name for the searched parameter
+ * @since 2.2
+ */
+function selectDuplicates(cssClassParameter) {
+    var line1nb = 0;
+    jQuery('#contestForm tr').each(function() {
+        // Browse all table lines
+        var line1 = jQuery(this);
+        
+        var line2nb = 0;
+        jQuery('#contestForm tr').each(function() {
+            // Browse all table lines
+            var line2 = jQuery(this);
+            if (line1nb != line2nb) { // Compare two different lines
+                var data1 = line1.find('.' + cssClassParameter).text();
+                var data2 = line2.find('.' + cssClassParameter).text();
+                if (data1 == data2 && data1 != "") {
+                    // If data are equal => check both lines
+                    line1.find('input[id^="cb-select"]').each(function() {
+                        jQuery(this).attr("checked", true);
+                    });
+                    line2.find('input[id^="cb-select"]').each(function() {
+                        jQuery(this).attr("checked", true);
+                    });
+                }
+            }
+            
+            line2nb++;
+        });
+        
+        line1nb++;
+    });
+}
+
 // -----------------------------------------------------------------------------
 // jQuery ready document
 
 jQuery(document).ready(function() {
+    
+    // ------------------------ IP address filter ------------------------------
+    
+    jQuery('#ipAddressFilter').click(function() {
+        selectDuplicates("zhyweb_comment_contest_ip");
+    });
+    
+    // ------------------------ end IP address filter --------------------------
+    
+    // ------------------------ Email filter -----------------------------------
+    
+    jQuery('#emailAddressFilter').click(function() {
+        selectDuplicates("zhyweb_comment_contest_email");
+    });
+    
+    // ------------------------ end Email filter -------------------------------
+    
+    // ------------------------ Date filter ------------------------------------
+    
+    jQuery('#datepicker').datepicker();
+    
+    jQuery('#dateSubmit').click(function() {
+        // Clear error messages
+        jQuery('#zwpcc_dateFilter_error_message').hide();
+        jQuery('#datepicker').css("border", "1px solid rgb(223,223,223)");
+        jQuery('#dateHours').css("border", "1px solid rgb(223,223,223)");
+        jQuery('#dateMinutes').css("border", "1px solid rgb(223,223,223)");
+        
+        // Check date format
+        var dateFormatOk = false;
+        var dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+        var dateValue = jQuery('#datepicker').val();
+        var month = "";
+        var day = "";
+        var year = "";
+        if (dateRegex.test(dateValue)) {
+            var match = dateRegex.exec(dateValue);
+            month = match[1];
+            day = match[2];
+            year = match[3];
+            if (month > 0 && month < 13 && day > 0 && day <32 && year > 0) {
+                dateFormatOk = true;
+            }
+        }
+        
+        if (dateFormatOk) {
+            // Check hours format
+            var dateHours = jQuery('#dateHours').val();
+            var dateMinutes = jQuery('#dateMinutes').val();
+            if (dateHours != "" && dateHours >= 0 && dateHours < 24 && dateMinutes != "" && dateMinutes >= 0 && dateMinutes < 60) {
+                // Date OK => Launch selection
+                jQuery('#contestForm tr').each(function() {
+                    // Browse all table lines
+                    var line = jQuery(this);
+
+                    // Search for span tag with class "zhyweb_comment_contest_timestamp"
+                    var timestampComment = line.find('.zhyweb_comment_contest_timestamp').text();
+                    if (timestampComment != "") {
+                        var wantedTimestamp = year + month + day + dateHours + dateMinutes;
+                        if (timestampComment > wantedTimestamp) {
+                            // If comment time > deadline => Check the box in lines
+                            line.find('input[id^="cb-select"]').each(function() {
+                                jQuery(this).attr("checked", true);
+                            });
+                        }
+                    }
+                });
+            } else {
+                jQuery('#zwpcc_dateFilter_error_message').show();
+                jQuery('#dateHours').css("border", "2px solid red");
+                jQuery('#dateMinutes').css("border", "2px solid red");
+            }
+        } else {
+            jQuery('#zwpcc_dateFilter_error_message').show();
+            jQuery('#datepicker').css("border", "2px solid red");
+        }
+    });
+    
+    // ------------------------ END Date filter --------------------------------
     
     // ------------------------ Tooltips (Help) --------------------------------
 
@@ -208,7 +340,7 @@ jQuery(document).ready(function() {
             jQuery('#contestForm tr').each(function() {
                 var line = jQuery(this);
                 
-                // Get only normal et cheating lines
+                // Get only normal and cheating lines
                 if (!line.hasClass("removedComment")) {
                     var commentID = line.find('.zhyweb_comment_contest_id').html();
 
@@ -231,7 +363,7 @@ jQuery(document).ready(function() {
             // Randomize arrays
             fisherYates(commentsCheat);
             if (commentsCheat.length < nbWinners) {
-                // Optimisation
+                // Optimisation : randomize array only if necessary
                 fisherYates(commentsNormal);
             }
             
@@ -252,15 +384,18 @@ jQuery(document).ready(function() {
         launch = true;
         
         // Clean all inputs
+        jQuery("#zwpcc_nbWinners_error_message").hide();
         jQuery(this).find('input').each(function() {
             jQuery(this).css('border', '1px solid rgb(223,223,223)');
         });
         
         // Check all values
         // "Number of winners" must be numeric
-        if (!jQuery.isNumeric(jQuery("#zwpcc_nb_winners").val())) {
+        var nbWinners = jQuery("#zwpcc_nb_winners").val();
+        if (!jQuery.isNumeric(nbWinners) || nbWinners <= 0) {
             launch = false;
             jQuery("#zwpcc_nb_winners").css('border', '2px solid red');
+            jQuery("#zwpcc_nbWinners_error_message").show();
         }
         
         // Launch contest?
