@@ -33,6 +33,7 @@ You need PHP version 5 like Wordpress.
 
 * English by Thomas "Zhykos" Cicognani ;
 * French by Thomas "Zhykos" Cicognani ;
+* Spanish by Andrew Kurtis ;
 * Belorussian by P.C. (partial since 2.0) ;
 * Dutch by Rene (partial since 2.0)
 
@@ -47,6 +48,9 @@ You need PHP version 5 like Wordpress.
 7. Result table with winner(s)
 
 == Changelog ==
+
+= 2.1.3 =
+* Misc: Add Spanish language. Thanks to Andrew from http://www.webhostinghub.com/ for this contribution!
 
 = 2.1.2 =
 * Misc: Remove plugin image to be 3.8 style compliant
