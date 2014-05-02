@@ -4,7 +4,7 @@
   Plugin URI: http://wp-comment-contest.zhyweb.org/
   Description: If you create a contest on your website, you can draw all comments in a specific post
   Author: Thomas "Zhykos" Cicognani
-  Version: 2.2.1
+  Version: 2.2.2
   Author URI: http://www.zhyweb.org/
  */
 

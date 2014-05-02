@@ -3,7 +3,7 @@ Contributors: zhykos
 Donate link: http://wp-comment-contest.zhyweb.org/
 Tags: comments, contest, concours, commentaire, zhykos, zhyweb
 Requires at least: 3.3
-Tested up to: 3.8.1
+Tested up to: 3.9
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -50,6 +50,9 @@ You need PHP version 5 like Wordpress.
 9. Result table
 
 == Changelog ==
+
+= 2.2.2 =
+* Misc: Check compatibility with Wordpress 3.9
 
 = 2.2.1 =
 * Misc: Check compatibility with Wordpress 3.8.1
