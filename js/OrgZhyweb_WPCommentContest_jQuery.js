@@ -1,4 +1,4 @@
-/*  Copyright 2009 - 2014 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : tcicognani@zhyweb.org)
+/*  Copyright 2009 - 2015 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : tcicognani@zhyweb.org)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@
 /*
  * Selected comment won't be used for contest
  * @param commentID Comment ID
- * @since 2.0
  */
 function commentContestDelete(commentID) {
     jQuery("#comment-contest-" + commentID).removeClass("cheatComment");
@@ -33,7 +32,6 @@ function commentContestDelete(commentID) {
 /*
  * Selected comment must be used for contest
  * @param commentID Comment ID
- * @since 2.0
  */
 function commentContestRestore(commentID) {
     jQuery("#comment-contest-" + commentID).removeClass("removedComment");
@@ -44,7 +42,6 @@ function commentContestRestore(commentID) {
 /**
  * Selected comment will win (if winners number greater than cheating comments number)
  * @param commentID Comment ID
- * @since 2.1
  */
 function commentContestCheat(commentID) {
     jQuery("#comment-contest-" + commentID).removeClass("removedComment");
@@ -59,7 +56,6 @@ function commentContestCheat(commentID) {
 /**
  * Selected comment won't win anymore (except if it will be randomly choosen during the contest last step)
  * @param commentID Comment ID
- * @since 2.1
  */
 function commentContestStopCheat(commentID) {
     jQuery("#comment-contest-" + commentID).removeClass("cheatComment");
@@ -69,7 +65,6 @@ function commentContestStopCheat(commentID) {
 
 /*
  * Select all comments in the table which have the role "roleID"
- * @since 2.1
  */
 function selectRole(roleID) {
     // Browse all table lines
@@ -94,7 +89,6 @@ function selectRole(roleID) {
  * Shuffle an array
  * @param myArray Array to shuffle
  * @see http://sedition.com/perl/javascript-fy.html
- * @since 2.0
  */
 function fisherYates(myArray) {
     var i = myArray.length;
@@ -111,7 +105,6 @@ function fisherYates(myArray) {
 
 /**
  * Open / Hide filters DIV component
- * @since 2.2
  */
 function toggleFilters(pluginURL) {
     var filtersDIV = jQuery('#filters');
@@ -125,63 +118,161 @@ function toggleFilters(pluginURL) {
     });
 }
 
-/**
- * Select duplicated lines in the table.
- * Lines are duplicated when a certain line parameter is the same in two lines.
- * @param cssClassParameter [string] CSS class name for the searched parameter
- * @since 2.2
- */
-function selectDuplicates(cssClassParameter) {
-    var line1nb = 0;
-    jQuery('#contestForm tr').each(function() {
-        // Browse all table lines
-        var line1 = jQuery(this);
-        
-        var line2nb = 0;
-        jQuery('#contestForm tr').each(function() {
-            // Browse all table lines
-            var line2 = jQuery(this);
-            if (line1nb != line2nb) { // Compare two different lines
-                var data1 = line1.find('.' + cssClassParameter).text();
-                var data2 = line2.find('.' + cssClassParameter).text();
-                if (data1 == data2 && data1 != "") {
-                    // If data are equal => check both lines
-                    line1.find('input[id^="cb-select"]').each(function() {
-                        jQuery(this).attr("checked", true);
-                    });
-                    line2.find('input[id^="cb-select"]').each(function() {
-                        jQuery(this).attr("checked", true);
-                    });
-                }
-            }
-            
-            line2nb++;
-        });
-        
-        line1nb++;
-    });
-}
-
 // -----------------------------------------------------------------------------
 // jQuery ready document
 
 jQuery(document).ready(function() {
     
-    // ------------------------ IP address filter ------------------------------
+    function checkInputsOfWrongComments(testFunction, useName, useEmail, useIP, selectDuplicates, nbAuthEntries) {
+        var duplicates = [];
+        var line1nb = 0;
+
+        jQuery('#contestForm tr').each(function() {
+            // Browse all table lines
+            var line1 = jQuery(this);
+            var line1Name = null;
+            if (useName) {
+                line1Name = line1.find('.zhyweb_comment_contest_alias').text();
+            }
+            
+            var line1Email = null;
+            if (useEmail) {
+                line1Email = line1.find('.zhyweb_comment_contest_email').text();
+            }
+            
+            var line1IP = null;
+            if (useIP) {
+                line1IP = line1.find('.zhyweb_comment_contest_ip').text();
+            }
+
+            if (line1Name || line1Email || line1IP) { // With this condition, we are sure we are not on header/footer line of the table
+                var line2nb = 0;
+                // Browse all table lines
+                jQuery('#contestForm tr').each(function() {
+                    // Compare two different lines and do not compare previously compared lines
+                    if (line2nb > line1nb) {
+                        var line2 = jQuery(this);
+
+                        var line2Name = null;
+                        if (useName) {
+                            line2Name = line2.find('.zhyweb_comment_contest_alias').text();
+                        }
+
+                        var line2Email = null;
+                        if (useEmail) {
+                            line2Email = line2.find('.zhyweb_comment_contest_email').text();
+                        }
+
+                        var line2IP = null;
+                        if (useIP) {
+                            line2IP = line2.find('.zhyweb_comment_contest_ip').text();
+                        }
+
+                        if (line1Name === line2Name && line1Email === line2Email && line1IP === line2IP) {
+                            // Both lines are the same
+                            if (testFunction.call(null, line1, line2)) {
+                                if (selectDuplicates) {
+                                    line1.find('input[id^="cb-select"]').each(function() {
+                                        var input = jQuery(this).val();
+                                        if (jQuery.inArray(input, duplicates) === -1) {
+                                            duplicates.push(input);
+                                        }
+                                    });
+                                }
+                                
+                                line2.find('input[id^="cb-select"]').each(function() {
+                                    var input = jQuery(this).val();
+                                    if (jQuery.inArray(input, duplicates) === -1) {
+                                        duplicates.push(input);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                    line2nb++;
+                });
+            }
+            line1nb++;
+        });
+        
+        // Sort numbers in case of they are not
+        duplicates.sort(function(a, b) {
+            return a - b;
+        });
     
-    jQuery('#ipAddressFilter').click(function() {
-        selectDuplicates("zhyweb_comment_contest_ip");
+        for (var i = 0; i < duplicates.length; i++) {
+            var inputID = duplicates[i];
+            if (i >= nbAuthEntries) {
+                jQuery('#contestForm #cb-select-' + inputID).attr("checked", true);
+            }
+        }
+    }
+    
+    // ------------------------ Filter action ----------------------------------
+    
+    function addFilterAction(actionID) {
+        var useName = ('alias' === actionID);
+        var useEmail = ('email' === actionID);
+        var useIP = ('ip' === actionID);
+        
+        jQuery('#' + actionID + 'AddressFilter').click(function() {
+            // Clean
+            jQuery('#zwpcc_' + actionID + 'Filter_error_message').hide();
+            removeCSSErrorElementID(actionID + 'Config');
+
+            // Check input format and launch the process if it's ok
+            var inputValue = jQuery('#' + actionID + 'Config').val();
+            if (jQuery.isNumeric(inputValue) && inputValue >= 0) {
+                checkInputsOfWrongComments(function(line1, line2) {
+                    var data1 = line1.find('.zhyweb_comment_contest_' + actionID).text();
+                    var data2 = line2.find('.zhyweb_comment_contest_' + actionID).text();
+                    return data1 === data2;
+                }, useName, useEmail, useIP, true, inputValue);
+            } else {
+                jQuery('#zwpcc_' + actionID + 'Filter_error_message').show();
+                addCSSErrorElementID(actionID + 'Config');
+            }
+        });
+    }
+    
+    addFilterAction("ip");
+    addFilterAction("email");
+    addFilterAction("alias");
+    
+    // ------------------------ end Filter action ------------------------------
+    
+    // ------------------------ Time Between Two Comments action ---------------
+    
+    jQuery('#timeBetweenFilter').click(function() {
+        // Clean
+        jQuery('#zwpcc_timeBetweenFilter_error_message').hide();
+        removeCSSErrorElementID('timeBetween');
+
+        // Check input format and launch the process if it's ok
+        var inputValue = jQuery('#timeBetween').val();
+        if (jQuery.isNumeric(inputValue) && inputValue > 0) {
+            var useName = jQuery('#timeBetweenFilterName').is(':checked');
+            var useEmail = jQuery('#timeBetweenFilterEmail').is(':checked');
+            var useIP = jQuery('#timeBetweenFilterIP').is(':checked');
+            
+            if (useName || useEmail || useIP) {
+                var diffTime = inputValue * 60; // Difference time in seconds
+                checkInputsOfWrongComments(function(line1, line2) {
+                    var time1 = line1.find('.zhyweb_comment_contest_timestamp').text();
+                    var time2 = line2.find('.zhyweb_comment_contest_timestamp').text();
+                    var testTime = Math.abs(time1 - time2) - diffTime;
+                    return testTime <= 0;
+                }, useName, useEmail, useIP, false, 0);
+            } else {
+                jQuery('#zwpcc_timeBetweenFilter_error_message').show();
+            }
+        } else {
+            jQuery('#zwpcc_timeBetweenFilter_error_message').show();
+            addCSSErrorElementID('timeBetween');
+        }
     });
     
-    // ------------------------ end IP address filter --------------------------
-    
-    // ------------------------ Email filter -----------------------------------
-    
-    jQuery('#emailAddressFilter').click(function() {
-        selectDuplicates("zhyweb_comment_contest_email");
-    });
-    
-    // ------------------------ end Email filter -------------------------------
+    // ------------------------ end Time Between Two Comments action -----------
     
     // ------------------------ Date filter ------------------------------------
     
@@ -190,9 +281,9 @@ jQuery(document).ready(function() {
     jQuery('#dateSubmit').click(function() {
         // Clear error messages
         jQuery('#zwpcc_dateFilter_error_message').hide();
-        jQuery('#datepicker').css("border", "1px solid rgb(223,223,223)");
-        jQuery('#dateHours').css("border", "1px solid rgb(223,223,223)");
-        jQuery('#dateMinutes').css("border", "1px solid rgb(223,223,223)");
+        removeCSSErrorElementID("datepicker");
+        removeCSSErrorElementID("dateHours");
+        removeCSSErrorElementID("dateMinutes");
         
         // Check date format
         var dateFormatOk = false;
@@ -215,15 +306,15 @@ jQuery(document).ready(function() {
             // Check hours format
             var dateHours = jQuery('#dateHours').val();
             var dateMinutes = jQuery('#dateMinutes').val();
-            if (dateHours != "" && dateHours >= 0 && dateHours < 24 && dateMinutes != "" && dateMinutes >= 0 && dateMinutes < 60) {
+            if (dateHours !== "" && dateHours >= 0 && dateHours < 24 && dateMinutes !== "" && dateMinutes >= 0 && dateMinutes < 60) {
                 // Date OK => Launch selection
                 jQuery('#contestForm tr').each(function() {
                     // Browse all table lines
                     var line = jQuery(this);
 
-                    // Search for span tag with class "zhyweb_comment_contest_timestamp"
-                    var timestampComment = line.find('.zhyweb_comment_contest_timestamp').text();
-                    if (timestampComment != "") {
+                    // Search for span tag with class "zhyweb_comment_contest_date"
+                    var timestampComment = line.find('.zhyweb_comment_contest_date').text();
+                    if (timestampComment !== "") {
                         var wantedTimestamp = year + month + day + dateHours + dateMinutes;
                         if (timestampComment > wantedTimestamp) {
                             // If comment time > deadline => Check the box in lines
@@ -235,16 +326,63 @@ jQuery(document).ready(function() {
                 });
             } else {
                 jQuery('#zwpcc_dateFilter_error_message').show();
-                jQuery('#dateHours').css("border", "2px solid red");
-                jQuery('#dateMinutes').css("border", "2px solid red");
+                addCSSErrorElementID("dateHours");
+                addCSSErrorElementID("dateMinutes");
             }
         } else {
             jQuery('#zwpcc_dateFilter_error_message').show();
-            jQuery('#datepicker').css("border", "2px solid red");
+            addCSSErrorElementID("datepicker");
         }
     });
     
     // ------------------------ END Date filter --------------------------------
+    
+    // ------------------------ Words filter -----------------------------------
+    
+    function selectLinesWithoutWords(all) {
+        var wordsStr = jQuery('#words').val();
+        var wordsArray = wordsStr.split(',');
+        
+        if (wordsArray.length > 0) { // Optimization test
+            for (var i = 0; i < wordsArray.length; i++) {
+                wordsArray[i] = wordsArray[i].trim().toLowerCase();
+            }
+            jQuery('#contestForm tr').each(function() {
+                var comment = jQuery(this).find('.comment p').html();
+                var found = all;
+                for (var i = 0; i < wordsArray.length && comment != null; i++) {
+                    var wordToFind = wordsArray[i];
+                    var wordIndex = comment.toLowerCase().indexOf(wordToFind);
+                    if (all) {
+                        if (wordIndex === -1) {
+                            // At least one word not found => check the input box
+                            found = false;
+                            break;
+                        }
+                    } else {
+                        if (wordIndex >= 0) {
+                            // At least one word found => do not check the input box
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (!found) {
+                    jQuery(this).find('input[id^="cb-select"]').attr("checked", true);
+                }
+            });
+        }
+    }
+    
+    jQuery('#wordsFilter').click(function() {
+        selectLinesWithoutWords(false);
+    });
+    
+    jQuery('#allWordsFilter').click(function() {
+        selectLinesWithoutWords(true);
+    });
+
+    // ------------------------ end Words filter -------------------------------
     
     // ------------------------ Tooltips (Help) --------------------------------
 
@@ -268,11 +406,10 @@ jQuery(document).ready(function() {
     // ------------------------ DELETE COMMENTS FROM CONTEST -------------------
     /**
      * Remove all checked comments
-     * @since 2.0
      */
     function deleteSelectedComments() {
         jQuery('#contestForm input[id^="cb-select"]:checked').each(function(index, domElem) {
-            if (domElem.id.indexOf("-all-") == -1) {
+            if (domElem.id.indexOf("-all-") === -1) {
                 commentContestDelete(jQuery(this).val());
             } else {
                 jQuery(this).attr("checked", false);
@@ -281,13 +418,13 @@ jQuery(document).ready(function() {
     }
     
     jQuery("#contestForm #doaction").click(function() {
-        if (jQuery('#contestForm select[name="action"]').val() == 'delete') {
+        if (jQuery('#contestForm select[name="action"]').val() === 'delete') {
             deleteSelectedComments();
         }
     });
     
     jQuery("#contestForm #doaction2").click(function() {
-        if (jQuery('#contestForm select[name="action2"]').val() == 'delete') {
+        if (jQuery('#contestForm select[name="action2"]').val() === 'delete') {
             deleteSelectedComments();
         }
     });
@@ -297,11 +434,10 @@ jQuery(document).ready(function() {
     // ------------------------ RESTORE COMMENTS FOR CONTEST -------------------
     /**
      * Restore all checked comments
-     * @since 2.0
      */
     function restoreSelectedComments() {
         jQuery('#contestForm input[id^="cb-select"]:checked').each(function(index, domElem) {
-            if (domElem.id.indexOf("-all-") == -1) {
+            if (domElem.id.indexOf("-all-") === -1) {
                 commentContestRestore(jQuery(this).val());
             } else {
                 jQuery(this).attr("checked", false);
@@ -310,13 +446,13 @@ jQuery(document).ready(function() {
     }
     
     jQuery("#contestForm #doaction").click(function() {
-        if (jQuery('#contestForm select[name="action"]').val() == 'restore') {
+        if (jQuery('#contestForm select[name="action"]').val() === 'restore') {
             restoreSelectedComments();
         }
     });
     
     jQuery("#contestForm #doaction2").click(function() {
-        if (jQuery('#contestForm select[name="action2"]').val() == 'restore') {
+        if (jQuery('#contestForm select[name="action2"]').val() === 'restore') {
             restoreSelectedComments();
         }
     });
@@ -345,7 +481,7 @@ jQuery(document).ready(function() {
                     var commentID = line.find('.zhyweb_comment_contest_id').html();
 
                     // Don't get table header and footer
-                    if (commentID != null && commentID != "") {                        
+                    if (commentID != null && commentID !== "") {                        
                         if (line.hasClass("cheatComment")) {
                             commentsCheat.push(commentID);
                         } else {
@@ -386,7 +522,7 @@ jQuery(document).ready(function() {
         // Clean all inputs
         jQuery("#zwpcc_nbWinners_error_message").hide();
         jQuery(this).find('input').each(function() {
-            jQuery(this).css('border', '1px solid rgb(223,223,223)');
+            removeCSSErrorElement(jQuery(this));
         });
         
         // Check all values
@@ -394,7 +530,7 @@ jQuery(document).ready(function() {
         var nbWinners = jQuery("#zwpcc_nb_winners").val();
         if (!jQuery.isNumeric(nbWinners) || nbWinners <= 0) {
             launch = false;
-            jQuery("#zwpcc_nb_winners").css('border', '2px solid red');
+            addCSSErrorElementID("zwpcc_nb_winners");
             jQuery("#zwpcc_nbWinners_error_message").show();
         }
         
@@ -406,5 +542,21 @@ jQuery(document).ready(function() {
         return false;
     });
     // ------------------------ end RESULT TABLE -------------------------------
+    
+    // ------------------------ CSS Functions ----------------------------------
+    
+    function addCSSErrorElementID(elementID) {
+        jQuery("#" + elementID).css('border', '2px solid red');
+    }
+    
+    function removeCSSErrorElement(element) {
+        element.css('border', '1px solid rgb(223,223,223)');
+    }
+    
+    function removeCSSErrorElementID(elementID) {
+        removeCSSErrorElement(jQuery("#" + elementID));
+    }
+    
+    // ------------------------ end CSS Functions ------------------------------
     
 });

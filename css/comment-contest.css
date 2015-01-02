@@ -1,4 +1,4 @@
-/*  Copyright 2009 - 2014 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : tcicognani@zhyweb.org)
+/*  Copyright 2009 - 2015 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : tcicognani@zhyweb.org)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -43,12 +43,12 @@
     margin-left: 10px;
 }
 
-#mainHelp {
-    margin-top: 15px;
-}
-
 .subsubsub {
     clear: both;
+}
+
+.help {
+    vertical-align: sub;
 }
 
 #filters {

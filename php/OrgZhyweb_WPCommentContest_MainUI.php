@@ -1,5 +1,5 @@
 <?php
-/*  Copyright 2009 - 2014 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : tcicognani@zhyweb.org)
+/*  Copyright 2009 - 2015 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : tcicognani@zhyweb.org)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,11 +24,15 @@ require_once 'OrgZhyweb_WPCommentContest_TableResults.php';
  * @author Thomas "Zhykos" Cicognani
  */
 class OrgZhyweb_WPCommentContest_MainUI {
-    /** Plug-in directory */
+    /** Plug-in URL directory */
     private $pluginDir;
     
-    public function __construct($pluginDir) {
+    /** Plug-in directory (on the server) */
+    private $pluginSystemPath;
+    
+    public function __construct($pluginDir, $pluginSystemPath) {
         $this->pluginDir = $pluginDir;
+        $this->pluginSystemPath = $pluginSystemPath;
     }
     
     /**
@@ -37,8 +41,7 @@ class OrgZhyweb_WPCommentContest_MainUI {
      * URL must have 'post' parameter as integer.
      */
     public function display() {
-        $getPostID = $_GET['postID'];
-        if (isset($getPostID)) {
+        if (isset($_GET['postID'])) {
             $postID = intval($_GET['postID']);
             if (current_user_can(10)) {
                 if ($postID > 0) {
@@ -104,37 +107,18 @@ class OrgZhyweb_WPCommentContest_MainUI {
             // Comments found
             $this->displayHeaderPage($postID);
             
-            echo "<br /><br /><hr /><h3 style=\"float: left;\">" . __('Comments used for the contest:', "comment-contest") . "</h3>";
+            echo "<br /><br /><hr /><h3 style=\"float: left;\">" . __('Comments used for the contest:', "comment-contest");
             
             // Help image
-            echo "<img src=\"$this->pluginDir/img/help.png\" alt=\"Help\" class=\"help\" id=\"mainHelp\" title=\"". __("The table below shows all available comments. You have to choose which ones you want for the contest.<br />"
+            echo " <img src=\"$this->pluginDir/img/help.png\" alt=\"Help\" class=\"help\" title=\"". __("The table below shows all available comments. You have to choose which ones you want for the contest.<br />"
                 . " - You can select users who have the same Wordpress role (see User page).<br />"
                 . " - You can remove comments from contest (don't be used to determine winners). Removed comments still are visible with red background color.<br />"
                 . " - You can also cheat by adding comments into a cheating list. All cheating comments will always win! (only if the cheating list length is less than the winners number). Cheating comments still are visible with green background color.<br />"
                 . " - The other comments (white/grey background) are only used if there isn't enough cheating comments.", "comment-contest") . "\" />";
                 
+            echo "</h3>";
             // Filters
-            echo "<div style='clear:both;'>
-                    <span>
-                        <a href='javascript:;' onclick='toggleFilters(\"$this->pluginDir\")'><img src='$this->pluginDir/img/plus.png' alt='expand/collapse' id='filtersImg' style='vertical-align: middle;' /></a>
-                        <a href='javascript:;' onclick='toggleFilters(\"$this->pluginDir\")'>" . __('Filters', "comment-contest") . "</a>
-                    </span>
-                    <div id='filters' style='display: none;'>
-                        <h4>" . __('Contest deadline', "comment-contest") . "</h4>
-                        <div id='zwpcc_dateFilter_error_message' style='color: red; display: none;'>" . __('Wrong date format!', "comment-contest") . "</div>
-                        " . __('Date:', "comment-contest") . " <input type='text' id='datepicker' /><br />
-                        " . __('Hour (24h format):', "comment-contest") . " <input type='text' id='dateHours' maxlength='2' size='3' />" . __('h', "comment-contest") . " <input type='text' id='dateMinutes' maxlength='2' size='3' />" . __('min', "comment-contest") . "<br />
-                        <br /><input type='button' class='button action' id='dateSubmit' value='" . __('Select comments after this deadline', "comment-contest") . "' />
-                       
-                        <br /><br />
-                        <h4>" . __('IP address', "comment-contest") . "</h4>
-                        <input type='button' class='button action' id='ipAddressFilter' value='" . __('Select all comments with the same IP address', "comment-contest") . "' />
-                            
-                        <br /><br />
-                        <h4>" . __('Email address', "comment-contest") . "</h4>
-                        <input type='button' class='button action' id='emailAddressFilter' value='" . __('Select all comments with the same email', "comment-contest") . "' />
-                    </div>
-                </div>"; 
+            $this->displayTemplate("filters");
             
             // Table
             echo "<div id='contestForm'>";
@@ -159,12 +143,15 @@ class OrgZhyweb_WPCommentContest_MainUI {
      */
     private function displayInfoPage($debug = NULL) {
         $this->displayHeaderPage(NULL);
+        $editPage = admin_url('edit.php');
         
-        echo    "<h3>" . sprintf(__("To use the plug-in, go to <a href=\"%s\">articles page</a> then you'll find a link to launch contests", "comment-contest"), admin_url('edit.php')) . "</h3>
-                    <br />
-                    " . __("Support:", "comment-contest") . " tcicognani@zhyweb.org<br />
-                    " . __("Official page:", "comment-contest") . " <a href=\"http://wordpress.org/plugins/comment-contest/\">http://wordpress.org/plugins/comment-contest/</a><br />
-                    " . __("Official page:", "comment-contest") . " <a href=\"http://wp-comment-contest.zhyweb.org/\">http://wp-comment-contest.zhyweb.org/</a>";
+        echo    "<h3>" . sprintf(__("To use the plug-in, go to the <a href=\"%s\">articles page</a> or <a href=\"%s\">pages page</a> then you'll find a link to launch contests", "comment-contest"), $editPage, "$editPage?post_type=page") . "</h3>
+                <br />"
+                . __("A question, a bug, an idea, a contribution? Ask me anything on the support page:", "comment-contest") . " <a href=\"https://wordpress.org/support/plugin/comment-contest\">https://wordpress.org/support/plugin/comment-contest</a><br />"
+                . __("In case of a bug, for a quicker answer, please give my all the information about your website or generate a report file with the following link (no personal data is exported):", "comment-contest") . " <a href=\"$this->pluginDir/php/OrgZhyweb_WPCommentContest_GenerateDebugReport.php\">Report generator</a><br /><br />"
+                . __("My email:") . " tcicognani@zhyweb.org<br /><br />"
+                . __("Official page:", "comment-contest") . " <a href=\"http://wordpress.org/plugins/comment-contest/\">http://wordpress.org/plugins/comment-contest/</a><br />"
+                . __("My French blog:", "comment-contest") . " <a href=\"http://wp-comment-contest.zhyweb.org/\">http://wp-comment-contest.zhyweb.org/</a>";
         
         if ($debug != NULL) {
             echo "<br /><br /><br />
@@ -173,5 +160,13 @@ class OrgZhyweb_WPCommentContest_MainUI {
             
         $this->displayFooterPage();
     }
+    
+    /**
+     * Include and display a page (PHP speaking)
+     * @param string $name Page name
+     */
+    private function displayTemplate($name) {
+        $file = $this->pluginSystemPath . '/views/' . $name . '.php';
+        require($file);
+    }
 }
-?>

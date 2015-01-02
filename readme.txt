@@ -1,19 +1,19 @@
 === Plugin Name ===
 Contributors: zhykos
 Donate link: http://wp-comment-contest.zhyweb.org/
-Tags: comments, contest, concours, commentaire, zhykos, zhyweb
+Tags: comments, contest, draw, concours, commentaire, zhykos, zhyweb
 Requires at least: 3.3
-Tested up to: 4.0
+Tested up to: 4.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-If you create a contest on your website, you can draw all comments in a specific post.
+Comment Contest allows you to manage contests on your website. This plug-in draws all comments in a specific post and show you the winners.
 
 == Description ==
 
-If you want to organize a contest on your blog (some goodies, games ... to win), use this plugin. Comment Contest works only with comments.
-You choose some comments, set some features (winners' number ...) and the system chooses the winners.
+If you want to organize a contest on your blog (some goodies, games... to win), use this plugin. Comment Contest works only with comments.
+You choose some comments, set some features (winners' number ...) and the system chooses the winners for you.
 
 == Installation ==
 
@@ -50,6 +50,13 @@ You need PHP version 5 like Wordpress.
 9. Result table
 
 == Changelog ==
+
+= 2.3.0 =
+* New: Contest can be launch from pages (before only posts could)
+* New: Add new filters
+* Update: Change the main plug-in page with my contact info and a system to send me info when a bug occurs
+* Misc: Check compatibility with Wordpress 4.1
+* Update: A lot of internal improvements
 
 = 2.2.3 =
 * Misc: Check compatibility with Wordpress 4.0

@@ -2,14 +2,14 @@
 /*
   Plugin Name: Comment Contest
   Plugin URI: http://wp-comment-contest.zhyweb.org/
-  Description: If you create a contest on your website, you can draw all comments in a specific post
+  Description: Comment Contest allows you to manage contests on your website. This plug-in draws all comments in a specific post and show you the winners.
   Author: Thomas "Zhykos" Cicognani
-  Version: 2.2.3
+  Version: 2.3.0
   Author URI: http://www.zhyweb.org/
  */
 
 /*
-  Copyright 2009 - 2014 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : tcicognani@zhyweb.org)
+  Copyright 2009 - 2015 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : tcicognani@zhyweb.org)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -26,30 +26,38 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-define(ORG_ZHYWEB_WP_COMMENT_CONTEST_PAGE_ID, "orgZhyweb-wpCommentContest");
+define("ORG_ZHYWEB_WP_COMMENT_CONTEST_PAGE_ID", "orgZhyweb-wpCommentContest");
 
 require_once 'php/OrgZhyweb_WPCommentContest_MainUI.php';
 
 new CommentContest();
 
 class CommentContest {
-    private $localizationName = "comment-contest";
+    private $pluginName = "comment-contest";
     
     private $pluginDir = '';
+    private $pluginSystemPath = '';
     
     public function __construct() {
-        $pluginPath = "/plugins/$this->localizationName";
+        $pluginPath = "/plugins/$this->pluginName";
         
          // Initialization
         $this->pluginDir = WP_CONTENT_URL . $pluginPath;
+        $this->pluginSystemPath = plugin_dir_path( __FILE__ );
         
-        load_plugin_textdomain($this->localizationName, false, dirname(plugin_basename(__FILE__)).'/lang/');
+        load_plugin_textdomain($this->pluginName, false, dirname(plugin_basename(__FILE__)).'/lang/');
         
         add_action('init', array($this, 'init'));
         
         // Add plug-in system in Wordpress
+        // Add a new column in posts admin page
         add_filter('manage_post_posts_columns', array($this, 'orgZhyweb_wpCommentContest_column_header'), 10);
         add_action('manage_post_posts_custom_column', array($this, 'orgZhyweb_wpCommentContest_column_content'), 10, 2);
+        
+        // Add a new column in pages admin page
+        add_filter('manage_pages_columns', array($this, 'orgZhyweb_wpCommentContest_column_header'), 10);
+        add_action('manage_pages_custom_column', array($this, 'orgZhyweb_wpCommentContest_column_content'), 10, 2);
+        
         
         // Add menu
         add_action('admin_menu', array($this, 'orgZhyweb_wpCommentContest_addPluginMenu'), 10, 2);
@@ -89,7 +97,7 @@ class CommentContest {
      * Wordpress Action : admin_menu.
      */
     public function orgZhyweb_wpCommentContest_addPluginMenu() {
-        add_comments_page(__("Comment Contest", "comment-contest"), __("Comment Contest", "comment-contest"), 10, ORG_ZHYWEB_WP_COMMENT_CONTEST_PAGE_ID, array(new OrgZhyweb_WPCommentContest_MainUI($this->pluginDir), 'display'));
+        add_comments_page(__("Comment Contest", "comment-contest"), __("Comment Contest", "comment-contest"), 10, ORG_ZHYWEB_WP_COMMENT_CONTEST_PAGE_ID, array(new OrgZhyweb_WPCommentContest_MainUI($this->pluginDir, $this->pluginSystemPath), 'display'));
     }
 
     /**
@@ -125,4 +133,3 @@ class CommentContest {
         }
     }
 }
-?>

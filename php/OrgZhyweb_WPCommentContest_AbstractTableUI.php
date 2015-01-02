@@ -1,5 +1,5 @@
 <?php
-/*  Copyright 2009 - 2014 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : tcicognani@zhyweb.org)
+/*  Copyright 2009 - 2015 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : tcicognani@zhyweb.org)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -181,6 +181,7 @@ abstract class OrgZhyweb_WPCommentContest_AbstractTableUI extends WP_List_Table 
         echo "<strong>";
         comment_author($comment->comment_ID);
         echo '</strong><br />';
+        
         if (!empty($author_url)) {
             echo "<a title='$author_url' href='$author_url'>$author_url_display</a><br />";
         }
@@ -208,14 +209,20 @@ abstract class OrgZhyweb_WPCommentContest_AbstractTableUI extends WP_List_Table 
         // Add comment ID (used to get winners)
         echo '<span style="display:none" class="zhyweb_comment_contest_id">' . $comment->comment_ID . '</span>';
         
+        // Add comment date post
+        echo '<span style="display:none" class="zhyweb_comment_contest_date">' . get_comment_date('YmdHi', $comment->comment_ID) . '</span>';
+        
         // Add comment timestamp post
-        echo '<span style="display:none" class="zhyweb_comment_contest_timestamp">' . get_comment_date('YmdHi', $comment->comment_ID) . '</span>';
+        echo '<span style="display:none" class="zhyweb_comment_contest_timestamp">' . get_comment_date('U', $comment->comment_ID) . '</span>';
         
         // Add comment IP address
         echo '<span style="display:none" class="zhyweb_comment_contest_ip">' . get_comment_author_IP($comment->comment_ID) . '</span>';
         
         // Add comment email
         echo '<span style="display:none" class="zhyweb_comment_contest_email">' . $comment->comment_author_email . '</span>';
+        
+        // Add comment alias
+        echo '<span style="display:none" class="zhyweb_comment_contest_alias">' . get_comment_author($comment->comment_ID) . '</span>';
     }
     
     /**
@@ -265,4 +272,3 @@ abstract class OrgZhyweb_WPCommentContest_AbstractTableUI extends WP_List_Table 
         echo '</div>';
     }    
 }
-?>
