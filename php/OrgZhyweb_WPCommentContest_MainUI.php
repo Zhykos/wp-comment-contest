@@ -74,14 +74,15 @@ class OrgZhyweb_WPCommentContest_MainUI {
                . __('Number of winners:', "comment-contest") . " <input type=\"text\" id=\"zwpcc_nb_winners\" value=\"1\"/>"
                . "<img src=\"$this->pluginDir/img/help.png\" alt=\"Help\" class=\"help\" title=\"". __('Number of comments used to determine winners', "comment-contest") . "\" /><br /><br />"
                . "<input type=\"submit\" class=\"button action\" value=\"" . __('Launch contest', "comment-contest") . "\" />";
-
             echo "</form>";
 
             // Result table : opened in a modal window
             echo "<div id=\"dialog-modal-winners\" title=\"" . __("Winners", "comment-contest") . "\" style=\"display:none; margin: 10px\">";
+            echo "<input type=\"button\" value=\"Save winners\" />";
             $list = new OrgZhyweb_WPCommentContest_TableResults($postID);
             $list->prepare_items();
             $list->display();
+            echo "<input type=\"button\" value=\"Save winners\" />";
             echo "</div>";
         }
     }
