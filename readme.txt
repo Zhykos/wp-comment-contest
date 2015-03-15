@@ -47,7 +47,7 @@ You need PHP version 5 like Wordpress.
 6. Cheat: this comment will win! (cheating comments are green)
 7. Filters
 8. Help
-9. Result table
+9. Result table and notification after saving winners
 
 == Changelog ==
 
