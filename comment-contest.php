@@ -4,7 +4,7 @@
   Plugin URI: http://wp-comment-contest.zhyweb.org/
   Description: Comment Contest allows you to manage contests on your website. This plug-in draws all comments in a specific post and show you the winners.
   Author: Thomas "Zhykos" Cicognani
-  Version: 2.3.0
+  Version: 2.4.0
   Author URI: http://www.zhyweb.org/
  */
 

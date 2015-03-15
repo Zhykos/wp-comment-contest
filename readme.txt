@@ -3,7 +3,7 @@ Contributors: zhykos
 Donate link: http://wp-comment-contest.zhyweb.org/
 Tags: comments, contest, draw, concours, commentaire, zhykos, zhyweb
 Requires at least: 3.3
-Tested up to: 4.1
+Tested up to: 4.2
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -50,6 +50,11 @@ You need PHP version 5 like Wordpress.
 9. Result table
 
 == Changelog ==
+
+= 2.4.0 =
+* New: Winners can be saved in post custom fields
+* Misc: Check compatibility with Wordpress 4.2
+* Misc: You can now find this plug-in on Git! Go check out (https://github.com/Zhykos/wp-comment-contest) and be free to contribute!
 
 = 2.3.0 =
 * New: Contest can be launch from pages (before only posts could)
