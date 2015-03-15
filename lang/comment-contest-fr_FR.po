@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Comment Contest v2.3.0\n"
+"Project-Id-Version: Comment Contest v2.4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-01-02 19:30+0100\n"
-"PO-Revision-Date: 2015-01-02 19:45+0100\n"
+"POT-Creation-Date: 2015-03-15 19:10+0100\n"
+"PO-Revision-Date: 2015-03-15 19:10+0100\n"
 "Last-Translator: Thomas \"Zhykos\" Cicognani <tcicognani@zhyweb.org>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -11,362 +11,415 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n>1;\n"
-"X-Generator: Poedit 1.7.1\n"
+"X-Generator: Poedit 1.7.5\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;"
-"_nx_noop:4c,1,2\n"
-"X-Poedit-Basepath: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
+"_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
+"X-Poedit-Basepath: C:\\Users\\Zhykos\\PhpstormProjects\\wp-comment-contest\n"
 "X-Textdomain-Support: yes\n"
-"X-Poedit-SearchPath-0: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest\n"
+"X-Poedit-SearchPath-0: C:\\Users\\Zhykos\\PhpstormProjects\\wp-comment-"
+"contest\n"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/comment-contest.php:100
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:67
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/comment-contest.php:100
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:67
 msgid "Comment Contest"
 msgstr "Comment Contest"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/comment-contest.php:111
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/comment-contest.php:111
 msgid "Contest"
 msgstr "Concours"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/comment-contest.php:129
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:76
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/comment-contest.php:129
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:80
 msgid "Launch contest"
 msgstr "Lancer le concours"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/comment-contest.php:131
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/comment-contest.php:131
 msgid "No comment"
 msgstr "Aucun commentaire"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:65
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_TableResults.php:33
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:65
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_TableResults.php:33
 msgid "Author"
 msgstr "Auteur"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:66
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_TableResults.php:34
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:54
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:66
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_TableResults.php:34
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:54
 msgid "Comment"
 msgstr "Commentaire"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:102
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:102
 #, php-format
 msgid "Select: %s"
 msgstr "Sélectionner : %s"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:135
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:135
 msgid "Select comment"
 msgstr "Sélectionner le commentaire"
 
 # @ comment-contest
-#. translators: 2: comment date, 3: comment time
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:237
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:237
 #, php-format
 msgid "Submitted on <a href=\"%1$s\">%2$s at %3$s</a>"
 msgstr "Soumis le <a href=\"%1$s\">%2$s à %3$s</a>"
 
 # @ comment-contest
-#. translators: comment date format. See http://php.net/date
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:238
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:238
 msgid "Y/m/d"
 msgstr "d / m / Y"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:245
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:245
 #, php-format
 msgid "In reply to <a href=\"%1$s\">%2$s</a>."
 msgstr "En réponse à <a href=\"%1$s\">%2$s</a>."
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:50
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:50
 msgid "URL must have 'post' parameter as integer"
 msgstr "Le paramètre 'post' dans l'URL doit être un nombre entier"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:53
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:53
 msgid "You have to be administrator to access this page"
-msgstr "Vous devez disposer de droits d'administrateur pour accéder à cette page"
+msgstr ""
+"Vous devez disposer de droits d'administrateur pour accéder à cette page"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:70
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:70
 #, php-format
 msgid "Contest on post \"%s\""
 msgstr "Concours pour l'article \"%s\""
 
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:73
+msgid "Winners saved"
+msgstr "Gagnants sauvegardés"
+
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:74
+msgid "Winners not saved!"
+msgstr "Les gagnants n'ont pas été sauvegardés !"
+
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:73
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:77
 msgid "Number of winners error"
 msgstr "Erreur pour le nombre de gagnants"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:74
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:78
 msgid "Number of winners:"
 msgstr "Nombre de gagnants :"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:75
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:79
 msgid "Number of comments used to determine winners"
 msgstr "Nombre de commentaires utilisés pour déterminer les gagnants"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:81
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:84
 msgid "Winners"
 msgstr "Gagnants"
 
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:85
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:89
+msgid "Save winners"
+msgstr "Sauvegarder les gagnants"
+
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:110
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:115
 msgid "Comments used for the contest:"
 msgstr "Commentaires utilisés pour le concours :"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:113
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:118
 msgid ""
-"The table below shows all available comments. You have to choose which ones you want for the contest.<br /> - You can select users who "
-"have the same Wordpress role (see User page).<br /> - You can remove comments from contest (don't be used to determine winners). "
-"Removed comments still are visible with red background color.<br /> - You can also cheat by adding comments into a cheating list. All "
-"cheating comments will always win! (only if the cheating list length is less than the winners number). Cheating comments still are "
-"visible with green background color.<br /> - The other comments (white/grey background) are only used if there isn't enough cheating "
+"The table below shows all available comments. You have to choose which ones "
+"you want for the contest.<br /> - You can select users who have the same "
+"Wordpress role (see User page).<br /> - You can remove comments from contest "
+"(don't be used to determine winners). Removed comments still are visible "
+"with red background color.<br /> - You can also cheat by adding comments "
+"into a cheating list. All cheating comments will always win! (only if the "
+"cheating list length is less than the winners number). Cheating comments "
+"still are visible with green background color.<br /> - The other comments "
+"(white/grey background) are only used if there isn't enough cheating "
 "comments."
 msgstr ""
-"Le tableau ci-dessous affiche tous les commentaires disponibles. Vous devez choisir ceux à utiliser pour le concours.<br /> - Vous "
-"pouvez choisir des utilisateurs ayant le même rôle Wordpress (voir la page des Utilisateurs).<br /> - Vous pouvez supprimer un "
-"commentaire du concours (ne sera donc pas utilisé pour déterminer les gagnants). Les commentaires supprimés seront toujours visibles "
-"mais affichés avec un fond rouge.<br /> - Vous pouvez aussi tricher en ajoutant des commentaires dans la liste de triche. Tous les "
-"commentaires de triche gagnent ! (seulement si la liste de triche est plus petite que le nombre de gagnants). Les commentaires de "
-"triche sont affichés avec un fond vert.<br /> - Les autres comentaires (fond blanc/gris) ne sont utilisés que s'il n'a pas assez de "
-"commentaire de triche."
+"Le tableau ci-dessous affiche tous les commentaires disponibles. Vous devez "
+"choisir ceux à utiliser pour le concours.<br /> - Vous pouvez choisir des "
+"utilisateurs ayant le même rôle Wordpress (voir la page des Utilisateurs)."
+"<br /> - Vous pouvez supprimer un commentaire du concours (ne sera donc pas "
+"utilisé pour déterminer les gagnants). Les commentaires supprimés seront "
+"toujours visibles mais affichés avec un fond rouge.<br /> - Vous pouvez "
+"aussi tricher en ajoutant des commentaires dans la liste de triche. Tous les "
+"commentaires de triche gagnent ! (seulement si la liste de triche est plus "
+"petite que le nombre de gagnants). Les commentaires de triche sont affichés "
+"avec un fond vert.<br /> - Les autres comentaires (fond blanc/gris) ne sont "
+"utilisés que s'il n'a pas assez de commentaire de triche."
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:135
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:140
 msgid "URL 'post' parameter has to be valid"
 msgstr "Le paramètre 'post' dans l'URL n'est pas valide"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:148
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:153
 #, php-format
 msgid ""
-"To use the plug-in, go to the <a href=\"%s\">articles page</a> or <a href=\"%s\">pages page</a> then you'll find a link to launch "
-"contests"
+"To use the plug-in, go to the <a href=\"%s\">articles page</a> or <a href="
+"\"%s\">pages page</a> then you'll find a link to launch contests"
 msgstr ""
-"Pour utiliser ce plug-in, allez à la <a href=\"%s\">page des articles</a> ou la <a href=\"%s\">page des pages</a> puis vous trouverez "
-"un lien afin de lancer les concours."
+"Pour utiliser ce plug-in, allez à la <a href=\"%s\">page des articles</a> ou "
+"la <a href=\"%s\">page des pages</a> puis vous trouverez un lien afin de "
+"lancer les concours."
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:150
-msgid "A question, a bug, an idea, a contribution? Ask me anything on the support page:"
-msgstr "Une question, un bug, une idée, une contribution ? Posez vos questions sur la page support :"
-
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:151
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:155
 msgid ""
-"In case of a bug, for a quicker answer, please give my all the information about your website or generate a report file with the "
-"following link (no personal data is exported):"
+"A question, a bug, an idea, a contribution? Ask me anything on the support "
+"page:"
 msgstr ""
-"En cas de bug, pour accélérer la réponse, veuillez fournir toutes les informations à propos de votre site ou générez un fichier de "
-"rapport grâce au lien suivant (aucune information personnelle n'est exportée) :"
+"Une question, un bug, une idée, une contribution ? Posez vos questions sur "
+"la page support :"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:152
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:156
+msgid ""
+"In case of a bug, for a quicker answer, please give my all the information "
+"about your website or generate a report file with the following link (no "
+"personal data is exported):"
+msgstr ""
+"En cas de bug, pour accélérer la réponse, veuillez fournir toutes les "
+"informations à propos de votre site ou générez un fichier de rapport grâce "
+"au lien suivant (aucune information personnelle n'est exportée) :"
+
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:157
 msgid "My email:"
 msgstr "Mon email :"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:153
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:158
 msgid "Official page:"
 msgstr "Page officielle :"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:154
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:159
 msgid "My French blog:"
 msgstr "Mon blog en Français :"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:158
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:163
 msgid "Debug:"
 msgstr "Debug :"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:41
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:50
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:41
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:50
 msgid "Delete"
 msgstr "Supprimer"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:42
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:51
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:42
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:51
 msgid "Restore"
 msgstr "Restaurer"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:43
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:43
 msgid "Cheat"
 msgstr "Tricher"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:44
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:44
 msgid "Stop cheating"
 msgstr "Ne plus tricher"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:25
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:25
 msgid "Filters"
 msgstr "Filtres"
 
 # @ comment-contest
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:28
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:28
 msgid "Contest deadline"
 msgstr "Date limite du concours"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:29
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:29
 msgid "Wrong date format!"
 msgstr "Mauvais format de date !"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:30
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:30
 msgid "Date:"
 msgstr "Date :"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:31
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:31
 msgid "Hour (24h format):"
 msgstr "Heure (format 24h) :"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:31
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:31
 msgid "h"
 msgstr "h"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:31
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:31
 msgid "min"
 msgstr "min"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:32
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:32
 msgid "Select comments after this deadline"
 msgstr "Sélectionner tous les commentaires postés après cette date"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:35
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:64
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:35
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:64
 msgid "Name"
 msgstr "Nom"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:35
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:35
 msgid ""
-"You can allow people with the same alias to post several comments for the contest. This filter limits the maximum number of comments "
-"for the same person.<br />(ex. 0 means a person is not allowed to post more than one time; 2 means only two comments from the same "
-"person will be kept for the contest)"
+"You can allow people with the same alias to post several comments for the "
+"contest. This filter limits the maximum number of comments for the same "
+"person.<br />(ex. 0 means a person is not allowed to post more than one "
+"time; 2 means only two comments from the same person will be kept for the "
+"contest)"
 msgstr ""
-"Vous pouvez autoriser des personnes, avec le même pseudo, de poster plusieurs commentaires pour le concours. Ce filtre limite le "
-"nombre maximum de commentaires pour la même personnes.<br />(ex. 0 signifie qu'une personne n'a pas le droit de poster plus d'une "
-"fois ; 2 signifie que seulement deux commentaires de la même personnes seront gardés pour le concours)"
+"Vous pouvez autoriser des personnes, avec le même pseudo, de poster "
+"plusieurs commentaires pour le concours. Ce filtre limite le nombre maximum "
+"de commentaires pour la même personnes.<br />(ex. 0 signifie qu'une personne "
+"n'a pas le droit de poster plus d'une fois ; 2 signifie que seulement deux "
+"commentaires de la même personnes seront gardés pour le concours)"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:36
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:42
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:49
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:36
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:42
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:49
 msgid "Wrong configuration! This number must be equals or greater than zero"
 msgstr "Mauvaise configuration ! Ce nombre doit être supérieur ou égal à zéro"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:37
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:37
 msgid "Same name maximum use:"
 msgstr "Maximum d'utilisation du même pseudo :"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:38
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:38
 msgid "Select comments with the same name"
 msgstr "Sélectionner les commentaires avec le même pseudo"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:41
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:41
 msgid "Email address"
 msgstr "Adresses email"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:41
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:41
 msgid ""
-"You can allow people with the same email to post several comments for the contest. This filter limits the maximum number of comments "
-"for the same email.<br />(ex. 0 means an email is not allowed to post more than one time; 2 means only two comments from the same "
-"email will be kept for the contest)"
+"You can allow people with the same email to post several comments for the "
+"contest. This filter limits the maximum number of comments for the same "
+"email.<br />(ex. 0 means an email is not allowed to post more than one time; "
+"2 means only two comments from the same email will be kept for the contest)"
 msgstr ""
-"Vous pouvez autoriser des personnes, avec le même email, de poster plusieurs commentaires pour le concours. Ce filtre limite le nombre "
-"maximum de commentaires pour la même personnes.<br />(ex. 0 signifie qu'un email n'a pas le droit de poster plus d'une fois ; 2 "
-"signifie que seulement deux commentaires du même email seront gardés pour le concours)"
+"Vous pouvez autoriser des personnes, avec le même email, de poster plusieurs "
+"commentaires pour le concours. Ce filtre limite le nombre maximum de "
+"commentaires pour la même personnes.<br />(ex. 0 signifie qu'un email n'a "
+"pas le droit de poster plus d'une fois ; 2 signifie que seulement deux "
+"commentaires du même email seront gardés pour le concours)"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:43
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:43
 msgid "Same email maximum use:"
 msgstr "Maximum d'utilisation du même email :"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:44
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:44
 msgid "Select comments with the same email"
 msgstr "Sélectionner les commentaires avec le même email"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:48
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:66
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:48
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:66
 msgid "IP address"
 msgstr "Adresse IP"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:48
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:48
 msgid ""
-"You can allow people with the same IP address to post several comments for the contest. This filter limits the maximum number of "
-"comments for the same IP address.<br />(ex. 0 means a IP address is not allowed to post more than one time; 2 means only two comments "
-"from the same IP address will be kept for the contest)"
+"You can allow people with the same IP address to post several comments for "
+"the contest. This filter limits the maximum number of comments for the same "
+"IP address.<br />(ex. 0 means a IP address is not allowed to post more than "
+"one time; 2 means only two comments from the same IP address will be kept "
+"for the contest)"
 msgstr ""
-"Vous pouvez autoriser des personnes, avec la même adresse IP, de poster plusieurs commentaires pour le concours. Ce filtre limite le "
-"nombre maximum de commentaires pour la même personnes.<br />(ex. 0 signifie qu'une adresse IP n'a pas le droit de poster plus d'une "
-"fois ; 2 signifie que seulement deux commentaires de la même adresse IP seront gardés pour le concours)"
+"Vous pouvez autoriser des personnes, avec la même adresse IP, de poster "
+"plusieurs commentaires pour le concours. Ce filtre limite le nombre maximum "
+"de commentaires pour la même personnes.<br />(ex. 0 signifie qu'une adresse "
+"IP n'a pas le droit de poster plus d'une fois ; 2 signifie que seulement "
+"deux commentaires de la même adresse IP seront gardés pour le concours)"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:50
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:50
 msgid "Same IP address maximum use:"
 msgstr "Maximum d'utilisation de la même adresse IP :"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:51
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:51
 msgid "Select comments with the same IP address"
 msgstr "Sélectionner les commentaires avec la même adresse IP"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:55
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:55
 msgid "Words (comma separated):"
 msgstr "Mots (séparés par une virgule) :"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:56
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:56
 msgid "Select comments which don't contain one of these words"
 msgstr "Sélectionner les commentaires qui ne contiennent pas l'un de ces mots"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:57
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:57
 msgid "Select comments which don't contain all these words"
 msgstr "Sélectionner les commentaires qui ne contiennent pas tous ces mots"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:60
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:60
 msgid "Time between two comments"
 msgstr "Temps entre deux commentaires"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:60
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:60
 msgid ""
-"You can allow people to post several comments in your contest. Between two comments the person must wait some times. This filter allow "
-"you to get all comments (from a person who has the same name/email/IP address) which don't respect your configuration"
+"You can allow people to post several comments in your contest. Between two "
+"comments the person must wait some times. This filter allow you to get all "
+"comments (from a person who has the same name/email/IP address) which don't "
+"respect your configuration"
 msgstr ""
-"Vous pouvez autoriser des personnes de poster plusieurs commentaires pour le concours. Entre deux commentaires, la personne doit "
-"attendre un certain temps. Ce filtre permet de sélectionner tous les commentaires (d'une personne ayant le même nom/email/adresse IP) "
-"qui ne respectent pas votre configuration"
+"Vous pouvez autoriser des personnes de poster plusieurs commentaires pour le "
+"concours. Entre deux commentaires, la personne doit attendre un certain "
+"temps. Ce filtre permet de sélectionner tous les commentaires (d'une "
+"personne ayant le même nom/email/adresse IP) qui ne respectent pas votre "
+"configuration"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:61
-msgid "Wrong configuration! This number must be greater than zero and at least one criterion must be checked!"
-msgstr "Mauvaise configuration ! Ce nombre doit être supérieur à zéro et au moins un critère doit être choisi !"
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:61
+msgid ""
+"Wrong configuration! This number must be greater than zero and at least one "
+"criterion must be checked!"
+msgstr ""
+"Mauvaise configuration ! Ce nombre doit être supérieur à zéro et au moins un "
+"critère doit être choisi !"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:62
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:62
 msgid "Time (in minutes [1 day = 1440 min]):"
 msgstr "Temps (en minutes [1 jour = 1440 min]) :"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:63
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:63
 msgid "Criteria:"
 msgstr "Critères :"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:65
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:65
 msgid "Email"
 msgstr "Email"
 
-#: /Users/Zhykos/Documents/www/Zhyweb/wordpress/wp-content/plugins/comment-contest/views/filters.php:67
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:67
 msgid "Select comments posted too soon"
 msgstr "Sélectionner les commentaires postés trop tôt"
 
 #~ msgid "Select all comments with the same IP address"
-#~ msgstr "Sélectionner tous les commentaires ayant été postés avec la même adresse IP"
+#~ msgstr ""
+#~ "Sélectionner tous les commentaires ayant été postés avec la même adresse "
+#~ "IP"
 
 #~ msgid "Select all comments with the same email"
-#~ msgstr "Sélectionner tous les commentaires ayant été postés avec le même email"
+#~ msgstr ""
+#~ "Sélectionner tous les commentaires ayant été postés avec le même email"
 
 # @ comment-contest
-#~ msgid "To use the plug-in, go to <a href=\"%s\">articles page</a> then you'll find a link to launch contests"
+#~ msgid ""
+#~ "To use the plug-in, go to <a href=\"%s\">articles page</a> then you'll "
+#~ "find a link to launch contests"
 #~ msgstr ""
-#~ "Pour utiliser le plug-in, aller à la <a href=\"%s\">page des articles</a> puis cliquez sur le lien dédié au lancement de concours"
+#~ "Pour utiliser le plug-in, aller à la <a href=\"%s\">page des articles</a> "
+#~ "puis cliquez sur le lien dédié au lancement de concours"
 
 # @ comment-contest
 #~ msgid "Support:"
