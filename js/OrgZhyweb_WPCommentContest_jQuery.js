@@ -524,6 +524,8 @@ jQuery(document).ready(function() {
         jQuery(this).find('input').each(function() {
             removeCSSErrorElement(jQuery(this));
         });
+        jQuery("#winners-message-ok").hide();
+        jQuery("#winners-message-error").hide();
         
         // Check all values
         // "Number of winners" must be numeric
@@ -558,5 +560,31 @@ jQuery(document).ready(function() {
     }
     
     // ------------------------ end CSS Functions ------------------------------
+
+    // ------------------------ Save Winners Action ----------------------------
+
+    jQuery(".saveWinnersButton").click(function () {
+        var winners = [];
+        jQuery('#dialog-modal-winners table tr').each(function () {
+            var line = jQuery(this);
+            var commentID = line.find('.zhyweb_comment_contest_id').text();
+            if (commentID && line.is(":visible")) {
+                winners.push(commentID);
+            }
+        });
+        var posting = jQuery.post("../wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_SaveWinners.php",
+            { winners: winners.join(","), post: jQuery("#zwpcc_postID").text()});
+        posting.fail(function(data) {
+            jQuery("#winners-message-ok").hide();
+            jQuery("#winners-message-error").show();
+            jQuery("#winners-message-error-msg").text(data);
+        });
+        posting.done(function(data) {
+            jQuery("#winners-message-error").hide();
+            jQuery("#winners-message-ok").show();
+        });
+    });
+
+    // ------------------------ end Save Winners Action ------------------------
     
 });

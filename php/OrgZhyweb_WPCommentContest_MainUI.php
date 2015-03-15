@@ -68,20 +68,25 @@ class OrgZhyweb_WPCommentContest_MainUI {
         
         if ($postID != NULL) {
             echo "<h3>" . sprintf(__('Contest on post "%s"', "comment-contest"), get_the_title($postID)) . "</h3>";
+			echo "<div id='zwpcc_postID' style='display: none'>$postID</div>";
+
+	        echo " <div id='winners-message-ok' class='updated' style='display: none'>" . __("Winners saved", "comment-contest") . "</div>";
+	        echo " <div id='winners-message-error' class='error' style='display: none'>" . __("Winners not saved!", "comment-contest") . "<span id='winners-message-error-msg'></span></div>";
 
             // Contest parameters
             echo "<div id=\"zwpcc_nbWinners_error_message\" style=\"color: red; display: none;\">" . __('Number of winners error', "comment-contest") . "</div>"
                . __('Number of winners:', "comment-contest") . " <input type=\"text\" id=\"zwpcc_nb_winners\" value=\"1\"/>"
                . "<img src=\"$this->pluginDir/img/help.png\" alt=\"Help\" class=\"help\" title=\"". __('Number of comments used to determine winners', "comment-contest") . "\" /><br /><br />"
                . "<input type=\"submit\" class=\"button action\" value=\"" . __('Launch contest', "comment-contest") . "\" />";
-
             echo "</form>";
 
             // Result table : opened in a modal window
             echo "<div id=\"dialog-modal-winners\" title=\"" . __("Winners", "comment-contest") . "\" style=\"display:none; margin: 10px\">";
-            $list = new OrgZhyweb_WPCommentContest_TableResults($postID);
+	        echo "<input type=\"button\" class=\"button action saveWinnersButton\" value=\"" . __("Save winners", "comment-contest") . "\" />";
+	        $list = new OrgZhyweb_WPCommentContest_TableResults($postID);
             $list->prepare_items();
             $list->display();
+            echo "<input type=\"button\" class=\"button action saveWinnersButton\" value=\"" . __("Save winners", "comment-contest") . "\" />";
             echo "</div>";
         }
     }
