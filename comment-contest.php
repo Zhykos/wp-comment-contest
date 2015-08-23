@@ -4,12 +4,15 @@
   Plugin URI: http://wp-comment-contest.zhyweb.org/
   Description: Comment Contest allows you to manage contests on your website. This plug-in draws all comments in a specific post and show you the winners.
   Author: Thomas "Zhykos" Cicognani
-  Version: 2.4.0
+  Version: 2.4.1
   Author URI: http://www.zhyweb.org/
  */
 
 /*
-  Copyright 2009 - 2015 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : tcicognani@zhyweb.org)
+  Copyright 2009, 2015 Comment Contest plug-in for WordPress by Thomas Cicognani
+
+  Thomas "Zhykos" Cicognani - Zhyweb (tcicognani@zhyweb.org) - First developments
+  Thomas "Zhykos" Cicognani - Zhyweb (tcicognani@zhyweb.org) - Check compatibility with WordPress 4.3
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
