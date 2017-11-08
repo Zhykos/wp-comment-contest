@@ -2,11 +2,13 @@ package fr.zhykos.wp.commentcontest.tests.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -15,6 +17,10 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 final class Utils {
+
+	private static final Logger LOGGER = Logger
+			.getLogger(Utils.class.getName());
+	private static final String DONE_STR = "done!"; //$NON-NLS-1$
 
 	private Utils() {
 		// Do nothing and must not be called
@@ -26,84 +32,70 @@ final class Utils {
 	}
 
 	private static void unzipWordPressInstall() throws UtilsException {
-		System.out.print("Unzipping WordPress... ");
-		ZipInputStream zis = null;
-		try {
-			final File wordPressFile = getWordPressFile();
-			zis = new ZipInputStream(new FileInputStream(wordPressFile));
-			final byte[] buffer = new byte[1024];
-			ZipEntry zipEntry = zis.getNextEntry();
+		LOGGER.info("Unzipping WordPress... "); //$NON-NLS-1$
+		final File wordPressFile = getWordPressFile();
+		try (final ZipInputStream zis = new ZipInputStream(
+				new FileInputStream(wordPressFile));) {
 			final File webappDirectory = getWebappDirectory();
+			ZipEntry zipEntry = zis.getNextEntry();
 			while (zipEntry != null) {
-				final String fileName = zipEntry.getName();
-				final File newFile = new File(webappDirectory, fileName);
-				if (zipEntry.isDirectory()) {
-					newFile.mkdirs();
-				} else {
-					final FileOutputStream fos = new FileOutputStream(newFile);
-					int len = zis.read(buffer);
-					while (len > 0) {
-						fos.write(buffer, 0, len);
-						len = zis.read(buffer);
-					}
-					fos.close();
-				}
+				unzipEntry(zis, zipEntry, webappDirectory);
 				zipEntry = zis.getNextEntry();
 			}
 		} catch (final IOException e) {
 			throw new UtilsException(e);
-		} finally {
-			if (zis != null) {
-				try {
-					zis.closeEntry();
-					zis.close();
-				} catch (final IOException e) {
-					throw new UtilsException(e);
+		}
+		LOGGER.info(DONE_STR);
+	}
+
+	private static void unzipEntry(final ZipInputStream zis,
+			final ZipEntry zipEntry, final File webappDirectory)
+			throws IOException, FileNotFoundException {
+		final byte[] buffer = new byte[1024];
+		final String fileName = zipEntry.getName();
+		final File newFile = new File(webappDirectory, fileName);
+		if (zipEntry.isDirectory()) {
+			newFile.mkdirs();
+		} else {
+			try (final FileOutputStream fos = new FileOutputStream(newFile);) {
+				int len = zis.read(buffer);
+				while (len > 0) {
+					fos.write(buffer, 0, len);
+					len = zis.read(buffer);
 				}
 			}
 		}
-		System.out.println("done!");
 	}
 
 	private static void downloadWordPress() throws UtilsException {
-		System.out.print("Downloading latest WordPress version... ");
-		FileOutputStream fos = null;
-		try {
+		LOGGER.info("Downloading latest WordPress version... "); //$NON-NLS-1$
+		final File wordpressFile = getWordPressFile();
+		try (FileOutputStream fos = new FileOutputStream(wordpressFile);) {
 			// https://wordpress.org/download/
-			final URL website = new URL("https://wordpress.org/latest.zip");
-			final ReadableByteChannel rbc = Channels
-					.newChannel(website.openStream());
-			final File wordpressFile = getWordPressFile();
-			fos = new FileOutputStream(wordpressFile);
-			fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+			final URL website = new URL("https://wordpress.org/latest.zip"); //$NON-NLS-1$
+			try (final ReadableByteChannel rbc = Channels
+					.newChannel(website.openStream());) {
+				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+			}
 		} catch (final IOException e) {
 			throw new UtilsException(e);
-		} finally {
-			if (fos != null) {
-				try {
-					fos.close();
-				} catch (final IOException e) {
-					throw new UtilsException(e);
-				}
-			}
 		}
-		System.out.println("done!");
+		LOGGER.info(DONE_STR);
 	}
 
 	private static File getWordPressFile() {
 		final File tempDir = getTempDirectory();
-		final File wordpressFile = new File(tempDir, "wordpress.zip");
-		return wordpressFile;
+		return new File(tempDir, "wordpress.zip"); //$NON-NLS-1$
 	}
 
 	public static File getTempDirectory() {
-		final File tempDir = new File("temp");
+		final File tempDir = new File("temp"); //$NON-NLS-1$
 		tempDir.mkdirs();
 		return tempDir;
 	}
 
 	public static File getWebappDirectory() {
-		final File tempDir = new File("webapp");
+		final File tempDir = new File("webapp"); //$NON-NLS-1$
 		tempDir.mkdirs();
 		return tempDir;
 	}
@@ -118,49 +110,53 @@ final class Utils {
 	private static void checkDeleteDirectory(final File directory)
 			throws UtilsException {
 		try {
-			System.out.print(String.format("Deleting directory '%s'... ",
+			LOGGER.info(String.format("Deleting directory '%s'... ", //$NON-NLS-1$
 					directory.getAbsolutePath()));
 			FileUtils.deleteDirectory(directory);
-			System.out.println("done!");
+			LOGGER.info(DONE_STR);
 		} catch (final IOException e) {
 			throw new UtilsException(e);
 		}
 		if (directory.exists()) {
 			final String message = String.format(
-					"Cannot delete temp directory: '%s'",
+					"Cannot delete temp directory: '%s'", //$NON-NLS-1$
 					directory.getAbsolutePath());
 			throw new UtilsException(message);
 		}
 	}
 
-	public static Monitor startJetty() throws Exception {
-		System.out.print("Starting Jerry server... ");
-		final Server server = new Server(8080);
-		final WebAppContext root = new WebAppContext();
-		root.setContextPath("/");
-		root.setDescriptor("webapp/WEB-INF/web.xml");
-		final URL webAppDir = Thread.currentThread().getContextClassLoader()
-				.getResource("webapp");
-		if (webAppDir == null) {
-			throw new RuntimeException(
-					"No webapp directory was found into the JAR file");
+	public static Monitor startJetty() throws UtilsException {
+		try {
+			LOGGER.info("Starting Jerry server... "); //$NON-NLS-1$
+			final Server server = new Server(8080);
+			final WebAppContext root = new WebAppContext();
+			root.setContextPath("/");
+			root.setDescriptor("webapp/WEB-INF/web.xml");
+			final URL webAppDir = Thread.currentThread().getContextClassLoader()
+					.getResource("webapp");
+			if (webAppDir == null) {
+				throw new UtilsException(
+						"No webapp directory was found into the JAR file");
+			}
+			root.setResourceBase(webAppDir.toURI().toString());
+			root.setParentLoaderPriority(true);
+			server.setHandler(root);
+			server.start();
+			final Monitor monitor = new Monitor(8090, new Server[] { server });
+			monitor.start();
+			server.join();
+			LOGGER.info(DONE_STR);
+			return monitor;
+		} catch (final Exception e) {
+			throw new UtilsException(e);
 		}
-		root.setResourceBase(webAppDir.toURI().toString());
-		root.setParentLoaderPriority(true);
-		server.setHandler(root);
-		server.start();
-		final Monitor monitor = new Monitor(8090, new Server[] { server });
-		monitor.start();
-		server.join();
-		System.out.println("done!");
-		return monitor;
 	}
 
 	public static String getSystemProperty(final String propertyKey)
 			throws UtilsException {
 		final String property = System.getProperty(propertyKey);
 		if (property == null) {
-			final String message = String.format("No property '%s' found!",
+			final String message = String.format("No property '%s' found!", //$NON-NLS-1$
 					propertyKey);
 			throw new UtilsException(message);
 		}

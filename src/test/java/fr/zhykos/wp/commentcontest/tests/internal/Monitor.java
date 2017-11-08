@@ -6,7 +6,11 @@ import java.io.LineNumberReader;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
+import java.util.Arrays;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.eclipse.jetty.server.Server;
 
 /*
@@ -19,68 +23,74 @@ import org.eclipse.jetty.server.Server;
  * @see <a href=
  *      "https://github.com/eclipse/jetty.project/tree/master/jetty-maven-plugin">https://github.com/eclipse/jetty.project/tree/master/jetty-maven-plugin</a>
  */
-public class Monitor extends Thread {
+class Monitor extends Thread {
 
+	private static final Log LOG = LogFactory.getLog(Monitor.class);
+	private static final String LOCALHOST = "127.0.0.1"; //$NON-NLS-1$
 	private final Server[] servers;
 	private ServerSocket serverSocket;
 
 	public Monitor(final int port, final Server[] servers) throws IOException {
+		super();
 		if (port <= 0) {
-			throw new IllegalStateException("Bad stop PORT");
+			final String message = String.format("Bad stop port %d", //$NON-NLS-1$
+					Integer.valueOf(port));
+			throw new IllegalStateException(message);
 		}
-		this.servers = servers;
+		this.servers = Arrays.copyOf(servers, servers.length);
 		setDaemon(true);
-		setName("StopJettyMonitor");
+		setName("StopJettyMonitor"); //$NON-NLS-1$
 		this.serverSocket = new ServerSocket(port, 1,
-				InetAddress.getByName("127.0.0.1"));
+				InetAddress.getByName(LOCALHOST));
 		this.serverSocket.setReuseAddress(true);
 	}
 
 	@Override
 	public void run() {
 		while (this.serverSocket != null) {
-			Socket socket = null;
-			try {
-				socket = this.serverSocket.accept();
-				socket.setSoLinger(false, 0);
-				final LineNumberReader lin = new LineNumberReader(
-						new InputStreamReader(socket.getInputStream()));
-				final String cmd = lin.readLine();
-				if ("stop".equals(cmd)) {
-					try {
-						socket.close();
-					} catch (final Exception e) {
-						e.printStackTrace();
-					}
-					try {
-						this.serverSocket.close();
-					} catch (final Exception e) {
-						e.printStackTrace();
-					}
-					this.serverSocket = null;
-					for (int i = 0; this.servers != null
-							&& i < this.servers.length; i++) {
-						try {
-							System.out.println("Stopping server " + i);
-							this.servers[i].stop();
-						} catch (final Exception e) {
-							e.printStackTrace();
-						}
-					}
-				} else {
-					System.out.println("Unsupported monitor operation " + cmd);
-				}
+			try (Socket socket = this.serverSocket.accept();) {
+				runSocket(socket);
 			} catch (final Exception e) {
-				e.printStackTrace();
-			} finally {
-				if (socket != null) {
-					try {
-						socket.close();
-					} catch (final Exception e) {
-						e.printStackTrace();
-					}
-				}
+				LOG.error(e.getMessage(), e);
 			}
 		}
 	}
+
+	private void runSocket(final Socket socket)
+			throws SocketException, IOException {
+		socket.setSoLinger(false, 0);
+		final LineNumberReader lin = new LineNumberReader(
+				new InputStreamReader(socket.getInputStream()));
+		final String cmd = lin.readLine();
+		if ("stop".equals(cmd)) {
+			try {
+				socket.close();
+			} catch (final Exception e) {
+				LOG.error(e.getMessage(), e);
+			}
+			try {
+				this.serverSocket.close();
+			} catch (final Exception e) {
+				LOG.error(e.getMessage(), e);
+			}
+			this.serverSocket = null;
+			for (int i = 0; this.servers != null
+					&& i < this.servers.length; i++) {
+				try {
+					final Server server = this.servers[i];
+					final String message = String.format("Stopping server '%s'", //$NON-NLS-1$
+							server);
+					LOG.info(message);
+					server.stop();
+				} catch (final Exception e) {
+					LOG.error(e.getMessage(), e);
+				}
+			}
+		} else {
+			final String message = String
+					.format("Unsupported monitor operation '%s'", cmd); //$NON-NLS-1$
+			LOG.info(message);
+		}
+	}
+
 }
