@@ -25,7 +25,7 @@ public class WPCommentContestPluginTest {
 	// private static final int OPERA_DRIVER = 2;
 	// private static final int CHROME_DRIVER = 3;
 
-	private final boolean hasError = false;
+	private boolean hasError = false;
 	// private int currentDriver;
 	private WebDriver driver;
 	// private String baseUrl;
@@ -99,6 +99,7 @@ public class WPCommentContestPluginTest {
 	}
 
 	private void testSelenium() {
+		this.hasError = true;
 		// // Connection
 		// this.driver.get(this.baseUrl + "faces/page1.xhtml");
 		// this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
@@ -327,22 +328,21 @@ public class WPCommentContestPluginTest {
 	// }
 
 	@After
-	public void after() throws TestException {
+	public void after() {
 		if (this.driver != null) {
 			this.driver.quit();
 		}
 		// final String error = this.errorsBuffer.toString();
 		// if (!error.isEmpty()) {
-		if (this.hasError) {
-			fail("FAIL");
-		}
 		if (this.server != null) {
 			try {
 				this.server.stop();
 			} catch (final Exception e) {
 				fail(e.getMessage());
-				throw new TestException(e);
 			}
+		}
+		if (this.hasError) {
+			fail("FAIL");
 		}
 	}
 
