@@ -21,6 +21,7 @@ final class Utils {
 	private static final Logger LOGGER = Logger
 			.getLogger(Utils.class.getName());
 	private static final String DONE_STR = "done!"; //$NON-NLS-1$
+	private static final String WEBAPP = "webapp"; //$NON-NLS-1$
 
 	private Utils() {
 		// Do nothing and must not be called
@@ -95,7 +96,7 @@ final class Utils {
 	}
 
 	public static File getWebappDirectory() {
-		final File tempDir = new File("webapp"); //$NON-NLS-1$
+		final File tempDir = new File(WEBAPP);
 		tempDir.mkdirs();
 		return tempDir;
 	}
@@ -125,28 +126,33 @@ final class Utils {
 		}
 	}
 
-	public static Monitor startJetty() throws UtilsException {
+	public static Server startJetty() throws UtilsException {
+		/*
+		 * http://javaetmoi.com/2015/06/web-app-jetty-standalone/
+		 */
 		try {
 			LOGGER.info("Starting Jerry server... "); //$NON-NLS-1$
 			final Server server = new Server(8080);
 			final WebAppContext root = new WebAppContext();
 			root.setContextPath("/");
 			root.setDescriptor("webapp/WEB-INF/web.xml");
-			final URL webAppDir = Thread.currentThread().getContextClassLoader()
-					.getResource("webapp");
-			if (webAppDir == null) {
-				throw new UtilsException(
-						"No webapp directory was found into the JAR file");
-			}
-			root.setResourceBase(webAppDir.toURI().toString());
+			// final URL webAppDir =
+			// Thread.currentThread().getContextClassLoader()
+			// .getResource("webapp");
+			// if (webAppDir == null) {
+			// throw new UtilsException(
+			// "No webapp directory was found into the JAR file");
+			// }
+			root.setResourceBase(WEBAPP);
 			root.setParentLoaderPriority(true);
 			server.setHandler(root);
 			server.start();
-			final Monitor monitor = new Monitor(8090, new Server[] { server });
-			monitor.start();
-			server.join();
-			LOGGER.info(DONE_STR);
-			return monitor;
+			// final Monitor monitor = new Monitor(8090, new Server[] { server
+			// });
+			// monitor.start();
+			// server.join();
+			// LOGGER.info(DONE_STR);
+			return server;
 		} catch (final Exception e) {
 			throw new UtilsException(e);
 		}

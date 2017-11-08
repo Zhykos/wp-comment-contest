@@ -2,6 +2,7 @@ package fr.zhykos.wp.commentcontest.tests.internal;
 
 import static org.junit.Assert.fail;
 
+import org.eclipse.jetty.server.Server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +28,8 @@ public class WPCommentContestPluginTest {
 	private WebDriver driver;
 	// private String baseUrl;
 	// private Selenium selenium;
-	private Monitor monitor;
+	// private Monitor monitor;
+	private Server server;
 
 	public WPCommentContestPluginTest() throws UtilsException {
 		this.chromeDriverPath = Utils
@@ -39,7 +41,7 @@ public class WPCommentContestPluginTest {
 		try {
 			Utils.cleanWorkspace();
 			Utils.installWordPressAndPlugin();
-			this.monitor = Utils.startJetty();
+			this.server = Utils.startJetty();
 			// final Properties properties = System.getProperties();
 			// this.baseUrl = properties.getProperty("base.url",
 			// "http://127.0.0.1:8080/tutoselenium/");
@@ -316,7 +318,7 @@ public class WPCommentContestPluginTest {
 	// }
 
 	@After
-	public void after() {
+	public void after() throws TestException {
 		if (this.driver != null) {
 			this.driver.quit();
 		}
@@ -325,8 +327,13 @@ public class WPCommentContestPluginTest {
 		if (this.hasError) {
 			fail("FAIL");
 		}
-		if (this.monitor != null) {
-			this.monitor.interrupt();
+		if (this.server != null) {
+			try {
+				this.server.stop();
+			} catch (final Exception e) {
+				fail(e.getMessage());
+				throw new TestException(e);
+			}
 		}
 	}
 
