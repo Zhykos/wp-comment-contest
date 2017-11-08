@@ -12,6 +12,11 @@ import org.openqa.selenium.chrome.ChromeDriver;
 /*
  * http://atatorus.developpez.com/tutoriels/java/test-application-web-avec-selenium/
  */
+@SuppressWarnings("PMD.AtLeastOneConstructor")
+/*
+ * @SuppressWarnings("PMD.AtLeastOneConstructor") tcicognani: constructor is not
+ * mandatory or needed in jUnit
+ */
 public class WPCommentContestPluginTest {
 
 	// private static final String PAGE_LOAD_TIMEOUT = "100";
@@ -19,9 +24,6 @@ public class WPCommentContestPluginTest {
 	// private static final int FIREFOX_DRIVER = 1;
 	// private static final int OPERA_DRIVER = 2;
 	// private static final int CHROME_DRIVER = 3;
-
-	private final String chromeDriverPath;
-	// private final StringBuilder errorsBuffer = new StringBuilder();
 
 	private final boolean hasError = false;
 	// private int currentDriver;
@@ -31,16 +33,19 @@ public class WPCommentContestPluginTest {
 	// private Monitor monitor;
 	private Server server;
 
-	public WPCommentContestPluginTest() throws UtilsException {
-		this.chromeDriverPath = Utils
-				.getSystemProperty(getClass().getName() + ".chromedriverpath"); //$NON-NLS-1$
-	}
-
 	@Before
 	public void before() throws TestException {
 		try {
-			Utils.cleanWorkspace();
-			Utils.installWordPressAndPlugin();
+			final boolean cleanWorkspace = Utils.getBooleanSystemProperty(
+					getClass().getName() + ".cleanworkspace", true); //$NON-NLS-1$
+			if (cleanWorkspace) {
+				Utils.cleanWorkspace();
+			}
+			final boolean installWordPress = Utils.getBooleanSystemProperty(
+					getClass().getName() + ".installwordpress", true); //$NON-NLS-1$
+			if (installWordPress) {
+				Utils.installWordPress();
+			}
 			this.server = Utils.startJetty();
 			// final Properties properties = System.getProperties();
 			// this.baseUrl = properties.getProperty("base.url",
@@ -80,13 +85,17 @@ public class WPCommentContestPluginTest {
 	 * @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert") tcicognani:
 	 * Assertions are in another method
 	 */
-	public void chromeTest() {
-		System.setProperty("webdriver.chrome.driver", this.chromeDriverPath); //$NON-NLS-1$
-		this.driver = new ChromeDriver();
-		// this.currentDriver = CHROME_DRIVER;
-		// this.selenium = new WebDriverBackedSelenium(this.driver,
-		// this.baseUrl);
-		testSelenium();
+	public void chromeTest() throws TestException {
+		try {
+			Utils.installChromeDriver();
+			this.driver = new ChromeDriver();
+			// this.currentDriver = CHROME_DRIVER;
+			// this.selenium = new WebDriverBackedSelenium(this.driver,
+			// this.baseUrl);
+			testSelenium();
+		} catch (final UtilsException e) {
+			throw new TestException(e);
+		}
 	}
 
 	private void testSelenium() {

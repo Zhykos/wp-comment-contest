@@ -27,20 +27,28 @@ final class Utils {
 		// Do nothing and must not be called
 	}
 
-	public static void installWordPressAndPlugin() throws UtilsException {
+	public static void installWordPress() throws UtilsException {
 		downloadWordPress();
 		unzipWordPressInstall();
 	}
 
 	private static void unzipWordPressInstall() throws UtilsException {
-		LOGGER.info("Unzipping WordPress... "); //$NON-NLS-1$
+		LOGGER.info("Unzipping WordPress..."); //$NON-NLS-1$
 		final File wordPressFile = getWordPressFile();
+		final File webappDirectory = getWebappDirectory();
+		unzipFile(wordPressFile, webappDirectory);
+		LOGGER.info(DONE_STR);
+	}
+
+	private static void unzipFile(final File fileToUnzip,
+			final File targetDirectory) throws UtilsException {
+		LOGGER.info(String.format("Unzipping file '%s'...", //$NON-NLS-1$
+				fileToUnzip.getAbsolutePath()));
 		try (final ZipInputStream zis = new ZipInputStream(
-				new FileInputStream(wordPressFile));) {
-			final File webappDirectory = getWebappDirectory();
+				new FileInputStream(fileToUnzip));) {
 			ZipEntry zipEntry = zis.getNextEntry();
 			while (zipEntry != null) {
-				unzipEntry(zis, zipEntry, webappDirectory);
+				unzipEntry(zis, zipEntry, targetDirectory);
 				zipEntry = zis.getNextEntry();
 			}
 		} catch (final IOException e) {
@@ -50,11 +58,11 @@ final class Utils {
 	}
 
 	private static void unzipEntry(final ZipInputStream zis,
-			final ZipEntry zipEntry, final File webappDirectory)
+			final ZipEntry zipEntry, final File targetDirectory)
 			throws IOException, FileNotFoundException {
 		final byte[] buffer = new byte[1024];
 		final String fileName = zipEntry.getName();
-		final File newFile = new File(webappDirectory, fileName);
+		final File newFile = new File(targetDirectory, fileName);
 		if (zipEntry.isDirectory()) {
 			newFile.mkdirs();
 		} else {
@@ -69,11 +77,18 @@ final class Utils {
 	}
 
 	private static void downloadWordPress() throws UtilsException {
-		LOGGER.info("Downloading latest WordPress version... "); //$NON-NLS-1$
+		LOGGER.info("Downloading latest WordPress version..."); //$NON-NLS-1$
 		final File wordpressFile = getWordPressFile();
-		try (FileOutputStream fos = new FileOutputStream(wordpressFile);) {
-			// https://wordpress.org/download/
-			final URL website = new URL("https://wordpress.org/latest.zip"); //$NON-NLS-1$
+		// https://wordpress.org/download/
+		downloadWebFile("https://wordpress.org/latest.zip", wordpressFile); //$NON-NLS-1$
+		LOGGER.info(DONE_STR);
+	}
+
+	private static void downloadWebFile(final String distantFile,
+			final File localFile) throws UtilsException {
+		LOGGER.info(String.format("Downloading '%s'...", distantFile)); //$NON-NLS-1$
+		try (FileOutputStream fos = new FileOutputStream(localFile);) {
+			final URL website = new URL(distantFile);
 			try (final ReadableByteChannel rbc = Channels
 					.newChannel(website.openStream());) {
 				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
@@ -111,7 +126,7 @@ final class Utils {
 	private static void checkDeleteDirectory(final File directory)
 			throws UtilsException {
 		try {
-			LOGGER.info(String.format("Deleting directory '%s'... ", //$NON-NLS-1$
+			LOGGER.info(String.format("Deleting directory '%s'...", //$NON-NLS-1$
 					directory.getAbsolutePath()));
 			FileUtils.deleteDirectory(directory);
 			LOGGER.info(DONE_STR);
@@ -131,7 +146,7 @@ final class Utils {
 		 * http://javaetmoi.com/2015/06/web-app-jetty-standalone/
 		 */
 		try {
-			LOGGER.info("Starting Jerry server... "); //$NON-NLS-1$
+			LOGGER.info("Starting Jerry server..."); //$NON-NLS-1$
 			final Server server = new Server(8080);
 			final WebAppContext root = new WebAppContext();
 			root.setContextPath("/");
@@ -158,15 +173,39 @@ final class Utils {
 		}
 	}
 
-	public static String getSystemProperty(final String propertyKey)
-			throws UtilsException {
-		final String property = System.getProperty(propertyKey);
-		if (property == null) {
-			final String message = String.format("No property '%s' found!", //$NON-NLS-1$
-					propertyKey);
-			throw new UtilsException(message);
-		}
-		return property;
+	// public static String getSystemProperty(final String propertyKey)
+	// throws UtilsException {
+	// final String property = System.getProperty(propertyKey);
+	// if (property == null) {
+	// final String message = String.format("No property '%s' found!",
+	// //$NON-NLS-1$
+	// propertyKey);
+	// throw new UtilsException(message);
+	// }
+	// return property;
+	// }
+	//
+	public static boolean getBooleanSystemProperty(final String propertyKey,
+			final boolean defaultBool) {
+		final String systemProperty = System.getProperty(propertyKey,
+				Boolean.toString(defaultBool));
+		return Boolean.parseBoolean(systemProperty);
+	}
+
+	public static void installChromeDriver() throws UtilsException {
+		/*
+		 * https://chromedriver.storage.googleapis.com/index.html?path=2.33/
+		 * TODO Gérer le numéro de version et Linux / Mac
+		 */
+		final File tempDir = getTempDirectory();
+		final File chromeDriverZip = new File(tempDir, "chromedriver.zip"); //$NON-NLS-1$
+		downloadWebFile(
+				"https://chromedriver.storage.googleapis.com/2.33/chromedriver_win32.zip", //$NON-NLS-1$
+				chromeDriverZip);
+		unzipFile(chromeDriverZip, tempDir);
+		final File chromeDriverExe = new File(tempDir, "chromedriver.exe"); //$NON-NLS-1$
+		System.setProperty("webdriver.chrome.driver", //$NON-NLS-1$
+				chromeDriverExe.getAbsolutePath());
 	}
 
 }
