@@ -1,4 +1,8 @@
 /.project
+/bin
+/target
+/temp
+/webapp
 .idea/.name
 .idea/encodings.xml
 .idea/scopes/scope_settings.xml
