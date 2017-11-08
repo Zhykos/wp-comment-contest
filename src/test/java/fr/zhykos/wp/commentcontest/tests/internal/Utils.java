@@ -11,8 +11,10 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.webapp.WebAppContext;
 
-public final class Utils {
+final class Utils {
 
 	private Utils() {
 		// Do nothing and must not be called
@@ -24,6 +26,7 @@ public final class Utils {
 	}
 
 	private static void unzipWordPressInstall() throws UtilsException {
+		System.out.print("Unzipping WordPress... ");
 		ZipInputStream zis = null;
 		try {
 			final File wordPressFile = getWordPressFile();
@@ -59,9 +62,11 @@ public final class Utils {
 				}
 			}
 		}
+		System.out.println("done!");
 	}
 
 	private static void downloadWordPress() throws UtilsException {
+		System.out.print("Downloading latest WordPress version... ");
 		FileOutputStream fos = null;
 		try {
 			// https://wordpress.org/download/
@@ -82,6 +87,7 @@ public final class Utils {
 				}
 			}
 		}
+		System.out.println("done!");
 	}
 
 	private static File getWordPressFile() {
@@ -112,7 +118,10 @@ public final class Utils {
 	private static void checkDeleteDirectory(final File directory)
 			throws UtilsException {
 		try {
+			System.out.print(String.format("Deleting directory '%s'... ",
+					directory.getAbsolutePath()));
 			FileUtils.deleteDirectory(directory);
+			System.out.println("done!");
 		} catch (final IOException e) {
 			throw new UtilsException(e);
 		}
@@ -122,6 +131,40 @@ public final class Utils {
 					directory.getAbsolutePath());
 			throw new UtilsException(message);
 		}
+	}
+
+	public static Monitor startJetty() throws Exception {
+		System.out.print("Starting Jerry server... ");
+		final Server server = new Server(8080);
+		final WebAppContext root = new WebAppContext();
+		root.setContextPath("/");
+		root.setDescriptor("webapp/WEB-INF/web.xml");
+		final URL webAppDir = Thread.currentThread().getContextClassLoader()
+				.getResource("webapp");
+		if (webAppDir == null) {
+			throw new RuntimeException(
+					"No webapp directory was found into the JAR file");
+		}
+		root.setResourceBase(webAppDir.toURI().toString());
+		root.setParentLoaderPriority(true);
+		server.setHandler(root);
+		server.start();
+		final Monitor monitor = new Monitor(8090, new Server[] { server });
+		monitor.start();
+		server.join();
+		System.out.println("done!");
+		return monitor;
+	}
+
+	public static String getSystemProperty(final String propertyKey)
+			throws UtilsException {
+		final String property = System.getProperty(propertyKey);
+		if (property == null) {
+			final String message = String.format("No property '%s' found!",
+					propertyKey);
+			throw new UtilsException(message);
+		}
+		return property;
 	}
 
 }

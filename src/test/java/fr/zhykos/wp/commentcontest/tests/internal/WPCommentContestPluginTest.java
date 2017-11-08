@@ -4,13 +4,10 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.webapp.WebAppContext;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,13 +27,12 @@ import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 public class WPCommentContestPluginTest {
 
 	private static final String PAGE_TO_LOAD_TIMEOUT = "100";
-	private static final String CHROME_DRIVER_PATH = "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe";
+	// private static final int HTML_UNIT_DRIVER = 0;
+	private static final int FIREFOX_DRIVER = 1;
+	private static final int OPERA_DRIVER = 2;
+	private static final int CHROME_DRIVER = 3;
 
-	public static final int HTML_UNIT_DRIVER = 0;
-	public static final int FIREFOX_DRIVER = 1;
-	public static final int OPERA_DRIVER = 2;
-	public static final int CHROME_DRIVER = 3;
-
+	private final String chromeDriverPath;
 	private final StringBuffer verificationErrors = new StringBuffer();
 
 	private int currentDriver;
@@ -45,34 +41,19 @@ public class WPCommentContestPluginTest {
 	private Selenium selenium;
 	private Monitor monitor;
 
+	public WPCommentContestPluginTest() throws UtilsException {
+		this.chromeDriverPath = Utils
+				.getSystemProperty(getClass().getName() + ".chromedriverpath");
+	}
+
 	@Before
 	public void before() throws Exception {
 		Utils.cleanWorkspace();
 		Utils.installWordPressAndPlugin();
-		startJetty();
+		this.monitor = Utils.startJetty();
 		final Properties properties = System.getProperties();
 		this.baseUrl = properties.getProperty("base.url",
 				"http://127.0.0.1:8080/tutoselenium/");
-	}
-
-	private void startJetty() throws Exception {
-		final Server server = new Server(8080);
-		final WebAppContext root = new WebAppContext();
-		root.setContextPath("/");
-		root.setDescriptor("webapp/WEB-INF/web.xml");
-		final URL webAppDir = Thread.currentThread().getContextClassLoader()
-				.getResource("webapp");
-		if (webAppDir == null) {
-			throw new RuntimeException(
-					"No webapp directory was found into the JAR file");
-		}
-		root.setResourceBase(webAppDir.toURI().toString());
-		root.setParentLoaderPriority(true);
-		server.setHandler(root);
-		server.start();
-		this.monitor = new Monitor(8090, new Server[] { server });
-		this.monitor.start();
-		server.join();
 	}
 
 	// @Test
@@ -101,7 +82,7 @@ public class WPCommentContestPluginTest {
 
 	@Test
 	public void chromeTest() throws Exception {
-		System.setProperty("webdriver.chrome.driver", CHROME_DRIVER_PATH);
+		System.setProperty("webdriver.chrome.driver", this.chromeDriverPath);
 		this.driver = new ChromeDriver();
 		this.currentDriver = CHROME_DRIVER;
 		this.selenium = new WebDriverBackedSelenium(this.driver, this.baseUrl);
