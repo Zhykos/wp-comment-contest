@@ -3,7 +3,7 @@ package fr.zhykos.wp.commentcontest.tests.internal.utils;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
 
-class TomcatServer implements EmbeddedServer {
+class TomcatServer implements TestServer {
 
 	private final Tomcat tomcat;
 

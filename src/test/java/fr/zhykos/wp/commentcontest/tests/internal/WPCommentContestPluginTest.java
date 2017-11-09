@@ -8,7 +8,7 @@ import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import fr.zhykos.wp.commentcontest.tests.internal.utils.EmbeddedServer;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.TestServer;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.Utils;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 
@@ -37,7 +37,7 @@ public class WPCommentContestPluginTest {
 	// private String baseUrl;
 	// private Selenium selenium;
 	// private Monitor monitor;
-	private EmbeddedServer server;
+	private TestServer server;
 
 	// TODO Passer en beforeclass et afterclass !!!!!!!!!!!!!!!!!!!!!!! ca
 	// évitera de faire les init pour chaque navigateur

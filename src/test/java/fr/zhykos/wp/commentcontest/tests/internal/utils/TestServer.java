@@ -1,6 +1,6 @@
 package fr.zhykos.wp.commentcontest.tests.internal.utils;
 
-public interface EmbeddedServer {
+public interface TestServer {
 
 	void launch(int port, String webappDirectory) throws UtilsException;
 

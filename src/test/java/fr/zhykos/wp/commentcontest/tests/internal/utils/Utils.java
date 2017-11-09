@@ -140,14 +140,14 @@ public final class Utils {
 		}
 	}
 
-	public static EmbeddedServer startEmbeddedServer() throws UtilsException {
+	public static TestServer startEmbeddedServer() throws UtilsException {
 		// http://localhost:8080/wordpress/index.php
 		LOGGER.info("Starting server..."); //$NON-NLS-1$
 		final int port = getIntegerSystemProperty(
 				Utils.class.getName() + ".serverport", 8080); //$NON-NLS-1$
 		final String webappDirectory = getWebappDirectory().getAbsolutePath()
 				+ "/wordpress"; //$NON-NLS-1$
-		final EmbeddedServer server = new TomcatServer();
+		final TestServer server = new TomcatServer();
 		server.launch(port, webappDirectory);
 		LOGGER.info(DONE_STR);
 		return server;
