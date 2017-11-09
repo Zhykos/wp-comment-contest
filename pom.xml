@@ -8,7 +8,7 @@
   <description>WordPress Comment Contest plugin</description>
   <properties>
 	<version.javax-servlet>3.1.0</version.javax-servlet>
-	<version.jetty>9.4.7.v20170914</version.jetty>
+	<tomcat.version>8.5.2</tomcat.version>
   </properties>
   <dependencies>
 	<dependency>
@@ -36,41 +36,6 @@
 		<scope>test</scope>
 	</dependency>
 	<dependency>
-		<groupId>org.eclipse.jetty</groupId>
-		<artifactId>jetty-server</artifactId>
-		<version>${version.jetty}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.eclipse.jetty</groupId>
-		<artifactId>jetty-webapp</artifactId>
-		<version>${version.jetty}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.eclipse.jetty</groupId>
-		<artifactId>jetty-servlet</artifactId>
-		<version>${version.jetty}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.eclipse.jetty</groupId>
-		<artifactId>jetty-util</artifactId>
-		<version>${version.jetty}</version>
-	</dependency>
-	<dependency>
-		<groupId>org.eclipse.jetty</groupId>
-		<artifactId>jetty-servlets</artifactId>
-		<version>${version.jetty}</version>
-	</dependency>
-	<!--dependency>
-		<groupId>org.eclipse.jetty</groupId>
-		<artifactId>jetty-jsp</artifactId>
-		<version>${version.jetty}</version>
-	</dependency-->
-	<dependency>
-		<groupId>org.eclipse.jetty</groupId>
-		<artifactId>jetty-http</artifactId>
-		<version>${version.jetty}</version>
-	</dependency>
-	<dependency>
 		<groupId>javax.servlet</groupId>
 		<artifactId>javax.servlet-api</artifactId>
 		<version>${version.javax-servlet}</version>
@@ -85,5 +50,35 @@
 		<artifactId>commons-logging</artifactId>
 		<version>1.2</version>
 	</dependency>
+	 <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-core</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-logging-juli</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.tomcat.embed</groupId>
+        <artifactId>tomcat-embed-jasper</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-jasper</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-jasper-el</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
+    <dependency>
+        <groupId>org.apache.tomcat</groupId>
+        <artifactId>tomcat-jsp-api</artifactId>
+        <version>${tomcat.version}</version>
+    </dependency>
   </dependencies>
 </project>

@@ -2,7 +2,6 @@ package fr.zhykos.wp.commentcontest.tests.internal;
 
 import static org.junit.Assert.fail;
 
-import org.eclipse.jetty.server.Server;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,6 +23,9 @@ public class WPCommentContestPluginTest {
 	// private static final int FIREFOX_DRIVER = 1;
 	// private static final int OPERA_DRIVER = 2;
 	// private static final int CHROME_DRIVER = 3;
+	private static final boolean INST_CHROME_DRV = Utils
+			.getBooleanSystemProperty(WPCommentContestPluginTest.class.getName()
+					+ ".installchromedriver", true); //$NON-NLS-1$
 
 	private boolean hasError = false;
 	// private int currentDriver;
@@ -31,28 +33,27 @@ public class WPCommentContestPluginTest {
 	// private String baseUrl;
 	// private Selenium selenium;
 	// private Monitor monitor;
-	private Server server;
+	private EmbeddedServer server;
 
+	// TODO Passer en beforeclass et afterclass !!!!!!!!!!!!!!!!!!!!!!! ca
+	// évitera de faire les init pour chaque navigateur
 	@Before
 	public void before() throws TestException {
-		try {
-			final boolean cleanWorkspace = Utils.getBooleanSystemProperty(
-					getClass().getName() + ".cleanworkspace", true); //$NON-NLS-1$
-			if (cleanWorkspace) {
-				Utils.cleanWorkspace();
-			}
-			final boolean installWordPress = Utils.getBooleanSystemProperty(
-					getClass().getName() + ".installwordpress", true); //$NON-NLS-1$
-			if (installWordPress) {
-				Utils.installWordPress();
-			}
-			this.server = Utils.startJetty();
-			// final Properties properties = System.getProperties();
-			// this.baseUrl = properties.getProperty("base.url",
-			// "http://127.0.0.1:8080/tutoselenium/");
-		} catch (final UtilsException e) {
-			throw new TestException(e);
+		final boolean cleanWorkspace = Utils.getBooleanSystemProperty(
+				getClass().getName() + ".cleanworkspace", true); //$NON-NLS-1$
+		if (cleanWorkspace) {
+			Utils.cleanWorkspace();
 		}
+		final boolean installWordPress = Utils.getBooleanSystemProperty(
+				getClass().getName() + ".installwordpress", true); //$NON-NLS-1$
+		if (installWordPress) {
+			Utils.installWordPress();
+		}
+		this.server = Utils.startEmbeddedServer();
+		Utils.configureWordpress(INST_CHROME_DRV);
+		// final Properties properties = System.getProperties();
+		// this.baseUrl = properties.getProperty("base.url",
+		// "http://127.0.0.1:8080/tutoselenium/");
 	}
 
 	// @Test
@@ -79,23 +80,19 @@ public class WPCommentContestPluginTest {
 	// testSelenium();
 	// }
 
-	@Test
+	@Test(timeout = 60000)
 	@SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 	/*
 	 * @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert") tcicognani:
 	 * Assertions are in another method
 	 */
 	public void chromeTest() throws TestException {
-		try {
-			Utils.installChromeDriver();
-			this.driver = new ChromeDriver();
-			// this.currentDriver = CHROME_DRIVER;
-			// this.selenium = new WebDriverBackedSelenium(this.driver,
-			// this.baseUrl);
-			testSelenium();
-		} catch (final UtilsException e) {
-			throw new TestException(e);
-		}
+		Utils.installChromeDriver(INST_CHROME_DRV);
+		this.driver = new ChromeDriver();
+		// this.currentDriver = CHROME_DRIVER;
+		// this.selenium = new WebDriverBackedSelenium(this.driver,
+		// this.baseUrl);
+		testSelenium();
 	}
 
 	private void testSelenium() {
