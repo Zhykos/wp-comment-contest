@@ -1,9 +1,11 @@
-package fr.zhykos.wp.commentcontest.tests.internal.utils;
+package fr.zhykos.wp.commentcontest.tests.internal.utils.server;
 
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.startup.Tomcat;
 
-class TomcatServer implements TestServer {
+import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
+
+class TomcatServer implements ITestServer {
 
 	private final Tomcat tomcat;
 

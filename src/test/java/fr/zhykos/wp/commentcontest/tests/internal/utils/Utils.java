@@ -5,6 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -12,8 +16,16 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteStreamHandler;
+import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.openqa.selenium.chrome.ChromeDriver;
+
+import fr.zhykos.wp.commentcontest.tests.internal.utils.server.ITestServer;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.server.ITestServerFactory;
 
 public final class Utils {
 
@@ -140,14 +152,14 @@ public final class Utils {
 		}
 	}
 
-	public static TestServer startEmbeddedServer() throws UtilsException {
+	public static ITestServer startEmbeddedServer() throws UtilsException {
 		// http://localhost:8080/wordpress/index.php
 		LOGGER.info("Starting server..."); //$NON-NLS-1$
 		final int port = getIntegerSystemProperty(
 				Utils.class.getName() + ".serverport", 8080); //$NON-NLS-1$
 		final String webappDirectory = getWebappDirectory().getAbsolutePath()
 				+ "/wordpress"; //$NON-NLS-1$
-		final TestServer server = new TomcatServer();
+		final ITestServer server = ITestServerFactory.DEFAULT.createServer();
 		server.launch(port, webappDirectory);
 		LOGGER.info(DONE_STR);
 		return server;
@@ -191,6 +203,75 @@ public final class Utils {
 		installChromeDriver(installChromeDrv);
 		final ChromeDriver driver = new ChromeDriver();
 		driver.close();
+	}
+
+	public static ICommandExecResult executeCommand(final String command)
+			throws UtilsException {
+		try {
+			LOGGER.info(String.format("Executing command: %s", command)); //$NON-NLS-1$
+			final CommandLine commandLine = CommandLine.parse(command);
+			final DefaultExecutor executor = new DefaultExecutor();
+			final StringWriter stdOut = new StringWriter();
+			final StringWriter stdErr = new StringWriter();
+			executor.setStreamHandler(new ExecuteStreamHandler() {
+				@Override
+				public void stop() throws IOException {
+					// DO NOTHING
+				}
+
+				@Override
+				public void start() throws IOException {
+					// DO NOTHING
+				}
+
+				@Override
+				public void setProcessOutputStream(final InputStream is)
+						throws IOException {
+					IOUtils.copy(is, stdOut, "UTF-8"); //$NON-NLS-1$
+				}
+
+				@Override
+				public void setProcessInputStream(final OutputStream os)
+						throws IOException {
+					// DO NOTHING
+				}
+
+				@Override
+				public void setProcessErrorStream(final InputStream is)
+						throws IOException {
+					IOUtils.copy(is, stdErr, "UTF-8"); //$NON-NLS-1$
+				}
+			});
+			final ExecuteWatchdog watchdog = new ExecuteWatchdog(60000);
+			executor.setWatchdog(watchdog);
+			final int exitValue = executor.execute(commandLine);
+			final ICommandExecResult result = createCommandResult(exitValue,
+					stdOut, stdErr);
+			LOGGER.info("Done!"); //$NON-NLS-1$
+			return result;
+		} catch (final Exception e) {
+			throw new UtilsException(e);
+		}
+	}
+
+	private static ICommandExecResult createCommandResult(final int exitValue,
+			final Writer output, final Writer errorOutput) {
+		return new ICommandExecResult() {
+			@Override
+			public String getOuput() {
+				return output.toString();
+			}
+
+			@Override
+			public int getExitValue() {
+				return exitValue;
+			}
+
+			@Override
+			public String getErrorOutput() {
+				return errorOutput.toString();
+			}
+		};
 	}
 
 }

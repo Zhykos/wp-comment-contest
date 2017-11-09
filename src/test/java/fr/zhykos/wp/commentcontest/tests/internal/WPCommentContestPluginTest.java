@@ -8,9 +8,9 @@ import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-import fr.zhykos.wp.commentcontest.tests.internal.utils.TestServer;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.Utils;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.server.ITestServer;
 
 /*
  * http://atatorus.developpez.com/tutoriels/java/test-application-web-avec-selenium/
@@ -37,7 +37,7 @@ public class WPCommentContestPluginTest {
 	// private String baseUrl;
 	// private Selenium selenium;
 	// private Monitor monitor;
-	private TestServer server;
+	private ITestServer server;
 
 	// TODO Passer en beforeclass et afterclass !!!!!!!!!!!!!!!!!!!!!!! ca
 	// évitera de faire les init pour chaque navigateur
