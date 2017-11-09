@@ -1,4 +1,4 @@
-package fr.zhykos.wp.commentcontest.tests.internal;
+package fr.zhykos.wp.commentcontest.tests.internal.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,12 +12,10 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import org.apache.catalina.LifecycleException;
-import org.apache.catalina.startup.Tomcat;
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.chrome.ChromeDriver;
 
-final class Utils {
+public final class Utils {
 
 	private static final Logger LOGGER = Logger
 			.getLogger(Utils.class.getName());
@@ -28,12 +26,12 @@ final class Utils {
 		// Do nothing and must not be called
 	}
 
-	public static void installWordPress() throws TestException {
+	public static void installWordPress() throws UtilsException {
 		downloadWordPress();
 		unzipWordPressInstall();
 	}
 
-	private static void unzipWordPressInstall() throws TestException {
+	private static void unzipWordPressInstall() throws UtilsException {
 		LOGGER.info("Unzipping WordPress..."); //$NON-NLS-1$
 		final File wordPressFile = getWordPressFile();
 		final File webappDirectory = getWebappDirectory();
@@ -42,7 +40,7 @@ final class Utils {
 	}
 
 	private static void unzipFile(final File fileToUnzip,
-			final File targetDirectory) throws TestException {
+			final File targetDirectory) throws UtilsException {
 		LOGGER.info(String.format("Unzipping file '%s'...", //$NON-NLS-1$
 				fileToUnzip.getAbsolutePath()));
 		try (final ZipInputStream zis = new ZipInputStream(
@@ -53,7 +51,7 @@ final class Utils {
 				zipEntry = zis.getNextEntry();
 			}
 		} catch (final IOException e) {
-			throw new TestException(e);
+			throw new UtilsException(e);
 		}
 		LOGGER.info(DONE_STR);
 	}
@@ -77,7 +75,7 @@ final class Utils {
 		}
 	}
 
-	private static void downloadWordPress() throws TestException {
+	private static void downloadWordPress() throws UtilsException {
 		LOGGER.info("Downloading latest WordPress version..."); //$NON-NLS-1$
 		final File wordpressFile = getWordPressFile();
 		// https://wordpress.org/download/
@@ -86,7 +84,7 @@ final class Utils {
 	}
 
 	private static void downloadWebFile(final String distantFile,
-			final File localFile) throws TestException {
+			final File localFile) throws UtilsException {
 		LOGGER.info(String.format("Downloading '%s'...", distantFile)); //$NON-NLS-1$
 		try (FileOutputStream fos = new FileOutputStream(localFile);) {
 			final URL website = new URL(distantFile);
@@ -95,7 +93,7 @@ final class Utils {
 				fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
 			}
 		} catch (final IOException e) {
-			throw new TestException(e);
+			throw new UtilsException(e);
 		}
 		LOGGER.info(DONE_STR);
 	}
@@ -117,7 +115,7 @@ final class Utils {
 		return tempDir;
 	}
 
-	public static void cleanWorkspace() throws TestException {
+	public static void cleanWorkspace() throws UtilsException {
 		final File tempDirectory = getTempDirectory();
 		checkDeleteDirectory(tempDirectory);
 		final File webappDirectory = getWebappDirectory();
@@ -125,55 +123,34 @@ final class Utils {
 	}
 
 	private static void checkDeleteDirectory(final File directory)
-			throws TestException {
+			throws UtilsException {
 		try {
 			LOGGER.info(String.format("Deleting directory '%s'...", //$NON-NLS-1$
 					directory.getAbsolutePath()));
 			FileUtils.deleteDirectory(directory);
 			LOGGER.info(DONE_STR);
 		} catch (final IOException e) {
-			throw new TestException(e);
+			throw new UtilsException(e);
 		}
 		if (directory.exists()) {
 			final String message = String.format(
 					"Cannot delete temp directory: '%s'", //$NON-NLS-1$
 					directory.getAbsolutePath());
-			throw new TestException(message);
+			throw new UtilsException(message);
 		}
 	}
 
-	public static EmbeddedServer startEmbeddedServer() throws TestException {
-		/*
-		 * https://devcenter.heroku.com/articles/create-a-java-web-application-
-		 * using-embedded-tomcat
-		 */
-		try {
-			LOGGER.info("Starting server..."); //$NON-NLS-1$
-			final Tomcat tomcat = new Tomcat();
-			final int port = getIntegerSystemProperty(
-					Utils.class.getName() + ".serverport", 8080); //$NON-NLS-1$
-			tomcat.setPort(port);
-			tomcat.setBaseDir("."); //$NON-NLS-1$
-			tomcat.addWebapp("", //$NON-NLS-1$
-					getWebappDirectory().getAbsolutePath() + "/wordpress"); //$NON-NLS-1$
-			tomcat.init();
-			// http://localhost:8080/wordpress/index.php
-			tomcat.start();
-			// tomcat.getServer().await();
-			LOGGER.info(DONE_STR);
-			return new EmbeddedServer() {
-				@Override
-				public void stop() throws TestException {
-					try {
-						tomcat.stop();
-					} catch (final LifecycleException e) {
-						throw new TestException(e);
-					}
-				}
-			};
-		} catch (final Exception e) {
-			throw new TestException(e);
-		}
+	public static EmbeddedServer startEmbeddedServer() throws UtilsException {
+		// http://localhost:8080/wordpress/index.php
+		LOGGER.info("Starting server..."); //$NON-NLS-1$
+		final int port = getIntegerSystemProperty(
+				Utils.class.getName() + ".serverport", 8080); //$NON-NLS-1$
+		final String webappDirectory = getWebappDirectory().getAbsolutePath()
+				+ "/wordpress"; //$NON-NLS-1$
+		final EmbeddedServer server = new TomcatServer();
+		server.launch(port, webappDirectory);
+		LOGGER.info(DONE_STR);
+		return server;
 	}
 
 	public static boolean getBooleanSystemProperty(final String propertyKey,
@@ -191,7 +168,7 @@ final class Utils {
 	}
 
 	public static void installChromeDriver(final boolean install)
-			throws TestException {
+			throws UtilsException {
 		/*
 		 * https://chromedriver.storage.googleapis.com/index.html?path=2.33/
 		 * TODO Gérer le numéro de version et Linux / Mac
@@ -210,7 +187,7 @@ final class Utils {
 	}
 
 	public static void configureWordpress(final boolean installChromeDrv)
-			throws TestException {
+			throws UtilsException {
 		installChromeDriver(installChromeDrv);
 		final ChromeDriver driver = new ChromeDriver();
 		driver.close();

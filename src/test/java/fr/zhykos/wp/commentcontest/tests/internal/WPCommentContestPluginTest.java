@@ -8,6 +8,10 @@ import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import fr.zhykos.wp.commentcontest.tests.internal.utils.EmbeddedServer;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.Utils;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
+
 /*
  * http://atatorus.developpez.com/tutoriels/java/test-application-web-avec-selenium/
  */
@@ -38,7 +42,7 @@ public class WPCommentContestPluginTest {
 	// TODO Passer en beforeclass et afterclass !!!!!!!!!!!!!!!!!!!!!!! ca
 	// évitera de faire les init pour chaque navigateur
 	@Before
-	public void before() throws TestException {
+	public void before() throws UtilsException {
 		final boolean cleanWorkspace = Utils.getBooleanSystemProperty(
 				getClass().getName() + ".cleanworkspace", true); //$NON-NLS-1$
 		if (cleanWorkspace) {
@@ -86,7 +90,7 @@ public class WPCommentContestPluginTest {
 	 * @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert") tcicognani:
 	 * Assertions are in another method
 	 */
-	public void chromeTest() throws TestException {
+	public void chromeTest() throws UtilsException {
 		Utils.installChromeDriver(INST_CHROME_DRV);
 		this.driver = new ChromeDriver();
 		// this.currentDriver = CHROME_DRIVER;
