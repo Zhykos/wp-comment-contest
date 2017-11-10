@@ -9,7 +9,12 @@ public interface IOSUtils {
 	/*
 	 * XXX Not sure but is a service only a Windows thing?????
 	 */
-	void startService(String serviceName) throws UtilsException;
+	ICommandExecResult startService(String serviceName) throws UtilsException;
+
+	/*
+	 * XXX Not sure but is a service only a Windows thing?????
+	 */
+	ICommandExecResult stopService(String serviceName) throws UtilsException;
 
 	ICommandExecResult executeCommand(String command) throws UtilsException;
 

@@ -17,8 +17,9 @@ class UnsupportedOS implements IOSUtils {
 	}
 
 	@Override
-	public void startService(final String serviceName) {
+	public ICommandExecResult startService(final String serviceName) {
 		throwUnsupported();
+		return null;
 	}
 
 	@Override
@@ -38,6 +39,12 @@ class UnsupportedOS implements IOSUtils {
 	public boolean isWindows() {
 		throwUnsupported();
 		return false;
+	}
+
+	@Override
+	public ICommandExecResult stopService(final String serviceName) {
+		throwUnsupported();
+		return null;
 	}
 
 }

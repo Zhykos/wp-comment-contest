@@ -125,7 +125,7 @@ public final class Utils {
 		checkDeleteDirectory(webappDirectory);
 	}
 
-	private static void checkDeleteDirectory(final File directory)
+	public static void checkDeleteDirectory(final File directory)
 			throws UtilsException {
 		try {
 			LOGGER.info(String.format("Deleting directory '%s'...", //$NON-NLS-1$
@@ -143,17 +143,39 @@ public final class Utils {
 		}
 	}
 
-	public static ITestServer startEmbeddedServer() throws UtilsException {
+	public static ITestServer startServer(final boolean doInstChrmDrv)
+			throws UtilsException {
 		// http://localhost:8080/wordpress/index.php
 		LOGGER.info("Starting server..."); //$NON-NLS-1$
 		final int port = getIntegerSystemProperty(
 				Utils.class.getName() + ".serverport", 8080); //$NON-NLS-1$
-		final String webappDirectory = getWebappDirectory().getAbsolutePath()
-				+ "/wordpress"; //$NON-NLS-1$
+		final File wpEmbedDir = new File(getWebappDirectory().getAbsolutePath(),
+				"wordpress"); //$NON-NLS-1$
 		final ITestServer server = ITestServerFactory.DEFAULT.createServer();
-		server.launch(port, webappDirectory);
+		final File wpRunDir = server.deployWordPress(wpEmbedDir);
+		deployPlugin(wpRunDir);
+		server.launch(port, wpRunDir.getAbsolutePath());
+		configureWordpress(doInstChrmDrv);
 		LOGGER.info(DONE_STR);
 		return server;
+	}
+
+	private static void deployPlugin(final File wpRunDir)
+			throws UtilsException {
+		try {
+			final String localPlgDirStr = System.getProperty(
+					Utils.class.getName() + ".plugindir", "src/main/wordpress"); //$NON-NLS-1$ //$NON-NLS-2$
+			final File wpPluginDir = new File(wpRunDir,
+					"wp-content/plugins/pluginToTest"); //$NON-NLS-1$
+			if (!wpPluginDir.mkdir()) {
+				throw new UtilsException(
+						String.format("Cannot create directory '%s'", //$NON-NLS-1$
+								wpPluginDir.getAbsolutePath()));
+			}
+			FileUtils.copyDirectory(new File(localPlgDirStr), wpPluginDir);
+		} catch (final IOException e) {
+			throw new UtilsException(e);
+		}
 	}
 
 	public static boolean getBooleanSystemProperty(final String propertyKey,
@@ -189,7 +211,7 @@ public final class Utils {
 				chromeDriverExe.getAbsolutePath());
 	}
 
-	public static void configureWordpress(final boolean installChromeDrv)
+	private static void configureWordpress(final boolean installChromeDrv)
 			throws UtilsException {
 		installChromeDriver(installChromeDrv);
 		final ChromeDriver driver = new ChromeDriver();

@@ -43,6 +43,8 @@ public class WPCommentContestPluginTest {
 	// évitera de faire les init pour chaque navigateur
 	@Before
 	public void before() throws UtilsException {
+		// TODO faire une méthode utilitaire pour l'initialisation globale afin
+		// de créer un framework générique de tests pour wordpress
 		final boolean cleanWorkspace = Utils.getBooleanSystemProperty(
 				getClass().getName() + ".cleanworkspace", true); //$NON-NLS-1$
 		if (cleanWorkspace) {
@@ -53,8 +55,7 @@ public class WPCommentContestPluginTest {
 		if (installWordPress) {
 			Utils.installWordPress();
 		}
-		this.server = Utils.startEmbeddedServer();
-		Utils.configureWordpress(INST_CHROME_DRV);
+		this.server = Utils.startServer(INST_CHROME_DRV);
 		// final Properties properties = System.getProperties();
 		// this.baseUrl = properties.getProperty("base.url",
 		// "http://127.0.0.1:8080/tutoselenium/");

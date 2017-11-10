@@ -15,7 +15,7 @@ class TestServerFactory implements ITestServerFactory {
 	public ITestServer createServer() throws UtilsException {
 		final String className = System.getProperty(
 				ITestServerFactory.class.getName() + ".server", //$NON-NLS-1$
-				TomcatServer.class.getName());
+				EmbeddedTomcatServer.class.getName());
 		Class<?> classs = null;
 		try {
 			classs = Class.forName(className);
@@ -25,7 +25,7 @@ class TestServerFactory implements ITestServerFactory {
 			logger.info(String.format(
 					"Class '%s' not found, use Tomcat by default (error: %s)", //$NON-NLS-1$
 					className, e.getMessage()));
-			classs = TomcatServer.class;
+			classs = EmbeddedTomcatServer.class;
 		}
 		try {
 			return (ITestServer) classs.newInstance();

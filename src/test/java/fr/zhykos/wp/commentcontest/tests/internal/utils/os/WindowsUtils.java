@@ -10,9 +10,12 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 class WindowsUtils implements IOSUtils {
 
 	@Override
-	public void startService(final String serviceName) throws UtilsException {
-		executeCommand(String.format("net start %s", serviceName)); //$NON-NLS-1$
+	public ICommandExecResult startService(final String serviceName)
+			throws UtilsException {
+		final ICommandExecResult result = executeCommand(
+				String.format("net start %s", serviceName)); //$NON-NLS-1$
 		checkServiceRunning(serviceName);
+		return result;
 	}
 
 	@Override
@@ -38,6 +41,12 @@ class WindowsUtils implements IOSUtils {
 	@Override
 	public boolean isWindows() {
 		return true;
+	}
+
+	@Override
+	public ICommandExecResult stopService(final String serviceName)
+			throws UtilsException {
+		return executeCommand(String.format("net stop %s", serviceName)); //$NON-NLS-1$
 	}
 
 }
