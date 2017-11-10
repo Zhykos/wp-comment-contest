@@ -1,4 +1,4 @@
-package fr.zhykos.wp.commentcontest.tests.internal.utils;
+package fr.zhykos.wp.commentcontest.tests.internal.utils.os;
 
 public interface ICommandExecResult {
 

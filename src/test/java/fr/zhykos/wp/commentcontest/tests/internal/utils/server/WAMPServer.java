@@ -1,11 +1,15 @@
 package fr.zhykos.wp.commentcontest.tests.internal.utils.server;
 
-import fr.zhykos.wp.commentcontest.tests.internal.utils.ICommandExecResult;
-import fr.zhykos.wp.commentcontest.tests.internal.utils.Utils;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.os.IOSUtils;
 
 /*
- * Windows implementation for Apache / PHP / MySQL http://www.wampserver.com
+ * Windows implementation for Apache / PHP / MySQL: http://www.wampserver.com
+ */
+@SuppressWarnings("PMD.AtLeastOneConstructor")
+/*
+ * @SuppressWarnings("PMD.AtLeastOneConstructor") tcicognani: useless default
+ * constructor: no need to have one
  */
 class WAMPServer implements ITestServer {
 
@@ -15,19 +19,11 @@ class WAMPServer implements ITestServer {
 	@Override
 	public void launch(final int port, final String webappDirectory)
 			throws UtilsException {
-		checkRunningService(APACHE_SERVICE);
-		checkRunningService(MYSQL_SERVICE);
-	}
-
-	private static void checkRunningService(final String serviceName)
-			throws UtilsException {
-		final String commandLine = String.format("cmd.exe /c sc query %s", //$NON-NLS-1$
-				serviceName);
-		final ICommandExecResult cmdRes = Utils.executeCommand(commandLine);
-		if (!cmdRes.getOuput().contains("RUNNING")) { //$NON-NLS-1$
-			throw new UtilsException(String
-					.format("WAMP service '%s' is not running!", serviceName)); //$NON-NLS-1$
+		if (!IOSUtils.DEFAULT.isWindows()) {
+			throw new UtilsException("WAMP server is only for Windows!"); //$NON-NLS-1$
 		}
+		IOSUtils.DEFAULT.startService(APACHE_SERVICE);
+		IOSUtils.DEFAULT.startService(MYSQL_SERVICE);
 	}
 
 	@Override
