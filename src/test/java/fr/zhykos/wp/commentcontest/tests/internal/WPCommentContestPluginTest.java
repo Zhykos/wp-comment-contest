@@ -330,7 +330,7 @@ public class WPCommentContestPluginTest {
 	// }
 
 	@After
-	public void after() {
+	public void after() throws UtilsException {
 		if (this.driver != null) {
 			this.driver.quit();
 		}
@@ -343,8 +343,16 @@ public class WPCommentContestPluginTest {
 				fail(e.getMessage());
 			}
 		}
+		// TODO Utiliser la classe EMF Facet de vérification d'erreur lors du
+		// test unitaire
 		if (this.hasError) {
+			// XXX temp packagePlugin à supprimer car test
+			// TOTO Passer ces paramètre en "-D"
+			Utils.packagePlugin(new String[] { "css/comment-contest.css" },
+					new String[] { "js/OrgZhyweb_WPCommentContest_jQuery.js" });
 			fail("FAIL");
+		} else {
+			// Utils.packagePlugin("", new String[0], "", new String[0]);
 		}
 	}
 
