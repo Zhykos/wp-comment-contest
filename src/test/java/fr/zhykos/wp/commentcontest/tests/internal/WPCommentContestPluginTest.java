@@ -100,7 +100,6 @@ public class WPCommentContestPluginTest {
 	}
 
 	private static void testPlugin() {
-		fail();
 		// // Connection
 		// this.driver.get(this.baseUrl + "faces/page1.xhtml");
 		// this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
@@ -346,7 +345,9 @@ public class WPCommentContestPluginTest {
 		// test unitaire
 		// TODO Passer ces paramètre en "-D"
 		Utils.packagePlugin(new String[] { "css/comment-contest.css" }, //$NON-NLS-1$
-				new String[] { "js/OrgZhyweb_WPCommentContest_jQuery.js" }); //$NON-NLS-1$
+				new String[] { "js/OrgZhyweb_WPCommentContest_jQuery.js" }, //$NON-NLS-1$
+				new String[] {});
+		fail();
 	}
 
 	// private boolean isElementPresent(final By byElement) {

@@ -15,6 +15,8 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -239,11 +241,23 @@ public final class Utils {
 	// }
 
 	public static void packagePlugin(final String[] cssToMini,
-			final String[] jsToMini) throws UtilsException {
+			final String[] jsToMini, final String[] filesStrToRemove)
+			throws UtilsException {
 		LOGGER.info("Packaging plugin..."); //$NON-NLS-1$
 		checkDeleteDirectory(getPackageDir());
 		try {
-			copyAndModifyCode(cssToMini, jsToMini);
+			final List<File> filesToRemove = new ArrayList<>();
+			for (final String string : filesStrToRemove) {
+				@SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+				/*
+				 * @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+				 * ticognani: it's ok here to instanciate objects in a loop!
+				 */
+				final File file = new File(
+						getLocalPluginDir().getAbsoluteFile(), string);
+				filesToRemove.add(file);
+			}
+			copyAndModifyCode(cssToMini, jsToMini, filesToRemove);
 		} catch (final IOException e) {
 			throw new UtilsException(e);
 		}
@@ -261,7 +275,8 @@ public final class Utils {
 	}
 
 	private static void copyAndModifyCode(final String[] cssToMini,
-			final String[] jsToMini) throws IOException, UtilsException {
+			final String[] jsToMini, final List<File> filesToRemove)
+			throws IOException, UtilsException {
 		final UtilsException[] internEx = new UtilsException[1];
 		final File localPluginDir = getLocalPluginDir();
 		final Path pathAbsolute = Paths.get(localPluginDir.getAbsolutePath());
@@ -273,7 +288,8 @@ public final class Utils {
 						final File file = path.toFile();
 						if (!modifyFileReferencingMiniIfNecessary(file,
 								cssToMini, jsToMini)
-								&& !minimifiedFile(file, cssToMini, jsToMini)) {
+								&& !minimifiedFile(file, cssToMini, jsToMini)
+								&& !filesToRemove.contains(file)) {
 							FileUtils.copyFile(file,
 									getPackageFileFromPluginPath(path));
 						}
