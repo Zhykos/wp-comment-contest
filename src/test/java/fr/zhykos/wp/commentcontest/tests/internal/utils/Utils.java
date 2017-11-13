@@ -254,7 +254,7 @@ public final class Utils {
 		installChromeDriver(installChromeDrv);
 		final ChromeDriver driver = new ChromeDriver();
 		cleanDatabase();
-		driver.close();
+		driver.quit();
 	}
 
 	private static void cleanDatabase() throws UtilsException {
