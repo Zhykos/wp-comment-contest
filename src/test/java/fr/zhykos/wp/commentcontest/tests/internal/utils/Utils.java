@@ -23,6 +23,8 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
 
+import fr.zhykos.wp.commentcontest.tests.internal.utils.min.IMin;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.min.IMinFactory;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.server.ITestServer;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.server.ITestServerFactory;
 
@@ -322,12 +324,22 @@ public final class Utils {
 	}
 
 	private static void minimifiedFile(final File file) throws UtilsException {
-		final File targetFile = getPackageFileFromPluginPath(file.toPath());
-		if (!targetFile.getParentFile().mkdirs()) {
+		final File tempFile = getPackageFileFromPluginPath(file.toPath());
+		final File parentFile = tempFile.getParentFile();
+		if (!parentFile.exists() && !parentFile.mkdirs()) {
 			throw new UtilsException(String.format(
-					"Cannot create directory '%s'", targetFile.getParent())); //$NON-NLS-1$
+					"Cannot create directory '%s'", tempFile.getParent())); //$NON-NLS-1$
 		}
-		// TODO
+		final File targetFile = new File(parentFile,
+				addMinToFileName(tempFile.getName()));
+		final IMin minProcessor = IMinFactory.DEFAULT.createMinProcessor(file);
+		minProcessor.process(targetFile);
+	}
+
+	private static String addMinToFileName(final String name) {
+		final int lastIndex = name.lastIndexOf('.');
+		return name.substring(0, lastIndex) + ".min" //$NON-NLS-1$
+				+ name.substring(lastIndex);
 	}
 
 	protected static boolean modifyFileReferencingMiniIfNecessary(
@@ -401,6 +413,7 @@ public final class Utils {
 				newLine = newLine.replace(css, css.replace(".css", ".min.css")); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
+		System.out.println("change");
 		return newLine;
 	}
 

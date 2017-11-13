@@ -80,5 +80,10 @@
         <artifactId>tomcat-jsp-api</artifactId>
         <version>${tomcat.version}</version>
     </dependency>
+	<dependency>
+		<groupId>ro.isdc.wro4j</groupId>
+		<artifactId>wro4j-maven-plugin</artifactId>
+		<version>1.8.0</version>
+	</dependency>
   </dependencies>
 </project>

@@ -348,11 +348,12 @@ public class WPCommentContestPluginTest {
 		if (this.hasError) {
 			// XXX temp packagePlugin à supprimer car test
 			// TOTO Passer ces paramètre en "-D"
-			Utils.packagePlugin(new String[] { "css/comment-contest.css" },
-					new String[] { "js/OrgZhyweb_WPCommentContest_jQuery.js" });
+			Utils.packagePlugin(new String[] { "css/comment-contest.css" }, //$NON-NLS-1$
+					new String[] { "js/OrgZhyweb_WPCommentContest_jQuery.js" }); //$NON-NLS-1$
 			fail("FAIL");
 		} else {
-			// Utils.packagePlugin("", new String[0], "", new String[0]);
+			Utils.packagePlugin(new String[] { "css/comment-contest.css" }, //$NON-NLS-1$
+					new String[] { "js/OrgZhyweb_WPCommentContest_jQuery.js" }); //$NON-NLS-1$
 		}
 	}
 
