@@ -18,8 +18,8 @@ abstract class AbstractProcessorAction {
 	protected abstract void execute(final Reader reader, final Writer writer,
 			final Object processor) throws UtilsException;
 
-	protected final Reader execute(final Reader reader, final Object processor)
-			throws UtilsException {
+	protected final StringReader execute(final Reader reader,
+			final Object processor) throws UtilsException {
 		execute(reader, this.result, processor);
 		return new StringReader(this.result.toString());
 	}

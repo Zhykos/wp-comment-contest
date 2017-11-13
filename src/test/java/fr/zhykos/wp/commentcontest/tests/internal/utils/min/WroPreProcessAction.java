@@ -25,7 +25,10 @@ class WroPreProcessAction extends AbstractProcessorAction {
 	private static ResourcePreProcessor checkType(final Object processor)
 			throws UtilsException {
 		if (!(processor instanceof ResourcePreProcessor)) {
-			throw new UtilsException("");
+			throw new UtilsException(
+					String.format("Processor '%s' must be typed as '%s'", //$NON-NLS-1$
+							processor.getClass().getName(),
+							ResourcePreProcessor.class.getName()));
 		}
 		return (ResourcePreProcessor) processor;
 	}

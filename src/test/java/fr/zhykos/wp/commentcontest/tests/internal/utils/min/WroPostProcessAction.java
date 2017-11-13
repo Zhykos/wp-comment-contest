@@ -20,7 +20,10 @@ class WroPostProcessAction extends AbstractProcessorAction {
 	private static ResourcePostProcessor checkType(final Object processor)
 			throws UtilsException {
 		if (!(processor instanceof ResourcePostProcessor)) {
-			throw new UtilsException("");
+			throw new UtilsException(
+					String.format("Processor '%s' must be typed as '%s'", //$NON-NLS-1$
+							processor.getClass().getName(),
+							ResourcePostProcessor.class.getName()));
 		}
 		return (ResourcePostProcessor) processor;
 	}

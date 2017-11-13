@@ -51,7 +51,7 @@ import java.util.regex.Pattern;
 
 final class GrepUtils {
 	// XXX autre charset???
-	private static Charset charset = Charset.forName("ISO-8859-15");
+	private static Charset charset = Charset.forName("ISO-8859-15"); //$NON-NLS-1$
 	private static CharsetDecoder decoder = charset.newDecoder();
 	private static Pattern linePattern = Pattern.compile(".*\r?\n"); //$NON-NLS-1$
 	private static Pattern pattern;

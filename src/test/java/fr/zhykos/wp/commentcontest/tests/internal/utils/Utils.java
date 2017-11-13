@@ -381,17 +381,21 @@ public final class Utils {
 				final BufferedWriter bufferedWriter = new BufferedWriter(
 						fileWriter);) {
 			String line = bufferedReader.readLine();
+			int lineNumber = 1;
 			while (line != null) {
-				bufferedWriter
-						.write(modifyLineWithMini(line, cssToMini, jsToMini));
+				final String lineToWrite = modifyLineWithMini(line, lineNumber,
+						file, cssToMini, jsToMini);
+				bufferedWriter.write(lineToWrite);
 				bufferedWriter.newLine();
 				line = bufferedReader.readLine();
+				lineNumber++;
 			}
 		}
 	}
 
 	private static String modifyLineWithMini(final String line,
-			final String[] cssToMini, final String[] jsToMini) {
+			final int lineNumber, final File file, final String[] cssToMini,
+			final String[] jsToMini) {
 		String newLine = line;
 		for (final String javascript : jsToMini) {
 			if (newLine
@@ -401,6 +405,10 @@ public final class Utils {
 							".*wp_enqueue_script\\s?\\(.*%s.*", javascript))) { //$NON-NLS-1$
 				newLine = newLine.replace(javascript,
 						javascript.replace(".js", ".min.js")); //$NON-NLS-1$ //$NON-NLS-2$
+				LOGGER.info(String.format(
+						"Line number %d from file '%s' has changed: min javascript '%s'", //$NON-NLS-1$
+						Integer.valueOf(lineNumber), file.getAbsolutePath(),
+						javascript));
 			}
 		}
 		for (final String css : cssToMini) {
@@ -411,9 +419,12 @@ public final class Utils {
 			if (newLine.matches(String.format(".*wp_enqueue_style\\s?\\(.*%s.*", //$NON-NLS-1$
 					css))) {
 				newLine = newLine.replace(css, css.replace(".css", ".min.css")); //$NON-NLS-1$ //$NON-NLS-2$
+				LOGGER.info(String.format(
+						"Line number %d from file '%s' has changed: min CSS '%s'", //$NON-NLS-1$
+						Integer.valueOf(lineNumber), file.getAbsolutePath(),
+						css));
 			}
 		}
-		System.out.println("change");
 		return newLine;
 	}
 

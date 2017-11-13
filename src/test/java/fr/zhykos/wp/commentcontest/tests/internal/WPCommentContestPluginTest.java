@@ -31,7 +31,6 @@ public class WPCommentContestPluginTest {
 			.getBooleanSystemProperty(WPCommentContestPluginTest.class.getName()
 					+ ".installchromedriver", true); //$NON-NLS-1$
 
-	private boolean hasError = false;
 	// private int currentDriver;
 	private WebDriver driver;
 	// private String baseUrl;
@@ -97,11 +96,11 @@ public class WPCommentContestPluginTest {
 		// this.currentDriver = CHROME_DRIVER;
 		// this.selenium = new WebDriverBackedSelenium(this.driver,
 		// this.baseUrl);
-		testSelenium();
+		testPlugin();
 	}
 
-	private void testSelenium() {
-		this.hasError = true;
+	private static void testPlugin() {
+		fail();
 		// // Connection
 		// this.driver.get(this.baseUrl + "faces/page1.xhtml");
 		// this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
@@ -345,16 +344,9 @@ public class WPCommentContestPluginTest {
 		}
 		// TODO Utiliser la classe EMF Facet de vérification d'erreur lors du
 		// test unitaire
-		if (this.hasError) {
-			// XXX temp packagePlugin à supprimer car test
-			// TOTO Passer ces paramètre en "-D"
-			Utils.packagePlugin(new String[] { "css/comment-contest.css" }, //$NON-NLS-1$
-					new String[] { "js/OrgZhyweb_WPCommentContest_jQuery.js" }); //$NON-NLS-1$
-			fail("FAIL");
-		} else {
-			Utils.packagePlugin(new String[] { "css/comment-contest.css" }, //$NON-NLS-1$
-					new String[] { "js/OrgZhyweb_WPCommentContest_jQuery.js" }); //$NON-NLS-1$
-		}
+		// TODO Passer ces paramètre en "-D"
+		Utils.packagePlugin(new String[] { "css/comment-contest.css" }, //$NON-NLS-1$
+				new String[] { "js/OrgZhyweb_WPCommentContest_jQuery.js" }); //$NON-NLS-1$
 	}
 
 	// private boolean isElementPresent(final By byElement) {

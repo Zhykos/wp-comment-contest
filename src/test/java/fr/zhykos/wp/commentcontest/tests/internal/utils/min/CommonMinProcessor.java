@@ -5,6 +5,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Arrays;
 
@@ -36,9 +38,13 @@ class CommonMinProcessor implements IMin {
 
 	private void internalProcess(final File target)
 			throws IOException, UtilsException {
+		/*
+		 * XXX Tout ce code est pourri mais pour le moment il fonctionne : les
+		 * actions spécifiques WRO ne devraient pas exister et on devrait tout
+		 * instancier dans la factory
+		 */
 		try (final FileReader fileReader = new FileReader(this.source);
 				final FileWriter fileWriter = new FileWriter(target);) {
-			Reader reader = fileReader;
 			final AbstractProcessorAction preAction = new AbstractProcessorAction() {
 				@Override
 				protected void execute(final Reader absReader,
@@ -55,6 +61,9 @@ class CommonMinProcessor implements IMin {
 					postProcess(absReader, absWriter);
 				}
 			};
+			final StringWriter writer = new StringWriter();
+			IOUtils.copy(fileReader, writer);
+			StringReader reader = new StringReader(writer.toString());
 			final AbstractProcessorAction[] actions = new AbstractProcessorAction[] {
 					preAction, new WroPreProcessAction(this.processors, target),
 					new WroPostProcessAction(this.processors), postAction };
