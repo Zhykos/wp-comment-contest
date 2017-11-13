@@ -15,6 +15,9 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -31,7 +34,22 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.min.IMinFactory;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.server.ITestServer;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.server.ITestServerFactory;
 
+/*
+ * TODO Découper cette classe !
+ */
 public final class Utils {
+
+	private interface IDatabase {
+		String getAddress();
+
+		String getLogin();
+
+		String getPassword();
+
+		String getBaseName();
+
+		String getDriver(); // XXX Passer une classe plutot
+	}
 
 	private static final Logger LOGGER = Logger
 			.getLogger(Utils.class.getName());
@@ -235,7 +253,64 @@ public final class Utils {
 			throws UtilsException {
 		installChromeDriver(installChromeDrv);
 		final ChromeDriver driver = new ChromeDriver();
+		cleanDatabase();
 		driver.close();
+	}
+
+	private static void cleanDatabase() throws UtilsException {
+		final IDatabase databaseInfo = getDatabaseInfo();
+		try {
+			Class.forName(databaseInfo.getDriver());
+		} catch (final ClassNotFoundException e) {
+			throw new UtilsException(e);
+		}
+		final String url = String.format(
+				"jdbc:mysql://%s:%d/?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", //$NON-NLS-1$
+				databaseInfo.getAddress(), Integer.valueOf(3306));
+		try (final Connection connection = DriverManager.getConnection(url,
+				databaseInfo.getLogin(), databaseInfo.getPassword());) {
+			final String dropDatabase = String.format(
+					"DROP DATABASE IF EXISTS %s", //$NON-NLS-1$
+					databaseInfo.getBaseName());
+			LOGGER.info(dropDatabase);
+			connection.nativeSQL(dropDatabase);
+		} catch (final SQLException e) {
+			throw new UtilsException(e);
+		}
+	}
+
+	private static IDatabase getDatabaseInfo() {
+		return new IDatabase() {
+			@Override
+			public String getPassword() {
+				return System.getProperty(Utils.class.getName() + ".dbpassword", //$NON-NLS-1$
+						""); //$NON-NLS-1$
+			}
+
+			@Override
+			public String getLogin() {
+				return System.getProperty(Utils.class.getName() + ".dblogin", //$NON-NLS-1$
+						"root"); //$NON-NLS-1$
+			}
+
+			@Override
+			public String getAddress() {
+				return System.getProperty(Utils.class.getName() + ".dbaddress", //$NON-NLS-1$
+						"localhost"); //$NON-NLS-1$
+			}
+
+			@Override
+			public String getBaseName() {
+				return System.getProperty(Utils.class.getName() + ".wpdatabase", //$NON-NLS-1$
+						"wptestzf"); //$NON-NLS-1$
+			}
+
+			@Override
+			public String getDriver() {
+				return System.getProperty(Utils.class.getName() + ".dbdriver", //$NON-NLS-1$
+						"com.mysql.cj.jdbc.Driver"); //$NON-NLS-1$
+			}
+		};
 	}
 
 	public static void packagePlugin(final String[] cssToMini,
