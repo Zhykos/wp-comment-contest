@@ -24,6 +24,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.chrome.ChromeDriver;
 
 import fr.zhykos.wp.commentcontest.tests.internal.utils.min.IMin;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.min.IMinFactory;
@@ -161,38 +162,35 @@ public final class Utils {
 			throws UtilsException {
 		// http://localhost:8080/wordpress/index.php
 		LOGGER.info("Starting server..."); //$NON-NLS-1$
-		// XXX commenté pour tests
-		// final int port = getIntegerSystemProperty(
-		// Utils.class.getName() + ".serverport", 8080); //$NON-NLS-1$
-		// final File wpEmbedDir = new
-		// File(getWebappDirectory().getAbsolutePath(),
-		// "wordpress"); //$NON-NLS-1$
+		final int port = getIntegerSystemProperty(
+				Utils.class.getName() + ".serverport", 8080); //$NON-NLS-1$
+		final File wpEmbedDir = new File(getWebappDirectory().getAbsolutePath(),
+				"wordpress"); //$NON-NLS-1$
 		final ITestServer server = ITestServerFactory.DEFAULT.createServer();
-		// final File wpRunDir = server.deployWordPress(wpEmbedDir);
-		// deployPlugin(wpRunDir);
-		// server.launch(port, wpRunDir.getAbsolutePath());
-		// configureWordpress(doInstChrmDrv);
+		final File wpRunDir = server.deployWordPress(wpEmbedDir);
+		deployPlugin(wpRunDir);
+		server.launch(port, wpRunDir.getAbsolutePath());
+		configureWordpress(doInstChrmDrv);
 		LOGGER.info(DONE_STR);
 		return server;
 	}
 
-	// private static void deployPlugin(final File wpRunDir)
-	// throws UtilsException {
-	// try {
-	// final File localPlgDir = getLocalPluginDir();
-	// final File wpPluginDir = new File(wpRunDir,
-	// "wp-content/plugins/pluginToTest"); //$NON-NLS-1$
-	// if (!wpPluginDir.mkdir()) {
-	// throw new UtilsException(
-	// String.format("Cannot create directory '%s'", //$NON-NLS-1$
-	// wpPluginDir.getAbsolutePath()));
-	// }
-	// FileUtils.copyDirectory(localPlgDir, wpPluginDir);
-	// // https://github.com/wro4j/wro4j.git
-	// } catch (final IOException e) {
-	// throw new UtilsException(e);
-	// }
-	// }
+	private static void deployPlugin(final File wpRunDir)
+			throws UtilsException {
+		try {
+			final File localPlgDir = getLocalPluginDir();
+			final File wpPluginDir = new File(wpRunDir,
+					"wp-content/plugins/pluginToTest"); //$NON-NLS-1$
+			if (!wpPluginDir.mkdir()) {
+				throw new UtilsException(
+						String.format("Cannot create directory '%s'", //$NON-NLS-1$
+								wpPluginDir.getAbsolutePath()));
+			}
+			FileUtils.copyDirectory(localPlgDir, wpPluginDir);
+		} catch (final IOException e) {
+			throw new UtilsException(e);
+		}
+	}
 
 	public static File getLocalPluginDir() {
 		final String localPlgDirStr = System.getProperty(
@@ -233,12 +231,12 @@ public final class Utils {
 				chromeDriverExe.getAbsolutePath());
 	}
 
-	// private static void configureWordpress(final boolean installChromeDrv)
-	// throws UtilsException {
-	// installChromeDriver(installChromeDrv);
-	// final ChromeDriver driver = new ChromeDriver();
-	// driver.close();
-	// }
+	private static void configureWordpress(final boolean installChromeDrv)
+			throws UtilsException {
+		installChromeDriver(installChromeDrv);
+		final ChromeDriver driver = new ChromeDriver();
+		driver.close();
+	}
 
 	public static void packagePlugin(final String[] cssToMini,
 			final String[] jsToMini, final String[] filesStrToRemove)
@@ -443,51 +441,5 @@ public final class Utils {
 		}
 		return newLine;
 	}
-
-	// private static void minimifiedAndChangeCode(final File packageDir,
-	// final String[] fileToMini) throws IOException, UtilsException {
-	// final Set<File> files = searchAllFilesToReplace(packageDir, fileToMini);
-	// for (final File file : files) {
-	// renameFile(file, file.getName() + ".temp");
-	// }
-	// System.out.println(files);
-	// }
-	//
-	// private static void renameFile(final File file, final String newName)
-	// throws UtilsException, IOException {
-	// final File newFile = new File(file.getParent(), newName);
-	// Files.move(file.toPath(), newFile.toPath());
-	// if (!newFile.exists()) {
-	// throw new UtilsException("cannot rename");
-	// }
-	// }
-	//
-	// private static Set<File> searchAllFilesToReplace(final File packageDir,
-	// final String[] fileToMini) throws IOException, UtilsException {
-	// final UtilsException[] internEx = new UtilsException[1];
-	// final Set<File> foundFiles = new HashSet<>();
-	// try (final Stream<Path> paths = Files
-	// .walk(Paths.get(packageDir.getAbsolutePath()))) {
-	// paths.filter(Files::isRegularFile).forEach(new Consumer<Path>() {
-	// @Override
-	// public void accept(final Path path) {
-	// try {
-	// for (final String fileStr : fileToMini) {
-	// final File file = path.toFile();
-	// final File[] resGrep = GrepUtils.grep(file,
-	// fileStr);
-	// foundFiles.addAll(Arrays.asList(resGrep));
-	// }
-	// } catch (final UtilsException e) {
-	// internEx[0] = e;
-	// }
-	// }
-	// });
-	// }
-	// if (internEx[0] != null) {
-	// throw internEx[0];
-	// }
-	// return foundFiles;
-	// }
 
 }
