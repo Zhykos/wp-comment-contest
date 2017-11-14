@@ -1,5 +1,7 @@
 package fr.zhykos.wp.commentcontest.tests.internal.utils;
 
+import static org.junit.Assert.fail;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -18,8 +20,10 @@ import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -27,7 +31,12 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+
+import com.thoughtworks.selenium.Selenium;
+import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 
 import fr.zhykos.wp.commentcontest.tests.internal.utils.min.IMin;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.min.IMinFactory;
@@ -49,12 +58,22 @@ public final class Utils {
 		String getBaseName();
 
 		String getDriver(); // XXX Passer une classe plutot
+
+		int getPort();
+
+		default String print() {
+			return String.format(
+					"Driver: '%s' / Address: '%s' / Port: %d / Login: '%s' / Password: '%s' / Database: '%s'", //$NON-NLS-1$
+					getDriver(), getAddress(), Integer.valueOf(getPort()),
+					getLogin(), getPassword(), getBaseName());
+		}
 	}
 
 	private static final Logger LOGGER = Logger
 			.getLogger(Utils.class.getName());
 	private static final String DONE_STR = "done!"; //$NON-NLS-1$
 	private static final String WEBAPP = "webapp"; //$NON-NLS-1$
+	private static final String SELENIUM_TIMEOUT = "30000"; //$NON-NLS-1$
 
 	private Utils() {
 		// Do nothing and must not be called
@@ -178,17 +197,14 @@ public final class Utils {
 
 	public static ITestServer startServer(final boolean doInstChrmDrv)
 			throws UtilsException {
-		// http://localhost:8080/wordpress/index.php
 		LOGGER.info("Starting server..."); //$NON-NLS-1$
-		final int port = getIntegerSystemProperty(
-				Utils.class.getName() + ".serverport", 8080); //$NON-NLS-1$
 		final File wpEmbedDir = new File(getWebappDirectory().getAbsolutePath(),
 				"wordpress"); //$NON-NLS-1$
 		final ITestServer server = ITestServerFactory.DEFAULT.createServer();
 		final File wpRunDir = server.deployWordPress(wpEmbedDir);
 		deployPlugin(wpRunDir);
-		server.launch(port, wpRunDir.getAbsolutePath());
-		configureWordpress(doInstChrmDrv);
+		server.start();
+		configureWordpress(doInstChrmDrv, server);
 		LOGGER.info(DONE_STR);
 		return server;
 	}
@@ -249,12 +265,100 @@ public final class Utils {
 				chromeDriverExe.getAbsolutePath());
 	}
 
-	private static void configureWordpress(final boolean installChromeDrv)
+	private static IWordPressInformation configureWordpress(
+			final boolean installChromeDrv, final ITestServer server)
 			throws UtilsException {
 		installChromeDriver(installChromeDrv);
 		final ChromeDriver driver = new ChromeDriver();
-		cleanDatabase();
-		driver.quit();
+		try {
+			cleanDatabase();
+			final String homeURL = server.getHomeURL();
+			driver.get(homeURL);
+			final Selenium selenium = new WebDriverBackedSelenium(driver,
+					homeURL);
+			selenium.waitForPageToLoad(SELENIUM_TIMEOUT);
+			// XXX select retourne une exception runtime crade s'il ne trouve
+			// pas : gérer le cas en sélectionnant l'anglais au cas où
+			selenium.select("id=language", //$NON-NLS-1$
+					String.format("value=%s", Locale.getDefault().toString())); //$NON-NLS-1$
+			selenium.click("id=language-continue"); //$NON-NLS-1$
+			selenium.waitForPageToLoad(SELENIUM_TIMEOUT);
+			final String step1href = driver
+					.findElement(By.xpath("//body//p[@class='step']/a")) //$NON-NLS-1$
+					.getAttribute("href"); //$NON-NLS-1$
+			selenium.open(step1href);
+			selenium.waitForPageToLoad(SELENIUM_TIMEOUT);
+			final IDatabase databaseInfo = getDatabaseInfo();
+			selenium.type("id=dbname", databaseInfo.getBaseName()); //$NON-NLS-1$
+			selenium.type("id=uname", databaseInfo.getLogin()); //$NON-NLS-1$
+			selenium.type("id=pwd", databaseInfo.getPassword()); //$NON-NLS-1$
+			selenium.type("id=dbhost", databaseInfo.getAddress()); //$NON-NLS-1$
+			selenium.type("id=prefix", "wp_"); //$NON-NLS-1$ //$NON-NLS-2$
+			driver.findElement(By.xpath("//body//form//p[@class='step']/input")) //$NON-NLS-1$
+					.click();
+			selenium.waitForPageToLoad(SELENIUM_TIMEOUT);
+			final String step2conTest = driver.findElement(By.xpath("//body")) //$NON-NLS-1$
+					.getAttribute("id"); //$NON-NLS-1$
+			if ("error-page".equals(step2conTest)) { //$NON-NLS-1$
+				fail("Cannot connect to database! " + databaseInfo.print()); //$NON-NLS-1$
+			}
+			final String step2href = driver
+					.findElement(By.xpath("//body//p[@class='step']/a")) //$NON-NLS-1$
+					.getAttribute("href"); //$NON-NLS-1$
+			selenium.open(step2href);
+			selenium.waitForPageToLoad(SELENIUM_TIMEOUT);
+			selenium.type("id=weblog_title", "Zhykos Auto Plugin Tests"); //$NON-NLS-1$
+			final String wpLogin = "Zhykos";
+			selenium.type("id=user_login", wpLogin); //$NON-NLS-1$
+			selenium.type("id=admin_email", "zhykos@gmail.com"); //$NON-NLS-1$
+			selenium.check("id=blog_public"); //$NON-NLS-1$
+			final String wpPassword = selenium.getValue("id=pass1-text"); //$NON-NLS-1$
+			selenium.click("id=submit"); //$NON-NLS-1$
+			selenium.waitForPageToLoad(SELENIUM_TIMEOUT);
+			final List<WebElement> installMessages = driver
+					.findElements(By.xpath("//body//p[@class='message']")); //$NON-NLS-1$
+			if (!installMessages.isEmpty()) {
+				final String message = installMessages.get(0).getText();
+				fail(String.format("Cannot install WordPress! Error: '%s'", //$NON-NLS-1$
+						message));
+			}
+			final String loginHref = driver
+					.findElement(By.xpath("//body//p[@class='step']/a")) //$NON-NLS-1$
+					.getAttribute("href"); //$NON-NLS-1$
+			selenium.open(loginHref);
+			selenium.waitForPageToLoad(SELENIUM_TIMEOUT);
+			selenium.type("id=user_login", wpLogin); //$NON-NLS-1$
+			selenium.type("id=user_pass", wpPassword); //$NON-NLS-1$
+			selenium.check("id=rememberme"); //$NON-NLS-1$
+			selenium.click("id=wp-submit"); //$NON-NLS-1$
+			selenium.waitForPageToLoad(SELENIUM_TIMEOUT);
+			final List<WebElement> loginMessages = driver
+					.findElementsById("login_error"); //$NON-NLS-1$
+			if (!loginMessages.isEmpty()) {
+				final String message = loginMessages.get(0).getText();
+				fail(String.format(
+						"Cannot login to WordPress! Wrong configuration? Error: '%s'", //$NON-NLS-1$
+						message));
+			}
+			return new IWordPressInformation() {
+				@Override
+				public String getURL() {
+					return homeURL;
+				}
+
+				@Override
+				public String getPassword() {
+					return wpPassword;
+				}
+
+				@Override
+				public String getLogin() {
+					return wpLogin;
+				}
+			};
+		} finally {
+			driver.quit();
+		}
 	}
 
 	private static void cleanDatabase() throws UtilsException {
@@ -266,14 +370,20 @@ public final class Utils {
 		}
 		final String url = String.format(
 				"jdbc:mysql://%s:%d/?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", //$NON-NLS-1$
-				databaseInfo.getAddress(), Integer.valueOf(3306));
+				databaseInfo.getAddress(),
+				Integer.valueOf(databaseInfo.getPort()));
 		try (final Connection connection = DriverManager.getConnection(url,
-				databaseInfo.getLogin(), databaseInfo.getPassword());) {
+				databaseInfo.getLogin(), databaseInfo.getPassword());
+				final Statement statement = connection.createStatement();) {
 			final String dropDatabase = String.format(
 					"DROP DATABASE IF EXISTS %s", //$NON-NLS-1$
 					databaseInfo.getBaseName());
 			LOGGER.info(dropDatabase);
-			connection.nativeSQL(dropDatabase);
+			statement.executeUpdate(dropDatabase);
+			final String createDatabase = String.format("CREATE DATABASE %s", //$NON-NLS-1$
+					databaseInfo.getBaseName());
+			LOGGER.info(createDatabase);
+			statement.executeUpdate(createDatabase);
 		} catch (final SQLException e) {
 			throw new UtilsException(e);
 		}
@@ -309,6 +419,12 @@ public final class Utils {
 			public String getDriver() {
 				return System.getProperty(Utils.class.getName() + ".dbdriver", //$NON-NLS-1$
 						"com.mysql.cj.jdbc.Driver"); //$NON-NLS-1$
+			}
+
+			@Override
+			public int getPort() {
+				return getIntegerSystemProperty(
+						Utils.class.getName() + ".dbport", 80); //$NON-NLS-1$
 			}
 		};
 	}
