@@ -18,7 +18,7 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.os.IOSUtils;
  * @SuppressWarnings("PMD.AtLeastOneConstructor") tcicognani: useless default
  * constructor: no need to have one
  */
-class WAMPServer implements ITestServer {
+class WAMPServer extends AbstractServer {
 
 	private static final Logger LOGGER = Logger
 			.getLogger(WAMPServer.class.getName());
@@ -26,8 +26,7 @@ class WAMPServer implements ITestServer {
 	private static final String MYSQL_SERVICE = "wampmysqld64"; //$NON-NLS-1$
 
 	@Override
-	public void launch(final int port, final String wpRunDir)
-			throws UtilsException {
+	public void start() throws UtilsException {
 		if (!IOSUtils.DEFAULT.isWindows()) {
 			throw new UtilsException("WAMP server is only for Windows!"); //$NON-NLS-1$
 		}
@@ -42,7 +41,8 @@ class WAMPServer implements ITestServer {
 	}
 
 	@Override
-	public File deployWordPress(final File wpEmbedDir) throws UtilsException {
+	protected File specificDeployWordPress(final File wpEmbedDir)
+			throws UtilsException {
 		// Copy WordPress into WAMP www directory
 		final String propertyKey = getClass().getName() + ".wptestdir"; //$NON-NLS-1$
 		final String wpTestDirStr = System.getProperty(propertyKey);
@@ -62,7 +62,7 @@ class WAMPServer implements ITestServer {
 					String.format("Cannot create directory '%s'", //$NON-NLS-1$
 							wpTestDir.getAbsolutePath()));
 		}
-		LOGGER.info(String.format("Deploying WordPress in '%s'...", //$NON-NLS-1$
+		LOGGER.info(String.format("Deploying WordPress for WAMP in '%s'...", //$NON-NLS-1$
 				wpTestDir.getAbsolutePath()));
 		try {
 			FileUtils.copyDirectory(wpEmbedDir, wpTestDir);
@@ -71,6 +71,14 @@ class WAMPServer implements ITestServer {
 		}
 		LOGGER.info("Done!"); //$NON-NLS-1$
 		return wpTestDir;
+	}
+
+	@Override
+	public String getHomeURL() throws UtilsException {
+		final String testUrlBase = System.getProperty(
+				getClass().getName() + ".testurlbase", //$NON-NLS-1$
+				getWordpressEmbeddedDir().getName());
+		return String.format("%s%s", super.getHomeURL(), testUrlBase); //$NON-NLS-1$
 	}
 
 }

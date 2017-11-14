@@ -14,8 +14,7 @@ class TestServerFactory implements ITestServerFactory {
 	@Override
 	public ITestServer createServer() throws UtilsException {
 		final String className = System.getProperty(
-				ITestServerFactory.class.getName() + ".server", //$NON-NLS-1$
-				EmbeddedTomcatServer.class.getName());
+				ITestServerFactory.class.getName() + ".server", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		Class<?> classs = null;
 		try {
 			classs = Class.forName(className);

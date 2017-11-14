@@ -6,10 +6,12 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 
 public interface ITestServer {
 
-	void launch(int port, String wpRunDir) throws UtilsException;
+	void start() throws UtilsException;
+
+	void stop() throws UtilsException;
 
 	File deployWordPress(File wpEmbedDir) throws UtilsException;
 
-	void stop() throws UtilsException;
+	String getHomeURL() throws UtilsException;
 
 }
