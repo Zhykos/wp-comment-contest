@@ -73,7 +73,7 @@ public final class Utils {
 			.getLogger(Utils.class.getName());
 	private static final String DONE_STR = "done!"; //$NON-NLS-1$
 	private static final String WEBAPP = "webapp"; //$NON-NLS-1$
-	private static final String SELENIUM_TIMEOUT = "30000"; //$NON-NLS-1$
+	private static final String PAGE_LOAD_TIMEOUT = "30000"; //$NON-NLS-1$
 
 	private Utils() {
 		// Do nothing and must not be called
@@ -195,7 +195,7 @@ public final class Utils {
 		}
 	}
 
-	public static ITestServer startServer(final boolean doInstChrmDrv)
+	public static IWordPressInformation startServer(final boolean doInstChrmDrv)
 			throws UtilsException {
 		LOGGER.info("Starting server..."); //$NON-NLS-1$
 		final File wpEmbedDir = new File(getWebappDirectory().getAbsolutePath(),
@@ -204,9 +204,10 @@ public final class Utils {
 		final File wpRunDir = server.deployWordPress(wpEmbedDir);
 		deployPlugin(wpRunDir);
 		server.start();
-		configureWordpress(doInstChrmDrv, server);
+		final IWordPressInformation wpInfo = configureWordpress(doInstChrmDrv,
+				server);
 		LOGGER.info(DONE_STR);
-		return server;
+		return wpInfo;
 	}
 
 	private static void deployPlugin(final File wpRunDir)
@@ -276,18 +277,18 @@ public final class Utils {
 			driver.get(homeURL);
 			final Selenium selenium = new WebDriverBackedSelenium(driver,
 					homeURL);
-			selenium.waitForPageToLoad(SELENIUM_TIMEOUT);
+			selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 			// XXX select retourne une exception runtime crade s'il ne trouve
 			// pas : gérer le cas en sélectionnant l'anglais au cas où
 			selenium.select("id=language", //$NON-NLS-1$
 					String.format("value=%s", Locale.getDefault().toString())); //$NON-NLS-1$
 			selenium.click("id=language-continue"); //$NON-NLS-1$
-			selenium.waitForPageToLoad(SELENIUM_TIMEOUT);
+			selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 			final String step1href = driver
 					.findElement(By.xpath("//body//p[@class='step']/a")) //$NON-NLS-1$
 					.getAttribute("href"); //$NON-NLS-1$
 			selenium.open(step1href);
-			selenium.waitForPageToLoad(SELENIUM_TIMEOUT);
+			selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 			final IDatabase databaseInfo = getDatabaseInfo();
 			selenium.type("id=dbname", databaseInfo.getBaseName()); //$NON-NLS-1$
 			selenium.type("id=uname", databaseInfo.getLogin()); //$NON-NLS-1$
@@ -296,7 +297,7 @@ public final class Utils {
 			selenium.type("id=prefix", "wp_"); //$NON-NLS-1$ //$NON-NLS-2$
 			driver.findElement(By.xpath("//body//form//p[@class='step']/input")) //$NON-NLS-1$
 					.click();
-			selenium.waitForPageToLoad(SELENIUM_TIMEOUT);
+			selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 			final String step2conTest = driver.findElement(By.xpath("//body")) //$NON-NLS-1$
 					.getAttribute("id"); //$NON-NLS-1$
 			if ("error-page".equals(step2conTest)) { //$NON-NLS-1$
@@ -306,15 +307,16 @@ public final class Utils {
 					.findElement(By.xpath("//body//p[@class='step']/a")) //$NON-NLS-1$
 					.getAttribute("href"); //$NON-NLS-1$
 			selenium.open(step2href);
-			selenium.waitForPageToLoad(SELENIUM_TIMEOUT);
-			selenium.type("id=weblog_title", "Zhykos Auto Plugin Tests"); //$NON-NLS-1$
+			selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+			final String websiteName = "Zhykos Auto Plugin Tests";
+			selenium.type("id=weblog_title", websiteName); //$NON-NLS-1$
 			final String wpLogin = "Zhykos";
 			selenium.type("id=user_login", wpLogin); //$NON-NLS-1$
 			selenium.type("id=admin_email", "zhykos@gmail.com"); //$NON-NLS-1$
 			selenium.check("id=blog_public"); //$NON-NLS-1$
 			final String wpPassword = selenium.getValue("id=pass1-text"); //$NON-NLS-1$
 			selenium.click("id=submit"); //$NON-NLS-1$
-			selenium.waitForPageToLoad(SELENIUM_TIMEOUT);
+			selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 			final List<WebElement> installMessages = driver
 					.findElements(By.xpath("//body//p[@class='message']")); //$NON-NLS-1$
 			if (!installMessages.isEmpty()) {
@@ -326,26 +328,9 @@ public final class Utils {
 					.findElement(By.xpath("//body//p[@class='step']/a")) //$NON-NLS-1$
 					.getAttribute("href"); //$NON-NLS-1$
 			selenium.open(loginHref);
-			selenium.waitForPageToLoad(SELENIUM_TIMEOUT);
-			selenium.type("id=user_login", wpLogin); //$NON-NLS-1$
-			selenium.type("id=user_pass", wpPassword); //$NON-NLS-1$
-			selenium.check("id=rememberme"); //$NON-NLS-1$
-			selenium.click("id=wp-submit"); //$NON-NLS-1$
-			selenium.waitForPageToLoad(SELENIUM_TIMEOUT);
-			final List<WebElement> loginMessages = driver
-					.findElementsById("login_error"); //$NON-NLS-1$
-			if (!loginMessages.isEmpty()) {
-				final String message = loginMessages.get(0).getText();
-				fail(String.format(
-						"Cannot login to WordPress! Wrong configuration? Error: '%s'", //$NON-NLS-1$
-						message));
-			}
+			selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+			htmlConnectionPage(driver, selenium, wpLogin, wpPassword);
 			return new IWordPressInformation() {
-				@Override
-				public String getURL() {
-					return homeURL;
-				}
-
 				@Override
 				public String getPassword() {
 					return wpPassword;
@@ -355,9 +340,45 @@ public final class Utils {
 				public String getLogin() {
 					return wpLogin;
 				}
+
+				@Override
+				public ITestServer getTestServer() {
+					return server;
+				}
+
+				@Override
+				public String getWebsiteName() {
+					return websiteName;
+				}
 			};
 		} finally {
 			driver.quit();
+		}
+	}
+
+	// XXX ChromeDriver en paramètre ! Passer un driver générique
+	public static void htmlConnectionPage(final ChromeDriver driver,
+			final Selenium selenium, final IWordPressInformation wpInfo) {
+		htmlConnectionPage(driver, selenium, wpInfo.getLogin(),
+				wpInfo.getPassword());
+	}
+
+	// XXX ChromeDriver en paramètre ! Passer un driver générique
+	private static void htmlConnectionPage(final ChromeDriver driver,
+			final Selenium selenium, final String wpLogin,
+			final String wpPassword) {
+		selenium.type("id=user_login", wpLogin); //$NON-NLS-1$
+		selenium.type("id=user_pass", wpPassword); //$NON-NLS-1$
+		selenium.check("id=rememberme"); //$NON-NLS-1$
+		selenium.click("id=wp-submit"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		final List<WebElement> loginMessages = driver
+				.findElementsById("login_error"); //$NON-NLS-1$
+		if (!loginMessages.isEmpty()) {
+			final String message = loginMessages.get(0).getText();
+			fail(String.format(
+					"Cannot login to WordPress! Wrong configuration? Error: '%s'", //$NON-NLS-1$
+					message));
 		}
 	}
 
