@@ -15,6 +15,8 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 import com.thoughtworks.selenium.Selenium;
 
+import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlugin;
+
 public final class WpHtmlUtils {
 
 	/** Number of plug-in to find with a specific search **/
@@ -62,16 +64,18 @@ public final class WpHtmlUtils {
 		checkH1Tag(driver, Translations.extensions);
 	}
 
-	public static void activatePlugin(final Selenium selenium,
+	public static void activatePlugins(final Selenium selenium,
 			final WebDriver driver, final String homeURL,
-			final String pluginId) {
+			final IWordPressPlugin[] plugins) {
 		openExtensionsPage(selenium, driver, homeURL);
-		final String xpathExpression = String.format(
-				"//form[@id='bulk-action-form']//table//tr[@data-slug='%s']/td//span[@class='activate']/a", //$NON-NLS-1$
-				pluginId);
-		driver.findElement(By.xpath(xpathExpression)).click();
-		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-		// TODO y a t il une facon de vérifier cette activation ?
+		for (final IWordPressPlugin plugin : plugins) {
+			final String xpathExpression = String.format(
+					"//form[@id='bulk-action-form']//table//tr[@data-slug='%s']/td//span[@class='activate']/a", //$NON-NLS-1$
+					plugin.getId());
+			driver.findElement(By.xpath(xpathExpression)).click();
+			selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+			plugin.defaultActivationAction();
+		}
 	}
 
 	private static void checkH1Tag(final WebDriver driver,
@@ -132,18 +136,20 @@ public final class WpHtmlUtils {
 		}
 	}
 
-	public static void installPlugins(final IWordPressPlugin[] otherPlugins,
-			final Selenium selenium, final WebDriver driver,
-			final String homeURL) throws UtilsException {
+	public static void installAndActivateExternalPlugins(
+			final IWordPressPlugin[] plugins, final Selenium selenium,
+			final WebDriver driver, final String homeURL)
+			throws UtilsException {
 		selenium.open(homeURL + "/wp-admin/plugin-install.php"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 		checkH1Tag(driver, Translations.addExtensions);
-		for (final IWordPressPlugin plugin : otherPlugins) {
-			installPlugin(selenium, driver, plugin);
+		for (final IWordPressPlugin plugin : plugins) {
+			installExternalPlugin(selenium, driver, plugin);
 		}
+		activatePlugins(selenium, driver, homeURL, plugins);
 	}
 
-	private static void installPlugin(final Selenium selenium,
+	private static void installExternalPlugin(final Selenium selenium,
 			final WebDriver driver, final IWordPressPlugin plugin)
 			throws UtilsException {
 		final String name = plugin.getName();
@@ -178,11 +184,6 @@ public final class WpHtmlUtils {
 				}
 			};
 			waitUntilCondition(condition, 60000);
-			/*
-			 * tcicognani: then I don't activate the plugin because I don't know
-			 * how it reacts (something to configure afterwards... so I let
-			 * tests developers to deal with it)
-			 */
 		} else {
 			fail(String.format(
 					"Cannot find a reference to plugin '%s' and id '%s' (maybe on another page or too much references)", //$NON-NLS-1$

@@ -12,29 +12,36 @@ import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 
 import fr.zhykos.wp.commentcontest.tests.internal.utils.IWordPressInformation;
-import fr.zhykos.wp.commentcontest.tests.internal.utils.IWordPressPlugin;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.Utils;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlugin;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginCatalog;
 
 /*
  * http://atatorus.developpez.com/tutoriels/java/test-application-web-avec-selenium/
  */
-@SuppressWarnings("PMD.AtLeastOneConstructor")
-/*
- * @SuppressWarnings("PMD.AtLeastOneConstructor") tcicognani: constructor is not
- * mandatory or needed in jUnit
- */
 public class WPCommentContestPluginTest {
 
 	private static final String PAGE_LOAD_TIMEOUT = "30000"; //$NON-NLS-1$
+	// XXX Constante INST_CHROME_DRV qui n'a rien à faire là
 	private static final boolean INST_CHROME_DRV = Utils
 			.getBooleanSystemProperty(WPCommentContestPluginTest.class.getName()
 					+ ".installchromedriver", true); //$NON-NLS-1$
 
+	private final IWordPressPlugin wpRssPlg;
+	private final IWordPressPlugin myPlugin;
+
 	private WebDriver driver;
 	private Selenium selenium;
 	private IWordPressInformation wpInfo;
+
+	public WPCommentContestPluginTest() throws UtilsException {
+		this.wpRssPlg = IWordPressPluginCatalog.DEFAULT
+				.getPlugin("wp-rss-aggregator"); //$NON-NLS-1$
+		this.myPlugin = IWordPressPluginCatalog.DEFAULT
+				.getPlugin("comment-contest"); //$NON-NLS-1$
+	}
 
 	// TODO Passer en beforeclass et afterclass !!!!!!!!!!!!!!!!!!!!!!! ca
 	// évitera de faire les init pour chaque navigateur
@@ -52,19 +59,8 @@ public class WPCommentContestPluginTest {
 		if (installWordPress) {
 			Utils.installWordPress();
 		}
-		final IWordPressPlugin rssAggregator = new IWordPressPlugin() {
-			@Override
-			public String getName() {
-				return "WP RSS Aggregator"; //$NON-NLS-1$
-			}
-
-			@Override
-			public String getId() {
-				return "wp-rss-aggregator"; //$NON-NLS-1$
-			}
-		};
 		this.wpInfo = Utils.startServer(INST_CHROME_DRV,
-				new IWordPressPlugin[] { rssAggregator });
+				new IWordPressPlugin[] { this.wpRssPlg });
 	}
 
 	// @Test
@@ -112,14 +108,9 @@ public class WPCommentContestPluginTest {
 		WpHtmlUtils.checkH1Tag(this.driver, this.wpInfo.getWebsiteName());
 		WpHtmlUtils.connect((ChromeDriver) this.driver, this.selenium,
 				this.wpInfo);
-		WpHtmlUtils.activatePlugin(this.selenium, this.driver, homeURL,
-				"comment-contest"); //$NON-NLS-1$
-		// final activer le plugin final qui était en conflit (on final ne le
-		// fait final pas de façon final générique car il final est impossible
-		// de final prédire comment réagissent final toutes les installations
-		// final de plugin par final contre on peut final très bien les final
-		// télécharger et final les installer !)
-		getClass();
+		WpHtmlUtils.activatePlugins(this.selenium, this.driver, homeURL,
+				new IWordPressPlugin[] { this.myPlugin, this.wpRssPlg });
+		l'activation peut se faire dans l'install maintenant que l'on a une méthode par défaut d'activation !
 	}
 
 	@After

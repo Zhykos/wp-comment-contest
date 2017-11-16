@@ -42,6 +42,7 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.min.IMin;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.min.IMinFactory;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.server.ITestServer;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.server.ITestServerFactory;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlugin;
 
 /*
  * TODO Découper cette classe !
@@ -207,7 +208,7 @@ public final class Utils {
 				"wordpress"); //$NON-NLS-1$
 		final ITestServer server = ITestServerFactory.DEFAULT.createServer();
 		final File wpRunDir = server.deployWordPress(wpEmbedDir);
-		deployPlugin(wpRunDir);
+		deployPlugin(wpRunDir); que fait cette méthode au juste ?
 		server.start();
 		final IWordPressInformation wpInfo = configureWordpress(doInstChrmDrv,
 				server, otherPlugins);
@@ -335,7 +336,8 @@ public final class Utils {
 					.getAttribute("href"); //$NON-NLS-1$
 			WpHtmlUtils.connect(driver, selenium, wpLogin, wpPassword,
 					loginHref);
-			WpHtmlUtils.installPlugins(otherPlugins, selenium, driver, homeURL);
+			WpHtmlUtils.installAndActivateExternalPlugins(otherPlugins,
+					selenium, driver, homeURL);
 			return new IWordPressInformation() {
 				@Override
 				public String getPassword() {
