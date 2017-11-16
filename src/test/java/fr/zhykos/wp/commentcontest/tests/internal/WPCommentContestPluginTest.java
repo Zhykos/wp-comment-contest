@@ -12,6 +12,7 @@ import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 
 import fr.zhykos.wp.commentcontest.tests.internal.utils.IWordPressInformation;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.IWordPressPlugin;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.Utils;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils;
@@ -51,7 +52,19 @@ public class WPCommentContestPluginTest {
 		if (installWordPress) {
 			Utils.installWordPress();
 		}
-		this.wpInfo = Utils.startServer(INST_CHROME_DRV);
+		final IWordPressPlugin rssAggregator = new IWordPressPlugin() {
+			@Override
+			public String getName() {
+				return "WP RSS Aggregator"; //$NON-NLS-1$
+			}
+
+			@Override
+			public String getId() {
+				return "wp-rss-aggregator"; //$NON-NLS-1$
+			}
+		};
+		this.wpInfo = Utils.startServer(INST_CHROME_DRV,
+				new IWordPressPlugin[] { rssAggregator });
 	}
 
 	// @Test
@@ -97,12 +110,15 @@ public class WPCommentContestPluginTest {
 		this.selenium.open(homeURL);
 		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.checkH1Tag(this.driver, this.wpInfo.getWebsiteName());
-		this.selenium.open(homeURL + "/wp-login.php"); //$NON-NLS-1$
-		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-		Utils.htmlConnectionPage((ChromeDriver) this.driver, this.selenium,
+		WpHtmlUtils.connect((ChromeDriver) this.driver, this.selenium,
 				this.wpInfo);
-		WpHtmlUtils.wpHtmlActivatePlugin(this.selenium, this.driver, homeURL,
+		WpHtmlUtils.activatePlugin(this.selenium, this.driver, homeURL,
 				"comment-contest"); //$NON-NLS-1$
+		// final activer le plugin final qui était en conflit (on final ne le
+		// fait final pas de façon final générique car il final est impossible
+		// de final prédire comment réagissent final toutes les installations
+		// final de plugin par final contre on peut final très bien les final
+		// télécharger et final les installer !)
 		getClass();
 	}
 

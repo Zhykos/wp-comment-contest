@@ -57,7 +57,7 @@ public final class Utils {
 
 		String getBaseName();
 
-		String getDriver(); // XXX Passer une classe plutot
+		String getDriver(); // XXX Passer une classe spéciale pour gérer les BDD
 
 		int getPort();
 
@@ -197,6 +197,11 @@ public final class Utils {
 
 	public static IWordPressInformation startServer(final boolean doInstChrmDrv)
 			throws UtilsException {
+		return startServer(doInstChrmDrv, new IWordPressPlugin[0]);
+	}
+
+	public static IWordPressInformation startServer(final boolean doInstChrmDrv,
+			final IWordPressPlugin[] otherPlugins) throws UtilsException {
 		LOGGER.info("Starting server..."); //$NON-NLS-1$
 		final File wpEmbedDir = new File(getWebappDirectory().getAbsolutePath(),
 				"wordpress"); //$NON-NLS-1$
@@ -205,7 +210,7 @@ public final class Utils {
 		deployPlugin(wpRunDir);
 		server.start();
 		final IWordPressInformation wpInfo = configureWordpress(doInstChrmDrv,
-				server);
+				server, otherPlugins);
 		LOGGER.info(DONE_STR);
 		return wpInfo;
 	}
@@ -267,11 +272,12 @@ public final class Utils {
 	}
 
 	private static IWordPressInformation configureWordpress(
-			final boolean installChromeDrv, final ITestServer server)
-			throws UtilsException {
+			final boolean installChromeDrv, final ITestServer server,
+			final IWordPressPlugin[] otherPlugins) throws UtilsException {
 		installChromeDriver(installChromeDrv);
 		final ChromeDriver driver = new ChromeDriver();
 		try {
+			// TODO Check H1 in each page
 			cleanDatabase();
 			final String homeURL = server.getHomeURL();
 			driver.get(homeURL);
@@ -279,7 +285,7 @@ public final class Utils {
 					homeURL);
 			selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 			// XXX select retourne une exception runtime crade s'il ne trouve
-			// pas : gérer le cas en sélectionnant l'anglais au cas où
+			// pas la langue : gérer le cas en sélectionnant l'anglais au cas où
 			selenium.select("id=language", //$NON-NLS-1$
 					String.format("value=%s", Locale.getDefault().toString())); //$NON-NLS-1$
 			selenium.click("id=language-continue"); //$NON-NLS-1$
@@ -327,9 +333,9 @@ public final class Utils {
 			final String loginHref = driver
 					.findElement(By.xpath("//body//p[@class='step']/a")) //$NON-NLS-1$
 					.getAttribute("href"); //$NON-NLS-1$
-			selenium.open(loginHref);
-			selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-			htmlConnectionPage(driver, selenium, wpLogin, wpPassword);
+			WpHtmlUtils.connect(driver, selenium, wpLogin, wpPassword,
+					loginHref);
+			WpHtmlUtils.installPlugins(otherPlugins, selenium, driver, homeURL);
 			return new IWordPressInformation() {
 				@Override
 				public String getPassword() {
@@ -353,32 +359,6 @@ public final class Utils {
 			};
 		} finally {
 			driver.quit();
-		}
-	}
-
-	// XXX ChromeDriver en paramètre ! Passer un driver générique
-	public static void htmlConnectionPage(final ChromeDriver driver,
-			final Selenium selenium, final IWordPressInformation wpInfo) {
-		htmlConnectionPage(driver, selenium, wpInfo.getLogin(),
-				wpInfo.getPassword());
-	}
-
-	// XXX ChromeDriver en paramètre ! Passer un driver générique
-	private static void htmlConnectionPage(final ChromeDriver driver,
-			final Selenium selenium, final String wpLogin,
-			final String wpPassword) {
-		selenium.type("id=user_login", wpLogin); //$NON-NLS-1$
-		selenium.type("id=user_pass", wpPassword); //$NON-NLS-1$
-		selenium.check("id=rememberme"); //$NON-NLS-1$
-		selenium.click("id=wp-submit"); //$NON-NLS-1$
-		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-		final List<WebElement> loginMessages = driver
-				.findElementsById("login_error"); //$NON-NLS-1$
-		if (!loginMessages.isEmpty()) {
-			final String message = loginMessages.get(0).getText();
-			fail(String.format(
-					"Cannot login to WordPress! Wrong configuration? Error: '%s'", //$NON-NLS-1$
-					message));
 		}
 	}
 
@@ -471,12 +451,6 @@ public final class Utils {
 		} catch (final IOException e) {
 			throw new UtilsException(e);
 		}
-		// try {
-		// FileUtils.copyDirectory(localPluginDir, packageDir);
-		// minimifiedAndChangeCode(packageDir, cssToMini);
-		// } catch (final IOException e) {
-		// throw new UtilsException(e);
-		// }
 		LOGGER.info(DONE_STR);
 	}
 
