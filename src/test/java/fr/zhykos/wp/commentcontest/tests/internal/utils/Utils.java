@@ -21,7 +21,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -43,6 +43,7 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.min.IMinFactory;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.server.ITestServer;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.server.ITestServerFactory;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlugin;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginToTest;
 
 /*
  * TODO Découper cette classe !
@@ -196,19 +197,22 @@ public final class Utils {
 		}
 	}
 
-	public static IWordPressInformation startServer(final boolean doInstChrmDrv)
-			throws UtilsException {
-		return startServer(doInstChrmDrv, new IWordPressPlugin[0]);
+	public static IWordPressInformation startServer(final boolean doInstChrmDrv,
+			final IWordPressPluginToTest pluginToTest) throws UtilsException {
+		return startServer(doInstChrmDrv, pluginToTest,
+				new IWordPressPlugin[0]);
 	}
 
+	// XXX pluginToTest: proposer de tester plusieurs plugins
 	public static IWordPressInformation startServer(final boolean doInstChrmDrv,
+			final IWordPressPluginToTest pluginToTest,
 			final IWordPressPlugin[] otherPlugins) throws UtilsException {
 		LOGGER.info("Starting server..."); //$NON-NLS-1$
 		final File wpEmbedDir = new File(getWebappDirectory().getAbsolutePath(),
 				"wordpress"); //$NON-NLS-1$
 		final ITestServer server = ITestServerFactory.DEFAULT.createServer();
 		final File wpRunDir = server.deployWordPress(wpEmbedDir);
-		deployPlugin(wpRunDir); que fait cette méthode au juste ?
+		deployPluginToTest(wpRunDir, pluginToTest);
 		server.start();
 		final IWordPressInformation wpInfo = configureWordpress(doInstChrmDrv,
 				server, otherPlugins);
@@ -216,12 +220,13 @@ public final class Utils {
 		return wpInfo;
 	}
 
-	private static void deployPlugin(final File wpRunDir)
-			throws UtilsException {
+	private static void deployPluginToTest(final File wpRunDir,
+			final IWordPressPluginToTest pluginToTest) throws UtilsException {
 		try {
-			final File localPlgDir = getLocalPluginDir();
-			final File wpPluginDir = new File(wpRunDir,
-					"wp-content/plugins/pluginToTest"); //$NON-NLS-1$
+			final File localPlgDir = pluginToTest.getLocalPluginDirectory();
+			final File wpPluginDir = new File(
+					new File(wpRunDir, "wp-content/plugins"), //$NON-NLS-1$
+					pluginToTest.getId());
 			if (!wpPluginDir.mkdir()) {
 				throw new UtilsException(
 						String.format("Cannot create directory '%s'", //$NON-NLS-1$
@@ -231,12 +236,6 @@ public final class Utils {
 		} catch (final IOException e) {
 			throw new UtilsException(e);
 		}
-	}
-
-	public static File getLocalPluginDir() {
-		final String localPlgDirStr = System.getProperty(
-				Utils.class.getName() + ".plugindir", "src/main/wordpress"); //$NON-NLS-1$ //$NON-NLS-2$
-		return new File(localPlgDirStr);
 	}
 
 	public static boolean getBooleanSystemProperty(final String propertyKey,
@@ -432,24 +431,13 @@ public final class Utils {
 		};
 	}
 
-	public static void packagePlugin(final String[] cssToMini,
-			final String[] jsToMini, final String[] filesStrToRemove)
+	// XXX pluginToTest: proposer de tester plusieurs plugins
+	public static void packagePlugin(final IWordPressPluginToTest pluginToTest)
 			throws UtilsException {
 		LOGGER.info("Packaging plugin..."); //$NON-NLS-1$
 		checkDeleteDirectory(getPackageDir());
 		try {
-			final List<File> filesToRemove = new ArrayList<>();
-			for (final String string : filesStrToRemove) {
-				@SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-				/*
-				 * @SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
-				 * ticognani: it's ok here to instanciate objects in a loop!
-				 */
-				final File file = new File(
-						getLocalPluginDir().getAbsoluteFile(), string);
-				filesToRemove.add(file);
-			}
-			copyAndModifyCode(cssToMini, jsToMini, filesToRemove);
+			copyAndModifyCode(pluginToTest);
 		} catch (final IOException e) {
 			throw new UtilsException(e);
 		}
@@ -460,12 +448,14 @@ public final class Utils {
 		return new File("package"); //$NON-NLS-1$
 	}
 
-	private static void copyAndModifyCode(final String[] cssToMini,
-			final String[] jsToMini, final List<File> filesToRemove)
+	private static void copyAndModifyCode(
+			final IWordPressPluginToTest pluginToTest)
 			throws IOException, UtilsException {
 		final UtilsException[] internEx = new UtilsException[1];
-		final File localPluginDir = getLocalPluginDir();
+		final File localPluginDir = pluginToTest.getLocalPluginDirectory();
 		final Path pathAbsolute = Paths.get(localPluginDir.getAbsolutePath());
+		final List<File> filesToRemove = Arrays
+				.asList(pluginToTest.packagingFilesToRemove());
 		try (final Stream<Path> paths = Files.walk(pathAbsolute)) {
 			paths.filter(Files::isRegularFile).forEach(new Consumer<Path>() {
 				@Override
@@ -473,11 +463,13 @@ public final class Utils {
 					try {
 						final File file = path.toFile();
 						if (!modifyFileReferencingMiniIfNecessary(file,
-								cssToMini, jsToMini)
-								&& !minimifiedFile(file, cssToMini, jsToMini)
+								pluginToTest)
+								&& !minimifiedFileIfNecessary(file,
+										pluginToTest)
 								&& !filesToRemove.contains(file)) {
 							FileUtils.copyFile(file,
-									getPackageFileFromPluginPath(path));
+									getPackageFileFromPluginPath(path,
+											pluginToTest));
 						}
 					} catch (final IOException e) {
 						internEx[0] = new UtilsException(e);
@@ -492,27 +484,27 @@ public final class Utils {
 		}
 	}
 
-	protected static File getPackageFileFromPluginPath(final Path path) {
+	protected static File getPackageFileFromPluginPath(final Path path,
+			final IWordPressPluginToTest pluginToTest) {
 		final File packageDir = getPackageDir();
-		final File localPluginDir = getLocalPluginDir();
+		final File localPluginDir = pluginToTest.getLocalPluginDirectory();
 		final Path pathAbsolute = Paths.get(localPluginDir.getAbsolutePath());
 		final File relativeFileTgt = pathAbsolute.relativize(path).toFile();
 		return new File(packageDir, relativeFileTgt.getPath());
 	}
 
-	protected static boolean minimifiedFile(final File file,
-			final String[] cssToMini, final String[] jsToMini)
-			throws UtilsException {
+	protected static boolean minimifiedFileIfNecessary(final File file,
+			final IWordPressPluginToTest pluginToTest) throws UtilsException {
 		boolean result = false;
 		final String fileStr = file.toString().replace('\\', '/');
-		for (final String pattern : jsToMini) {
+		for (final String pattern : pluginToTest.packagingJavascriptToMini()) {
 			if (fileStr.endsWith(pattern.replace('\\', '/'))) {
 				result = true;
 				break;
 			}
 		}
 		if (!result) {
-			for (final String pattern : cssToMini) {
+			for (final String pattern : pluginToTest.packagingCSSToMini()) {
 				if (fileStr.endsWith(pattern.replace('\\', '/'))) {
 					result = true;
 					break;
@@ -520,13 +512,15 @@ public final class Utils {
 			}
 		}
 		if (result) {
-			minimifiedFile(file);
+			minimifiedFile(file, pluginToTest);
 		}
 		return result;
 	}
 
-	private static void minimifiedFile(final File file) throws UtilsException {
-		final File tempFile = getPackageFileFromPluginPath(file.toPath());
+	private static void minimifiedFile(final File file,
+			final IWordPressPluginToTest pluginToTest) throws UtilsException {
+		final File tempFile = getPackageFileFromPluginPath(file.toPath(),
+				pluginToTest);
 		final File parentFile = tempFile.getParentFile();
 		if (!parentFile.exists() && !parentFile.mkdirs()) {
 			throw new UtilsException(String.format(
@@ -545,17 +539,17 @@ public final class Utils {
 	}
 
 	protected static boolean modifyFileReferencingMiniIfNecessary(
-			final File file, final String[] cssToMini, final String[] jsToMini)
+			final File file, final IWordPressPluginToTest pluginToTest)
 			throws UtilsException, IOException {
 		boolean result = false;
-		for (final String pattern : jsToMini) {
+		for (final String pattern : pluginToTest.packagingJavascriptToMini()) {
 			result = GrepUtils.grep(file, pattern);
 			if (result) {
 				break;
 			}
 		}
 		if (!result) {
-			for (final String pattern : cssToMini) {
+			for (final String pattern : pluginToTest.packagingCSSToMini()) {
 				result = GrepUtils.grep(file, pattern);
 				if (result) {
 					break;
@@ -563,15 +557,16 @@ public final class Utils {
 			}
 		}
 		if (result) {
-			modifyFileWithMiniReferences(file, cssToMini, jsToMini);
+			modifyFileWithMiniReferences(file, pluginToTest);
 		}
 		return result;
 	}
 
 	private static void modifyFileWithMiniReferences(final File file,
-			final String[] cssToMini, final String[] jsToMini)
+			final IWordPressPluginToTest pluginToTest)
 			throws IOException, UtilsException {
-		final File targetFile = getPackageFileFromPluginPath(file.toPath());
+		final File targetFile = getPackageFileFromPluginPath(file.toPath(),
+				pluginToTest);
 		if (!targetFile.getParentFile().mkdirs()) {
 			throw new UtilsException(String.format(
 					"Cannot create directory '%s'", targetFile.getParent())); //$NON-NLS-1$
@@ -586,7 +581,7 @@ public final class Utils {
 			int lineNumber = 1;
 			while (line != null) {
 				final String lineToWrite = modifyLineWithMini(line, lineNumber,
-						file, cssToMini, jsToMini);
+						file, pluginToTest);
 				bufferedWriter.write(lineToWrite);
 				bufferedWriter.newLine();
 				line = bufferedReader.readLine();
@@ -596,10 +591,11 @@ public final class Utils {
 	}
 
 	private static String modifyLineWithMini(final String line,
-			final int lineNumber, final File file, final String[] cssToMini,
-			final String[] jsToMini) {
+			final int lineNumber, final File file,
+			final IWordPressPluginToTest pluginToTest) {
 		String newLine = line;
-		for (final String javascript : jsToMini) {
+		for (final String javascript : pluginToTest
+				.packagingJavascriptToMini()) {
 			if (newLine
 					.matches(String.format(".*wp_register_script\\s?\\(.*%s.*", //$NON-NLS-1$
 							javascript))
@@ -613,7 +609,7 @@ public final class Utils {
 						javascript));
 			}
 		}
-		for (final String css : cssToMini) {
+		for (final String css : pluginToTest.packagingCSSToMini()) {
 			/*
 			 * No test on 'wp_register_style' because is not a correct function:
 			 * https://codex.wordpress.org/Function_Reference/wp_register_style

@@ -17,6 +17,8 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlugin;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginCatalog;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginToTest;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginToTestFactory;
 
 /*
  * http://atatorus.developpez.com/tutoriels/java/test-application-web-avec-selenium/
@@ -30,7 +32,7 @@ public class WPCommentContestPluginTest {
 					+ ".installchromedriver", true); //$NON-NLS-1$
 
 	private final IWordPressPlugin wpRssPlg;
-	private final IWordPressPlugin myPlugin;
+	private final IWordPressPluginToTest myPlugin;
 
 	private WebDriver driver;
 	private Selenium selenium;
@@ -39,8 +41,10 @@ public class WPCommentContestPluginTest {
 	public WPCommentContestPluginTest() throws UtilsException {
 		this.wpRssPlg = IWordPressPluginCatalog.DEFAULT
 				.getPlugin("wp-rss-aggregator"); //$NON-NLS-1$
-		this.myPlugin = IWordPressPluginCatalog.DEFAULT
-				.getPlugin("comment-contest"); //$NON-NLS-1$
+		this.myPlugin = IWordPressPluginToTestFactory.DEFAULT.getPlugin(
+				"comment-contest", new String[] { "css/comment-contest.css" }, //$NON-NLS-1$ //$NON-NLS-2$
+				new String[] { "js/OrgZhyweb_WPCommentContest_jQuery.js" }, //$NON-NLS-1$
+				new String[] {});
 	}
 
 	// TODO Passer en beforeclass et afterclass !!!!!!!!!!!!!!!!!!!!!!! ca
@@ -59,7 +63,7 @@ public class WPCommentContestPluginTest {
 		if (installWordPress) {
 			Utils.installWordPress();
 		}
-		this.wpInfo = Utils.startServer(INST_CHROME_DRV,
+		this.wpInfo = Utils.startServer(INST_CHROME_DRV, this.myPlugin,
 				new IWordPressPlugin[] { this.wpRssPlg });
 	}
 
@@ -110,7 +114,8 @@ public class WPCommentContestPluginTest {
 				this.wpInfo);
 		WpHtmlUtils.activatePlugins(this.selenium, this.driver, homeURL,
 				new IWordPressPlugin[] { this.myPlugin, this.wpRssPlg });
-		l'activation peut se faire dans l'install maintenant que l'on a une méthode par défaut d'activation !
+		// l'activation peut se faire dans l'install maintenant que l'on a une
+		// méthode par défaut d'activation !
 	}
 
 	@After
@@ -127,12 +132,7 @@ public class WPCommentContestPluginTest {
 		}
 		// TODO Utiliser la classe EMF Facet de vérification d'erreur lors du
 		// test unitaire
-		// TODO Passer ces paramètre en "-D"
-		// Utils.packagePlugin(new String[] { "css/comment-contest.css" },
-		// //$NON-NLS-1$
-		// new String[] { "js/OrgZhyweb_WPCommentContest_jQuery.js" },
-		// //$NON-NLS-1$
-		// new String[] {});
+		// Utils.packagePlugin(this.myPlugin);
 		fail();
 	}
 
