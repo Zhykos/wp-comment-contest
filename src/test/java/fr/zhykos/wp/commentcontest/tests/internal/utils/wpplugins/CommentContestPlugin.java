@@ -1,5 +1,9 @@
 package fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins;
 
+import org.openqa.selenium.WebDriver;
+
+import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils;
+
 @SuppressWarnings("PMD.AtLeastOneConstructor")
 /*
  * @SuppressWarnings("PMD.AtLeastOneConstructor") tcicognani: useless default
@@ -18,9 +22,8 @@ class CommentContestPlugin implements IWordPressPlugin {
 	}
 
 	@Override
-	public void defaultActivationAction() {
-		// TODO Auto-generated method stub
-checkmessage
+	public void defaultActivationAction(final WebDriver driver) {
+		WpHtmlUtils.assertDefaultPluginActivation(driver);
 	}
 
 }

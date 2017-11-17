@@ -197,12 +197,6 @@ public final class Utils {
 		}
 	}
 
-	public static IWordPressInformation startServer(final boolean doInstChrmDrv,
-			final IWordPressPluginToTest pluginToTest) throws UtilsException {
-		return startServer(doInstChrmDrv, pluginToTest,
-				new IWordPressPlugin[0]);
-	}
-
 	// XXX pluginToTest: proposer de tester plusieurs plugins
 	public static IWordPressInformation startServer(final boolean doInstChrmDrv,
 			final IWordPressPluginToTest pluginToTest,
@@ -215,7 +209,7 @@ public final class Utils {
 		deployPluginToTest(wpRunDir, pluginToTest);
 		server.start();
 		final IWordPressInformation wpInfo = configureWordpress(doInstChrmDrv,
-				server, otherPlugins);
+				server, pluginToTest, otherPlugins);
 		LOGGER.info(DONE_STR);
 		return wpInfo;
 	}
@@ -273,6 +267,7 @@ public final class Utils {
 
 	private static IWordPressInformation configureWordpress(
 			final boolean installChromeDrv, final ITestServer server,
+			final IWordPressPluginToTest pluginToTest,
 			final IWordPressPlugin[] otherPlugins) throws UtilsException {
 		installChromeDriver(installChromeDrv);
 		final ChromeDriver driver = new ChromeDriver();
@@ -335,8 +330,14 @@ public final class Utils {
 					.getAttribute("href"); //$NON-NLS-1$
 			WpHtmlUtils.connect(driver, selenium, wpLogin, wpPassword,
 					loginHref);
-			WpHtmlUtils.installAndActivateExternalPlugins(otherPlugins,
-					selenium, driver, homeURL);
+			WpHtmlUtils.installExternalPlugins(otherPlugins, selenium, driver,
+					homeURL);
+			final IWordPressPlugin[] allPlugins = new IWordPressPlugin[otherPlugins.length
+					+ 1];
+			allPlugins[0] = pluginToTest;
+			System.arraycopy(otherPlugins, 0, allPlugins, 1,
+					otherPlugins.length);
+			WpHtmlUtils.activatePlugins(selenium, driver, homeURL, allPlugins);
 			return new IWordPressInformation() {
 				@Override
 				public String getPassword() {

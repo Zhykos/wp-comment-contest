@@ -24,7 +24,7 @@ public final class WpHtmlUtils {
 	private static final String PAGE_LOAD_TIMEOUT = "30000"; //$NON-NLS-1$
 
 	private enum Translations {
-		extensions, addExtensions
+		extensions, addExtensions, activatedPluginOk
 	}
 
 	private interface IRunnableCondition {
@@ -33,9 +33,11 @@ public final class WpHtmlUtils {
 
 	private static final Map<Locale, Map<Translations, String>> TRANSLATIONS = new ConcurrentHashMap<>();
 	static {
+		// XXX Ce serait bien de pouvoir accéder aux fichiers de trad WordPress
 		final Map<Translations, String> french = new ConcurrentHashMap<>();
 		french.put(Translations.extensions, "Extensions"); //$NON-NLS-1$
 		french.put(Translations.addExtensions, "Ajouter des extensions"); //$NON-NLS-1$
+		french.put(Translations.activatedPluginOk, "Extension activée"); //$NON-NLS-1$
 		TRANSLATIONS.put(Locale.FRENCH, french);
 	}
 
@@ -61,26 +63,36 @@ public final class WpHtmlUtils {
 			final WebDriver driver, final String homeURL) {
 		selenium.open(homeURL + "/wp-admin/plugins.php"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-		checkH1Tag(driver, Translations.extensions);
+		assertH1Tag(driver, Translations.extensions);
 	}
 
 	public static void activatePlugins(final Selenium selenium,
 			final WebDriver driver, final String homeURL,
 			final IWordPressPlugin[] plugins) {
-		openExtensionsPage(selenium, driver, homeURL);
 		for (final IWordPressPlugin plugin : plugins) {
+			openExtensionsPage(selenium, driver, homeURL);
 			final String xpathExpression = String.format(
 					"//form[@id='bulk-action-form']//table//tr[@data-slug='%s']/td//span[@class='activate']/a", //$NON-NLS-1$
 					plugin.getId());
 			driver.findElement(By.xpath(xpathExpression)).click();
 			selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-			plugin.defaultActivationAction();
+			plugin.defaultActivationAction(driver);
 		}
 	}
 
-	private static void checkH1Tag(final WebDriver driver,
+	public static void assertDefaultPluginActivation(final WebDriver driver) {
+		assertHTML(driver, "//div[@id='message']/p", //$NON-NLS-1$
+				getTranslation(Translations.activatedPluginOk));
+	}
+
+	private static void assertH1Tag(final WebDriver driver,
 			final Translations expected) {
-		checkH1Tag(driver, getTranslation(expected));
+		assertH1Tag(driver, getTranslation(expected));
+	}
+
+	public static void assertH1Tag(final WebDriver driver,
+			final String expected) {
+		assertHTML(driver, "//h1", expected); //$NON-NLS-1$
 	}
 
 	@SuppressWarnings("PMD.UseLocaleWithCaseConversions")
@@ -89,19 +101,25 @@ public final class WpHtmlUtils {
 	 * usually use Locale.getDefault() in toLowerCase() parameter so it's
 	 * useless to add it
 	 */
-	public static void checkH1Tag(final WebDriver driver,
+	private static void assertHTML(final WebDriver driver, final String xpath,
 			final String expected) {
 		if (expected == null) {
-			Assert.fail(
-					"Cannot check H1 tag value because the expected value is unknown!"); //$NON-NLS-1$
+			/*
+			 * XXX Eviter de planter car le jour où ce code sera dans un vrai
+			 * framework, les gens ne pourront pas facilement changer ce code et
+			 * planter les fera chier: avoir une option pour éviter le plantage
+			 * ou autre...
+			 */
+			Assert.fail(String.format(
+					"Cannot check HTML value to XPath '%s' because the expected value is unknown!", //$NON-NLS-1$
+					xpath));
 		} else {
 			/*
 			 * tcicognani: useless else statement but Eclipse says expected can
 			 * be null (with is impossible due to the fail assertion...)
 			 */
-			final String h1home = driver.findElement(By.xpath("//h1")) //$NON-NLS-1$
-					.getText();
-			Assert.assertEquals(expected.toLowerCase(), h1home.toLowerCase());
+			final String text = driver.findElement(By.xpath(xpath)).getText();
+			Assert.assertEquals(expected.toLowerCase(), text.toLowerCase());
 		}
 	}
 
@@ -136,17 +154,17 @@ public final class WpHtmlUtils {
 		}
 	}
 
-	public static void installAndActivateExternalPlugins(
-			final IWordPressPlugin[] plugins, final Selenium selenium,
-			final WebDriver driver, final String homeURL)
-			throws UtilsException {
-		selenium.open(homeURL + "/wp-admin/plugin-install.php"); //$NON-NLS-1$
-		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-		checkH1Tag(driver, Translations.addExtensions);
-		for (final IWordPressPlugin plugin : plugins) {
-			installExternalPlugin(selenium, driver, plugin);
+	public static void installExternalPlugins(final IWordPressPlugin[] plugins,
+			final Selenium selenium, final WebDriver driver,
+			final String homeURL) throws UtilsException {
+		if (plugins.length > 0) {
+			selenium.open(homeURL + "/wp-admin/plugin-install.php"); //$NON-NLS-1$
+			selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+			assertH1Tag(driver, Translations.addExtensions);
+			for (final IWordPressPlugin plugin : plugins) {
+				installExternalPlugin(selenium, driver, plugin);
+			}
 		}
-		activatePlugins(selenium, driver, homeURL, plugins);
 	}
 
 	private static void installExternalPlugin(final Selenium selenium,

@@ -109,13 +109,9 @@ public class WPCommentContestPluginTest {
 		final String homeURL = this.wpInfo.getTestServer().getHomeURL();
 		this.selenium.open(homeURL);
 		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-		WpHtmlUtils.checkH1Tag(this.driver, this.wpInfo.getWebsiteName());
+		WpHtmlUtils.assertH1Tag(this.driver, this.wpInfo.getWebsiteName());
 		WpHtmlUtils.connect((ChromeDriver) this.driver, this.selenium,
 				this.wpInfo);
-		WpHtmlUtils.activatePlugins(this.selenium, this.driver, homeURL,
-				new IWordPressPlugin[] { this.myPlugin, this.wpRssPlg });
-		// l'activation peut se faire dans l'install maintenant que l'on a une
-		// méthode par défaut d'activation !
 	}
 
 	@After
