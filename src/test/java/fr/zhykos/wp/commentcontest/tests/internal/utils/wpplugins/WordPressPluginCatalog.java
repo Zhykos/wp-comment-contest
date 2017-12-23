@@ -15,8 +15,8 @@ class WordPressPluginCatalog implements IWordPressPluginCatalog {
 		 * it doesn't work this way and I had to do so with external librairies:
 		 * for now list all classes like a noob
 		 */
-		this.plugins.add(new CommentContestPlugin());
-		this.plugins.add(new WPRSSAggregatorPlugin());
+		this.plugins.add(new PluginCommentContest());
+		this.plugins.add(new PluginWPRSSAggregator());
 	}
 
 	@Override

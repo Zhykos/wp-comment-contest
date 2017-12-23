@@ -9,7 +9,7 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils;
  * @SuppressWarnings("PMD.AtLeastOneConstructor") tcicognani: useless default
  * constructor: no need to have one
  */
-class CommentContestPlugin implements IWordPressPlugin {
+class PluginCommentContest implements IWordPressPlugin {
 
 	@Override
 	public String getName() {

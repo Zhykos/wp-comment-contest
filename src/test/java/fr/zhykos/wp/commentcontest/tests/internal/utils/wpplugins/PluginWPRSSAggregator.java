@@ -9,7 +9,7 @@ import org.openqa.selenium.WebDriver;
  * @SuppressWarnings("PMD.AtLeastOneConstructor") tcicognani: useless default
  * constructor: no need to have one
  */
-class WPRSSAggregatorPlugin implements IWordPressPlugin {
+class PluginWPRSSAggregator implements IWordPressPlugin {
 
 	private final static String REGEX = "Welcome to WP RSS Aggregator .*!"; //$NON-NLS-1$
 
