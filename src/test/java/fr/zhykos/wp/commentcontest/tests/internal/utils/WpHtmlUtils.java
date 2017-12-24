@@ -26,7 +26,7 @@ public final class WpHtmlUtils {
 
 	// XXX Mettre le système de traduction dans une autre classe
 	public enum Translations {
-		extensions, addExtensions, activatedPluginOk, comments, editComment, commentsOnArticle
+		extensions, addExtensions, activatedPluginOk, comments, editComment, commentsOnArticle, articles
 	}
 
 	public interface IRunnableCondition {
@@ -43,6 +43,7 @@ public final class WpHtmlUtils {
 		french.put(Translations.comments, "Commentaires"); //$NON-NLS-1$
 		french.put(Translations.editComment, "Modifier le commentaire"); //$NON-NLS-1$
 		french.put(Translations.commentsOnArticle, "Commentaires sur « %s »"); //$NON-NLS-1$
+		french.put(Translations.articles, "Articles"); //$NON-NLS-1$
 		TRANSLATIONS.put(Locale.FRENCH, french);
 	}
 
@@ -114,6 +115,12 @@ public final class WpHtmlUtils {
 	public static void assertH2Tag(final WebDriver driver,
 			final String expected) {
 		assertHTML(driver, "//h2", expected); //$NON-NLS-1$
+	}
+
+	// XXX Voir si on peut mieux faire pour les tests sur les balises Hx
+	public static void assertH3Tag(final WebDriver driver,
+			final String expected) {
+		assertHTML(driver, "//h3", expected); //$NON-NLS-1$
 	}
 
 	@SuppressWarnings("PMD.UseLocaleWithCaseConversions")
@@ -277,42 +284,60 @@ public final class WpHtmlUtils {
 		}
 	}
 
+	// XXX Mutualiser avec expandSettingsScreenMenu
 	public static void expandAdminMenu(final WebDriver driver,
-			final Selenium selenium) {
+			final Selenium selenium) throws UtilsException {
 		final List<WebElement> buttons = driver
 				.findElements(By.xpath("//button[@id='collapse-button']")); //$NON-NLS-1$
 		if (buttons.isEmpty()) {
-			expandAdminMinMenu(driver);
+			throw new NoSuchElementException("Cannot get button to expand"); //$NON-NLS-1$
+		}
+		final WebElement button = buttons.get(0);
+		final boolean visible = selenium.isVisible("id=collapse-button"); //$NON-NLS-1$
+		if (visible) {
+			expandMenu(button);
 		} else {
-			final WebElement button = buttons.get(0);
-			final boolean visible = selenium.isVisible("id=collapse-button"); //$NON-NLS-1$
-			if (visible) {
-				expandAdminMenu(button);
-			} else {
-				expandAdminMinMenu(driver);
-			}
-		}
-	}
-
-	/*
-	 * Maybe UI is too small and responsive behavior display another button
-	 */
-	private static void expandAdminMinMenu(final WebDriver driver) {
-		final List<WebElement> minButtons = driver.findElements(
-				By.xpath("//li[@id='wp-admin-bar-menu-toggle']/a")); //$NON-NLS-1$
-		if (minButtons.isEmpty()) {
 			throw new NoSuchElementException(
-					"Cannot get button to expand admin menu"); //$NON-NLS-1$
+					"Cannot get button to expand (doesn't work on mobile responsive UI)"); //$NON-NLS-1$
 		}
-		final WebElement button = minButtons.get(0);
-		expandAdminMenu(button);
 	}
 
-	private static void expandAdminMenu(final WebElement button) {
+	private static void expandMenu(final WebElement button)
+			throws UtilsException {
 		button.click();
-		final String expandedState = button.getAttribute("aria-expanded"); //$NON-NLS-1$
-		if (Boolean.FALSE.equals(Boolean.valueOf(expandedState))) {
-			throw new NoSuchElementException("Admin menu was already expanded"); //$NON-NLS-1$
+		final IRunnableCondition condition = new IRunnableCondition() {
+			@Override
+			public boolean run() {
+				final String expandedState = button
+						.getAttribute("aria-expanded"); //$NON-NLS-1$
+				return Boolean.TRUE.equals(Boolean.valueOf(expandedState));
+			}
+
+			// XXX toString c'est nul
+			@Override
+			public String toString() {
+				return String.format("state expanded for button '%s'", //$NON-NLS-1$
+						button.toString());
+			}
+		};
+		waitUntilCondition(condition, 10000);
+	}
+
+	// XXX Mutualiser avec expandAdminMenu
+	public static void expandSettingsScreenMenu(final WebDriver driver,
+			final Selenium selenium) throws UtilsException {
+		final List<WebElement> buttons = driver
+				.findElements(By.xpath("//button[@id='show-settings-link']")); //$NON-NLS-1$
+		if (buttons.isEmpty()) {
+			throw new NoSuchElementException("Cannot get button to expand"); //$NON-NLS-1$
+		}
+		final WebElement button = buttons.get(0);
+		final boolean visible = selenium.isVisible("id=show-settings-link"); //$NON-NLS-1$
+		if (visible) {
+			expandMenu(button);
+		} else {
+			throw new NoSuchElementException(
+					"Cannot get button to expand (doesn't work on mobile responsive UI)"); //$NON-NLS-1$
 		}
 	}
 

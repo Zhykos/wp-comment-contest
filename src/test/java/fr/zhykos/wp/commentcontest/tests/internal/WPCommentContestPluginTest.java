@@ -8,6 +8,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -38,6 +39,7 @@ public class WPCommentContestPluginTest {
 	private static final boolean INST_CHROME_DRV = Utils
 			.getBooleanSystemProperty(WPCommentContestPluginTest.class.getName()
 					+ ".installchromedriver", true); //$NON-NLS-1$
+	private static final int FAKE_COMMENTS_NB = 5;
 
 	private final IWordPressPlugin wpRssPlg;
 	private final IWordPressPlugin fakerPlg;
@@ -103,34 +105,60 @@ public class WPCommentContestPluginTest {
 	// }
 
 	@Test // (timeout = 60000) XXX
+	@Ignore
 	@SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
 	/*
 	 * @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert") tcicognani:
 	 * Assertions are in another method
 	 */
-	public void chromeTest() throws UtilsException {
+	public void testPluginInstallAndGlobalFeatures() throws UtilsException {
 		Utils.installChromeDriver(INST_CHROME_DRV);
-		this.driver = new ChromeDriver();
+		this.driver = new ChromeDriver(); // XXX test other browsers
 		this.selenium = new WebDriverBackedSelenium(this.driver,
 				this.wpInfo.getTestServer().getHomeURL());
-		testPlugin();
-	}
-
-	private void testPlugin() throws UtilsException {
 		final String homeURL = this.wpInfo.getTestServer().getHomeURL();
 		this.selenium.open(homeURL);
 		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH1Tag(this.driver, this.wpInfo.getWebsiteName());
 		WpHtmlUtils.connect((ChromeDriver) this.driver, this.selenium,
 				this.wpInfo);
-		addFakeComments();
+		addFakeComments(); // XXX beforeclass car prérequis pour tous les tests
 		testPluginCommentPage();
-		testPluginDraw();
+		testPluginArticlePage();
 	}
 
-	private void testPluginDraw() {
-		// TODO Auto-generated method stub
-		System.out.println();
+	private void testPluginArticlePage() throws UtilsException {
+		final String homeURL = this.wpInfo.getTestServer().getHomeURL();
+		this.selenium.open(homeURL + "/wp-admin/edit.php"); //$NON-NLS-1$
+		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH1Tag(this.driver, Translations.articles);
+		final WebElement articleLine = this.driver
+				.findElement(By.xpath("//tr[@id='post-1']")); //$NON-NLS-1$
+		final String commentsNb = articleLine.findElement(By.xpath(
+				"//td[@class='comments column-comments']/div/a/span[@class='comment-count-approved']")) //$NON-NLS-1$
+				.getText();
+		Assert.assertEquals(FAKE_COMMENTS_NB + 1, Integer.parseInt(commentsNb));
+		final String contestLinkTxt = articleLine.findElement(By.xpath(
+				"//td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"))
+				.getText();
+		Assert.assertEquals("Lancer le concours", contestLinkTxt);
+		WpHtmlUtils.expandSettingsScreenMenu(this.driver, this.selenium);
+		this.selenium.uncheck("id=orgZhyweb-wpCommentContest-hide");
+		final List<WebElement> contestColumnElts = articleLine.findElements(By
+				.xpath("//td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
+		Assert.assertTrue(contestColumnElts.isEmpty());
+		this.selenium.check("id=orgZhyweb-wpCommentContest-hide");
+		final WebElement contestLink = articleLine.findElement(By.xpath(
+				"//td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
+		Assert.assertEquals("Lancer le concours", contestLink.getText());
+		final String articleName = articleLine.findElement(By.xpath(
+				"//td[@class='title column-title has-row-actions column-primary page-title']/strong/a")) //$NON-NLS-1$
+				.getText();
+		this.selenium.open(contestLink.getAttribute("href")); //$NON-NLS-1$
+		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH2Tag(this.driver, "Comment Contest");
+		WpHtmlUtils.assertH3Tag(this.driver,
+				String.format("Concours pour l'article \"%s\"", articleName));
 	}
 
 	private void testPluginCommentPage() throws UtilsException {
@@ -163,7 +191,8 @@ public class WPCommentContestPluginTest {
 		this.selenium.open(
 				homeURL + "/wp-admin/admin.php?page=fakerpress&view=comments"); //$NON-NLS-1$
 		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-		this.selenium.type("id=fakerpress-field-qty-min", "5"); //$NON-NLS-1$ //$NON-NLS-2$
+		this.selenium.type("id=fakerpress-field-qty-min", //$NON-NLS-1$
+				String.valueOf(FAKE_COMMENTS_NB));
 		this.selenium.uncheck("id=fakerpress-field-use_html-1"); //$NON-NLS-1$
 		this.driver
 				.findElement(
@@ -205,6 +234,33 @@ public class WPCommentContestPluginTest {
 		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH1Tag(this.driver, Translations.commentsOnArticle,
 				articleName);
+	}
+
+	@Test // (timeout = 60000) XXX
+	@SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
+	/*
+	 * @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert") tcicognani:
+	 * Assertions are in another method
+	 */
+	public void testDraws1() throws UtilsException {
+		Utils.installChromeDriver(INST_CHROME_DRV);
+		this.driver = new ChromeDriver(); // XXX test other browsers
+		this.selenium = new WebDriverBackedSelenium(this.driver,
+				this.wpInfo.getTestServer().getHomeURL());
+		WpHtmlUtils.connect((ChromeDriver) this.driver, this.selenium,
+				this.wpInfo);
+		addFakeComments(); // XXX beforeclass car prérequis pour tous les tests
+		final String homeURL = this.wpInfo.getTestServer().getHomeURL();
+		this.selenium.open(homeURL + "/wp-admin/edit.php"); //$NON-NLS-1$
+		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH1Tag(this.driver, Translations.articles);
+		final WebElement articleLine = this.driver
+				.findElement(By.xpath("//tr[@id='post-1']")); //$NON-NLS-1$
+		final WebElement contestLink = articleLine.findElement(By.xpath(
+				"//td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
+		this.selenium.open(contestLink.getAttribute("href")); //$NON-NLS-1$
+		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		System.out.println();
 	}
 
 	@After
