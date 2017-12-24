@@ -132,27 +132,25 @@ public class WPCommentContestPluginTest {
 		this.selenium.open(homeURL + "/wp-admin/edit.php"); //$NON-NLS-1$
 		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH1Tag(this.driver, Translations.articles);
-		final WebElement articleLine = this.driver
-				.findElement(By.xpath("//tr[@id='post-1']")); //$NON-NLS-1$
-		final String commentsNb = articleLine.findElement(By.xpath(
-				"//td[@class='comments column-comments']/div/a/span[@class='comment-count-approved']")) //$NON-NLS-1$
+		final String commentsNb = this.driver.findElement(By.xpath(
+				"//tr[@id='post-1']/td[@class='comments column-comments']/div/a/span[@class='comment-count-approved']")) //$NON-NLS-1$
 				.getText();
 		Assert.assertEquals(FAKE_COMMENTS_NB + 1, Integer.parseInt(commentsNb));
-		final String contestLinkTxt = articleLine.findElement(By.xpath(
-				"//td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"))
+		final String contestLinkTxt = this.driver.findElement(By.xpath(
+				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"))
 				.getText();
 		Assert.assertEquals("Lancer le concours", contestLinkTxt);
 		WpHtmlUtils.expandSettingsScreenMenu(this.driver, this.selenium);
 		this.selenium.uncheck("id=orgZhyweb-wpCommentContest-hide");
-		final List<WebElement> contestColumnElts = articleLine.findElements(By
-				.xpath("//td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
+		final List<WebElement> contestColumnElts = this.driver.findElements(By
+				.xpath("//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
 		Assert.assertTrue(contestColumnElts.isEmpty());
 		this.selenium.check("id=orgZhyweb-wpCommentContest-hide");
-		final WebElement contestLink = articleLine.findElement(By.xpath(
-				"//td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
+		final WebElement contestLink = this.driver.findElement(By.xpath(
+				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
 		Assert.assertEquals("Lancer le concours", contestLink.getText());
-		final String articleName = articleLine.findElement(By.xpath(
-				"//td[@class='title column-title has-row-actions column-primary page-title']/strong/a")) //$NON-NLS-1$
+		final String articleName = this.driver.findElement(By.xpath(
+				"//tr[@id='post-1']/td[@class='title column-title has-row-actions column-primary page-title']/strong/a")) //$NON-NLS-1$
 				.getText();
 		this.selenium.open(contestLink.getAttribute("href")); //$NON-NLS-1$
 		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
@@ -236,13 +234,8 @@ public class WPCommentContestPluginTest {
 				articleName);
 	}
 
-	@Test // (timeout = 60000) XXX
-	@SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
-	/*
-	 * @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert") tcicognani:
-	 * Assertions are in another method
-	 */
-	public void testDraws1() throws UtilsException {
+	@Test(timeout = 200000)
+	public void testCommentsInTable() throws UtilsException {
 		Utils.installChromeDriver(INST_CHROME_DRV);
 		this.driver = new ChromeDriver(); // XXX test other browsers
 		this.selenium = new WebDriverBackedSelenium(this.driver,
@@ -254,17 +247,63 @@ public class WPCommentContestPluginTest {
 		this.selenium.open(homeURL + "/wp-admin/edit.php"); //$NON-NLS-1$
 		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH1Tag(this.driver, Translations.articles);
-		final WebElement articleLine = this.driver
-				.findElement(By.xpath("//tr[@id='post-1']")); //$NON-NLS-1$
-		final WebElement contestLink = articleLine.findElement(By.xpath(
-				"//td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
+		final WebElement contestLink = this.driver.findElement(By.xpath(
+				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
 		this.selenium.open(contestLink.getAttribute("href")); //$NON-NLS-1$
 		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-		System.out.println();
+		this.driver.findElement(By.xpath("//div[@id='contestForm']/table")); //$NON-NLS-1$
+		final List<WebElement> linesElt = this.driver.findElements(
+				By.xpath("//div[@id='contestForm']/table/tbody/tr")); //$NON-NLS-1$
+		// n fake comments plus one from install and one invisible fake
+		Assert.assertEquals(FAKE_COMMENTS_NB + 2, linesElt.size());
+		final String firstLineId = linesElt.get(0).getAttribute("id"); //$NON-NLS-1$
+		Assert.assertEquals("comment-contest-not-found-tr", firstLineId); //$NON-NLS-1$
+		String bckColorAlt1 = null;
+		String bckColorAlt2 = null;
+		for (int i = 1; i < linesElt.size(); i++) {
+			final WebElement lineElt = linesElt.get(i);
+			final String eltId = lineElt.getAttribute("id"); //$NON-NLS-1$
+			Assert.assertTrue(eltId.matches("comment-contest-\\d")); //$NON-NLS-1$
+			// Check alternate colors
+			final String bckColor = lineElt.getCssValue("background-color"); //$NON-NLS-1$
+			if (i % 2 == 0) {
+				if (bckColorAlt1 == null) {
+					bckColorAlt1 = bckColor;
+				} else {
+					Assert.assertEquals(bckColorAlt1, bckColor);
+				}
+			} else {
+				if (bckColorAlt2 == null) {
+					bckColorAlt2 = bckColor;
+				} else {
+					Assert.assertEquals(bckColorAlt2, bckColor);
+				}
+			}
+		}
+		// Assert.assertNotEquals(bckColorAlt2, bckColorAlt1); // FIXME
+		// Special links in table
+		final List<WebElement> actionSpans = this.driver.findElements(By.xpath(
+				"//tr[@id='comment-contest-1']/td[@class='comment column-comment']/div[@class='row-actions']/span")); //$NON-NLS-1$
+		Assert.assertEquals(4, actionSpans.size());
+		final String span1 = actionSpans.get(0).getAttribute("class"); //$NON-NLS-1$
+		Assert.assertEquals("delete", span1); //$NON-NLS-1$
+		final String span2 = actionSpans.get(1).getAttribute("class"); //$NON-NLS-1$
+		Assert.assertEquals("restore", span2); //$NON-NLS-1$
+		final String span3 = actionSpans.get(2).getAttribute("class"); //$NON-NLS-1$
+		Assert.assertEquals("cheat", span3); //$NON-NLS-1$
+		final String span4 = actionSpans.get(3).getAttribute("class"); //$NON-NLS-1$
+		Assert.assertEquals("stopcheat", span4); //$NON-NLS-1$
+		// Check columns
+		this.driver.findElement(By.xpath(
+				"//tr[@id='comment-contest-1']/th[@class='check-column']/input[@type='checkbox']")); //$NON-NLS-1$
+		final List<WebElement> columns = this.driver
+				.findElements(By.xpath("//tr[@id='comment-contest-1']/td")); //$NON-NLS-1$
+		Assert.assertEquals(2, columns.size());
 	}
 
 	@After
 	public void after() throws UtilsException {
+		// XXX After class
 		if (this.driver != null) {
 			this.driver.quit();
 		}
@@ -276,9 +315,9 @@ public class WPCommentContestPluginTest {
 			}
 		}
 		// TODO Utiliser la classe EMF Facet de vérification d'erreur lors du
-		// test unitaire
+		// test unitaire pour savoir si on peut packager
 		// Utils.packagePlugin(this.myPlugin);
-		fail();
+		// fail();
 	}
 
 }
