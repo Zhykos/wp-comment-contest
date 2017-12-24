@@ -2,10 +2,16 @@ package fr.zhykos.wp.commentcontest.tests.internal;
 
 import static org.junit.Assert.fail;
 
+import java.util.Calendar;
+import java.util.List;
+
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
 import com.thoughtworks.selenium.Selenium;
@@ -15,6 +21,8 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.IWordPressInformation;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.Utils;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils.IRunnableCondition;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils.Translations;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlugin;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginCatalog;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginToTest;
@@ -32,6 +40,7 @@ public class WPCommentContestPluginTest {
 					+ ".installchromedriver", true); //$NON-NLS-1$
 
 	private final IWordPressPlugin wpRssPlg;
+	private final IWordPressPlugin fakerPlg;
 	private final IWordPressPluginToTest myPlugin;
 
 	private WebDriver driver;
@@ -41,6 +50,7 @@ public class WPCommentContestPluginTest {
 	public WPCommentContestPluginTest() throws UtilsException {
 		this.wpRssPlg = IWordPressPluginCatalog.DEFAULT
 				.getPlugin("wp-rss-aggregator"); //$NON-NLS-1$
+		this.fakerPlg = IWordPressPluginCatalog.DEFAULT.getPlugin("fakerpress"); //$NON-NLS-1$
 		this.myPlugin = IWordPressPluginToTestFactory.DEFAULT.getPlugin(
 				"comment-contest", new String[] { "css/comment-contest.css" }, //$NON-NLS-1$ //$NON-NLS-2$
 				new String[] { "js/OrgZhyweb_WPCommentContest_jQuery.js" }, //$NON-NLS-1$
@@ -63,8 +73,9 @@ public class WPCommentContestPluginTest {
 		if (installWordPress) {
 			Utils.installWordPress();
 		}
+		// XXX startServer c'est nul comme nom...
 		this.wpInfo = Utils.startServer(INST_CHROME_DRV, this.myPlugin,
-				new IWordPressPlugin[] { this.wpRssPlg });
+				new IWordPressPlugin[] { this.wpRssPlg, this.fakerPlg });
 	}
 
 	// @Test
@@ -112,6 +123,88 @@ public class WPCommentContestPluginTest {
 		WpHtmlUtils.assertH1Tag(this.driver, this.wpInfo.getWebsiteName());
 		WpHtmlUtils.connect((ChromeDriver) this.driver, this.selenium,
 				this.wpInfo);
+		addFakeComments();
+		testPluginCommentPage();
+		testPluginDraw();
+	}
+
+	private void testPluginDraw() {
+		// TODO Auto-generated method stub
+		System.out.println();
+	}
+
+	private void testPluginCommentPage() throws UtilsException {
+		// Test if plugin link if a comment sub menu
+		WpHtmlUtils.expandAdminMenu(this.driver, this.selenium);
+		final String link = this.driver.findElement(By.xpath(
+				"//li[@id='menu-comments']/ul/li/a[@href='edit-comments.php?page=orgZhyweb-wpCommentContest']"))
+				.getText();
+		Assert.assertEquals("Comment Contest", link);
+		// Check plugin page
+		final String homeURL = this.wpInfo.getTestServer().getHomeURL();
+		this.selenium.open(homeURL
+				+ "/wp-admin/edit-comments.php?page=orgZhyweb-wpCommentContest");
+		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH2Tag(this.driver, "Comment Contest");
+		testReport();
+	}
+
+	private void testReport() {
+		// TODO Auto-generated method stub
+	}
+
+	protected WebDriver getDriver() {
+		return this.driver;
+	}
+
+	private void addFakeComments() throws UtilsException {
+		// Generate fakes
+		final String homeURL = this.wpInfo.getTestServer().getHomeURL();
+		this.selenium.open(
+				homeURL + "/wp-admin/admin.php?page=fakerpress&view=comments"); //$NON-NLS-1$
+		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		this.selenium.type("id=fakerpress-field-qty-min", "5"); //$NON-NLS-1$ //$NON-NLS-2$
+		this.selenium.uncheck("id=fakerpress-field-use_html-1"); //$NON-NLS-1$
+		this.driver
+				.findElement(
+						By.xpath("//body//form[@class='fp-module-generator']")) //$NON-NLS-1$
+				.submit();
+		final IRunnableCondition condition = new IRunnableCondition() {
+			@Override
+			public boolean run() {
+				final List<WebElement> foundElements = getDriver()
+						.findElements(By.xpath(
+								"//div[@class='fp-response']//div[@class='notice is-dismissible notice-success']")); //$NON-NLS-1$
+				return (!foundElements.isEmpty());
+			}
+
+			// XXX toString c'est nul
+			@Override
+			public String toString() {
+				return "generate comments"; //$NON-NLS-1$
+			}
+		};
+		WpHtmlUtils.waitUntilCondition(condition, 60000);
+		// Modify one comment date (for tests)
+		this.selenium
+				.open(homeURL + "/wp-admin/comment.php?action=editcomment&c=2"); //$NON-NLS-1$
+		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH1Tag(this.driver, Translations.editComment);
+		final Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1);
+		this.selenium.type("id=jj", //$NON-NLS-1$
+				Integer.toString(cal.get(Calendar.DAY_OF_MONTH)));
+		this.selenium.select("id=mm", //$NON-NLS-1$
+				"index=" + Integer.toString(cal.get(Calendar.MONTH))); //$NON-NLS-1$
+		this.selenium.type("id=aa", //$NON-NLS-1$
+				Integer.toString(cal.get(Calendar.YEAR)));
+		final String articleName = this.driver.findElement(By.xpath(
+				"//div[@id='misc-publishing-actions']/div[@class='misc-pub-section misc-pub-response-to']/b/a")) //$NON-NLS-1$
+				.getText();
+		this.selenium.submit("id=post"); //$NON-NLS-1$
+		this.selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH1Tag(this.driver, Translations.commentsOnArticle,
+				articleName);
 	}
 
 	@After

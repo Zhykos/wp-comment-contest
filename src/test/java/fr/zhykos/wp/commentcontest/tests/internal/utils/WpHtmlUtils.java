@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -23,11 +24,12 @@ public final class WpHtmlUtils {
 	private static final int INST_PLG_SEARCH = 1;
 	private static final String PAGE_LOAD_TIMEOUT = "30000"; //$NON-NLS-1$
 
-	private enum Translations {
-		extensions, addExtensions, activatedPluginOk
+	// XXX Mettre le système de traduction dans une autre classe
+	public enum Translations {
+		extensions, addExtensions, activatedPluginOk, comments, editComment, commentsOnArticle
 	}
 
-	private interface IRunnableCondition {
+	public interface IRunnableCondition {
 		boolean run();
 	}
 
@@ -38,6 +40,9 @@ public final class WpHtmlUtils {
 		french.put(Translations.extensions, "Extensions"); //$NON-NLS-1$
 		french.put(Translations.addExtensions, "Ajouter des extensions"); //$NON-NLS-1$
 		french.put(Translations.activatedPluginOk, "Extension activée"); //$NON-NLS-1$
+		french.put(Translations.comments, "Commentaires"); //$NON-NLS-1$
+		french.put(Translations.editComment, "Modifier le commentaire"); //$NON-NLS-1$
+		french.put(Translations.commentsOnArticle, "Commentaires sur « %s »"); //$NON-NLS-1$
 		TRANSLATIONS.put(Locale.FRENCH, french);
 	}
 
@@ -85,14 +90,30 @@ public final class WpHtmlUtils {
 				getTranslation(Translations.activatedPluginOk));
 	}
 
-	private static void assertH1Tag(final WebDriver driver,
+	// XXX Améliorer assertH1Tag et assertH1Tag avec Object...
+	public static void assertH1Tag(final WebDriver driver,
 			final Translations expected) {
 		assertH1Tag(driver, getTranslation(expected));
 	}
 
+	// XXX Améliorer assertH1Tag et assertH1Tag avec Object...
+	public static void assertH1Tag(final WebDriver driver,
+			final Translations expected, final Object... translationArgs) {
+		final String translation = String.format(getTranslation(expected),
+				translationArgs);
+		assertH1Tag(driver, translation);
+	}
+
+	// XXX Voir si on peut mieux faire pour les tests sur les balises Hx
 	public static void assertH1Tag(final WebDriver driver,
 			final String expected) {
 		assertHTML(driver, "//h1", expected); //$NON-NLS-1$
+	}
+
+	// XXX Voir si on peut mieux faire pour les tests sur les balises Hx
+	public static void assertH2Tag(final WebDriver driver,
+			final String expected) {
+		assertHTML(driver, "//h2", expected); //$NON-NLS-1$
 	}
 
 	@SuppressWarnings("PMD.UseLocaleWithCaseConversions")
@@ -194,6 +215,7 @@ public final class WpHtmlUtils {
 					return classAttr.contains("activate-now"); //$NON-NLS-1$
 				}
 
+				// XXX toString c'est nul
 				@Override
 				public String toString() {
 					return String.format(
@@ -218,6 +240,7 @@ public final class WpHtmlUtils {
 				return selenium.isVisible(locator) == visible;
 			}
 
+			// XXX toString c'est nul
 			@Override
 			public String toString() {
 				return String.format("state 'visible = %s' for locator '%s'", //$NON-NLS-1$
@@ -227,7 +250,7 @@ public final class WpHtmlUtils {
 		waitUntilCondition(condition, maxTimeMilli);
 	}
 
-	private static void waitUntilCondition(final IRunnableCondition condition,
+	public static void waitUntilCondition(final IRunnableCondition condition,
 			final int maxTimeMilli) throws UtilsException {
 		waitMilli(1000);
 		boolean catchState = false;
@@ -251,6 +274,45 @@ public final class WpHtmlUtils {
 			Thread.sleep(time);
 		} catch (final InterruptedException e) {
 			throw new UtilsException(e);
+		}
+	}
+
+	public static void expandAdminMenu(final WebDriver driver,
+			final Selenium selenium) {
+		final List<WebElement> buttons = driver
+				.findElements(By.xpath("//button[@id='collapse-button']")); //$NON-NLS-1$
+		if (buttons.isEmpty()) {
+			expandAdminMinMenu(driver);
+		} else {
+			final WebElement button = buttons.get(0);
+			final boolean visible = selenium.isVisible("id=collapse-button"); //$NON-NLS-1$
+			if (visible) {
+				expandAdminMenu(button);
+			} else {
+				expandAdminMinMenu(driver);
+			}
+		}
+	}
+
+	/*
+	 * Maybe UI is too small and responsive behavior display another button
+	 */
+	private static void expandAdminMinMenu(final WebDriver driver) {
+		final List<WebElement> minButtons = driver.findElements(
+				By.xpath("//li[@id='wp-admin-bar-menu-toggle']/a")); //$NON-NLS-1$
+		if (minButtons.isEmpty()) {
+			throw new NoSuchElementException(
+					"Cannot get button to expand admin menu"); //$NON-NLS-1$
+		}
+		final WebElement button = minButtons.get(0);
+		expandAdminMenu(button);
+	}
+
+	private static void expandAdminMenu(final WebElement button) {
+		button.click();
+		final String expandedState = button.getAttribute("aria-expanded"); //$NON-NLS-1$
+		if (Boolean.FALSE.equals(Boolean.valueOf(expandedState))) {
+			throw new NoSuchElementException("Admin menu was already expanded"); //$NON-NLS-1$
 		}
 	}
 
