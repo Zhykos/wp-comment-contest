@@ -17,6 +17,7 @@ class WordPressPluginCatalog implements IWordPressPluginCatalog {
 		 */
 		this.plugins.add(new PluginCommentContest());
 		this.plugins.add(new PluginWPRSSAggregator());
+		this.plugins.add(new PluginFakerPress());
 	}
 
 	@Override
