@@ -47,6 +47,7 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlug
 
 /*
  * TODO Découper cette classe !
+ * TODO Ajouter une méthode utilitaire qui, en cas de getText(), vérifie que l'élément est visible et si non plante
  */
 public final class Utils {
 
