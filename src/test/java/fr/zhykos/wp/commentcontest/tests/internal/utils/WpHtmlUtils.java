@@ -12,7 +12,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import com.thoughtworks.selenium.Selenium;
@@ -23,6 +22,7 @@ public final class WpHtmlUtils {
 
 	/** Number of plug-in to find with a specific search **/
 	private static final int INST_PLG_SEARCH = 1;
+	// XXX Mutualiser cette variable pour le chargement d'une page
 	private static final String PAGE_LOAD_TIMEOUT = "30000"; //$NON-NLS-1$
 
 	// XXX Mettre le système de traduction dans une autre classe
@@ -152,10 +152,8 @@ public final class WpHtmlUtils {
 		}
 	}
 
-	// XXX ChromeDriver en paramètre ! Passer un driver générique
-	public static void connect(final ChromeDriver driver,
-			final Selenium selenium, final IWordPressInformation wpInfo)
-			throws UtilsException {
+	public static void connect(final WebDriver driver, final Selenium selenium,
+			final IWordPressInformation wpInfo) throws UtilsException {
 		final String homeURL = wpInfo.getTestServer().getHomeURL();
 		connect(driver, selenium, wpInfo.getLogin(), wpInfo.getPassword(),
 				homeURL + "/wp-login.php"); //$NON-NLS-1$

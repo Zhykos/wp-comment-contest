@@ -76,6 +76,7 @@ public final class Utils {
 			.getLogger(Utils.class.getName());
 	private static final String DONE_STR = "done!"; //$NON-NLS-1$
 	private static final String WEBAPP = "webapp"; //$NON-NLS-1$
+	// XXX Mutualiser cette variable pour le chargement d'une page
 	private static final String PAGE_LOAD_TIMEOUT = "30000"; //$NON-NLS-1$
 
 	private Utils() {
