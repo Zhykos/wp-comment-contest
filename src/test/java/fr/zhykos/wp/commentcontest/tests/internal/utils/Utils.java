@@ -32,8 +32,8 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
 
 import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
@@ -95,7 +95,7 @@ public final class Utils {
 		LOGGER.info(DONE_STR);
 	}
 
-	private static void unzipFile(final File fileToUnzip,
+	protected static void unzipFile(final File fileToUnzip,
 			final File targetDirectory) throws UtilsException {
 		LOGGER.info(String.format("Unzipping file '%s'...", //$NON-NLS-1$
 				fileToUnzip.getAbsolutePath()));
@@ -139,7 +139,7 @@ public final class Utils {
 		LOGGER.info(DONE_STR);
 	}
 
-	private static void downloadWebFile(final String distantFile,
+	protected static void downloadWebFile(final String distantFile,
 			final File localFile) throws UtilsException {
 		LOGGER.info(String.format("Downloading '%s'...", distantFile)); //$NON-NLS-1$
 		try (FileOutputStream fos = new FileOutputStream(localFile);) {
@@ -199,7 +199,7 @@ public final class Utils {
 	}
 
 	// XXX pluginToTest: proposer de tester plusieurs plugins
-	public static IWordPressInformation startServer(final boolean doInstChrmDrv,
+	public static IWordPressInformation startServer(
 			final IWordPressPluginToTest pluginToTest,
 			final IWordPressPlugin[] otherPlugins) throws UtilsException {
 		LOGGER.info("Starting server..."); //$NON-NLS-1$
@@ -209,8 +209,8 @@ public final class Utils {
 		final File wpRunDir = server.deployWordPress(wpEmbedDir);
 		deployPluginToTest(wpRunDir, pluginToTest);
 		server.start();
-		final IWordPressInformation wpInfo = configureWordpress(doInstChrmDrv,
-				server, pluginToTest, otherPlugins);
+		final IWordPressInformation wpInfo = configureWordpress(server,
+				pluginToTest, otherPlugins);
 		LOGGER.info(DONE_STR);
 		return wpInfo;
 	}
@@ -247,31 +247,10 @@ public final class Utils {
 		return Integer.parseInt(systemProperty);
 	}
 
-	public static void installChromeDriver(final boolean install)
-			throws UtilsException {
-		/*
-		 * https://chromedriver.storage.googleapis.com/index.html?path=2.33/
-		 * TODO Gérer le numéro de version et Linux / Mac
-		 */
-		final File tempDir = getTempDirectory();
-		if (install) {
-			final File chromeDriverZip = new File(tempDir, "chromedriver.zip"); //$NON-NLS-1$
-			downloadWebFile(
-					"https://chromedriver.storage.googleapis.com/2.33/chromedriver_win32.zip", //$NON-NLS-1$
-					chromeDriverZip);
-			unzipFile(chromeDriverZip, tempDir);
-		}
-		final File chromeDriverExe = new File(tempDir, "chromedriver.exe"); //$NON-NLS-1$
-		System.setProperty("webdriver.chrome.driver", //$NON-NLS-1$
-				chromeDriverExe.getAbsolutePath());
-	}
-
 	private static IWordPressInformation configureWordpress(
-			final boolean installChromeDrv, final ITestServer server,
-			final IWordPressPluginToTest pluginToTest,
+			final ITestServer server, final IWordPressPluginToTest pluginToTest,
 			final IWordPressPlugin[] otherPlugins) throws UtilsException {
-		installChromeDriver(installChromeDrv);
-		final ChromeDriver driver = new ChromeDriver();
+		final WebDriver driver = BrowserUtils.createChromeDriver();
 		try {
 			// TODO Check H1 in each page
 			cleanDatabase();

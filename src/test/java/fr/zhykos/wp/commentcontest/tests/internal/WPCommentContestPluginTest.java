@@ -17,6 +17,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 
+import fr.zhykos.wp.commentcontest.tests.internal.utils.BrowserUtils;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.IWordPressInformation;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.Utils;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
@@ -31,13 +32,9 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlug
 /*
  * http://atatorus.developpez.com/tutoriels/java/test-application-web-avec-selenium/
  */
-class WPCommentContestPluginTest {
+public class WPCommentContestPluginTest {
 
 	private static final String PAGE_LOAD_TIMEOUT = "30000"; //$NON-NLS-1$
-	// XXX Constante INST_CHROME_DRV qui n'a rien à faire là
-	private static final boolean INST_CHROME_DRV = Utils
-			.getBooleanSystemProperty(WPCommentContestPluginTest.class.getName()
-					+ ".installchromedriver", true); //$NON-NLS-1$
 	private static final int FAKE_COMMENTS_NB = 5;
 
 	private static IWordPressPlugin wpRssPlg;
@@ -49,7 +46,7 @@ class WPCommentContestPluginTest {
 	private Selenium selenium;
 
 	@BeforeAll
-	static void beforeAll() throws UtilsException {
+	public static void beforeAll() throws UtilsException {
 		wpRssPlg = IWordPressPluginCatalog.DEFAULT
 				.getPlugin("wp-rss-aggregator"); //$NON-NLS-1$
 		fakerPlg = IWordPressPluginCatalog.DEFAULT.getPlugin("fakerpress"); //$NON-NLS-1$
@@ -74,7 +71,7 @@ class WPCommentContestPluginTest {
 			Utils.installWordPress();
 		}
 		// XXX startServer c'est nul comme nom...
-		wpInfo = Utils.startServer(INST_CHROME_DRV, myPlugin,
+		wpInfo = Utils.startServer(myPlugin,
 				new IWordPressPlugin[] { wpRssPlg, fakerPlg });
 	}
 
@@ -109,9 +106,8 @@ class WPCommentContestPluginTest {
 	 * @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert") tcicognani:
 	 * Assertions are in another method
 	 */
-	void testPluginInstallAndGlobalFeatures() throws UtilsException {
-		Utils.installChromeDriver(INST_CHROME_DRV);
-		this.driver = new ChromeDriver(); // XXX test other browsers
+	public void testPluginInstallAndGlobalFeatures() throws UtilsException {
+		this.driver = BrowserUtils.createChromeDriver(); // XXX test other browsers
 		this.selenium = new WebDriverBackedSelenium(this.driver,
 				wpInfo.getTestServer().getHomeURL());
 		final String homeURL = wpInfo.getTestServer().getHomeURL();
@@ -239,9 +235,8 @@ class WPCommentContestPluginTest {
 	 * @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert") tcicognani: There
 	 * are JUnit 5 assertions!
 	 */
-	void testCommentsInTable() throws UtilsException {
-		Utils.installChromeDriver(INST_CHROME_DRV);
-		this.driver = new ChromeDriver(); // XXX test other browsers
+	public void testCommentsInTable() throws UtilsException {
+		this.driver = BrowserUtils.createChromeDriver(); // XXX test other browsers
 		this.selenium = new WebDriverBackedSelenium(this.driver,
 				wpInfo.getTestServer().getHomeURL());
 		WpHtmlUtils.connect((ChromeDriver) this.driver, this.selenium, wpInfo);
@@ -304,14 +299,14 @@ class WPCommentContestPluginTest {
 	}
 
 	@AfterEach
-	void after() {
+	public void after() {
 		if (this.driver != null) {
 			this.driver.quit();
 		}
 	}
 
 	@AfterAll
-	static void afterAll() {
+	public static void afterAll() {
 		if (wpInfo != null) {
 			try {
 				wpInfo.getTestServer().stop();

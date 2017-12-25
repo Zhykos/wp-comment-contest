@@ -13,6 +13,7 @@ import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import com.thoughtworks.selenium.Selenium;
 
@@ -160,10 +161,9 @@ public final class WpHtmlUtils {
 				homeURL + "/wp-login.php"); //$NON-NLS-1$
 	}
 
-	// XXX ChromeDriver en paramètre ! Passer un driver générique
-	public static void connect(final ChromeDriver driver,
-			final Selenium selenium, final String wpLogin,
-			final String wpPassword, final String loginHref) {
+	public static void connect(final WebDriver driver, final Selenium selenium,
+			final String wpLogin, final String wpPassword,
+			final String loginHref) {
 		// TODO Add check h1
 		selenium.open(loginHref);
 		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
@@ -172,7 +172,7 @@ public final class WpHtmlUtils {
 		selenium.check("id=rememberme"); //$NON-NLS-1$
 		selenium.click("id=wp-submit"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-		final List<WebElement> loginMessages = driver
+		final List<WebElement> loginMessages = ((RemoteWebDriver) driver)
 				.findElementsById("login_error"); //$NON-NLS-1$
 		if (!loginMessages.isEmpty()) {
 			final String message = loginMessages.get(0).getText();
