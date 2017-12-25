@@ -60,7 +60,8 @@ class WordPressPluginToTestFactory implements IWordPressPluginToTestFactory {
 			}
 
 			@Override
-			public void defaultActivationAction(final WebDriver driver) {
+			public void defaultActivationAction(final WebDriver driver)
+					throws UtilsException {
 				plugin.defaultActivationAction(driver);
 			}
 

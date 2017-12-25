@@ -2,6 +2,7 @@ package fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins;
 
 import org.openqa.selenium.WebDriver;
 
+import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils;
 
 @SuppressWarnings("PMD.AtLeastOneConstructor")
@@ -22,7 +23,8 @@ class PluginFakerPress implements IWordPressPlugin {
 	}
 
 	@Override
-	public void defaultActivationAction(final WebDriver driver) {
+	public void defaultActivationAction(final WebDriver driver)
+			throws UtilsException {
 		WpHtmlUtils.assertDefaultPluginActivation(driver);
 	}
 

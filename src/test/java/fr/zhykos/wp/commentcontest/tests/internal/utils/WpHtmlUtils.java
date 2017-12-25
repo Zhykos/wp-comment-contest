@@ -74,7 +74,7 @@ public final class WpHtmlUtils {
 
 	public static void activatePlugins(final Selenium selenium,
 			final WebDriver driver, final String homeURL,
-			final IWordPressPlugin[] plugins) {
+			final IWordPressPlugin[] plugins) throws UtilsException {
 		for (final IWordPressPlugin plugin : plugins) {
 			openExtensionsPage(selenium, driver, homeURL);
 			final String xpathExpression = String.format(
