@@ -27,7 +27,7 @@ class TestServerFactory implements ITestServerFactory {
 			classs = EmbeddedTomcatServer.class;
 		}
 		try {
-			return (ITestServer) classs.newInstance();
+			return (ITestServer) classs.getDeclaredConstructor().newInstance();
 		} catch (final Exception e) {
 			throw new UtilsException(e);
 		}
