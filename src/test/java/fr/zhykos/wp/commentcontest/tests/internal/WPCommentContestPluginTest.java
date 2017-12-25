@@ -13,6 +13,7 @@ import org.junit.jupiter.api.function.Executable;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 
 import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
@@ -85,6 +86,7 @@ public class WPCommentContestPluginTest {
 	 * It's not a JUnit 4 method, it's JUnit 5...
 	 */
 	// XXX On a toujours le même pattern pour tester les méthodes sur tous les navigateurs
+	// XXX Rajouter timeout
 	@TestFactory
 	public Collection<DynamicTest> testPluginInstallAndGlobalFeatures()
 			throws UtilsException {
@@ -160,12 +162,17 @@ public class WPCommentContestPluginTest {
 
 	private static void testPluginCommentPage(final WebDriver driver,
 			final Selenium selenium) throws UtilsException {
-		// Test if plugin link if a comment sub menu
+		// Test if plugin link is a comment sub menu
 		WpHtmlUtils.expandAdminMenu(driver, selenium);
-		final String link = driver.findElement(By.xpath(
-				"//li[@id='menu-comments']/ul/li/a[@href='edit-comments.php?page=orgZhyweb-wpCommentContest']"))
-				.getText();
-		Assertions.assertEquals("Comment Contest", link);
+		final WebElement plgCommentMenu = driver.findElement(By.xpath(
+				"//li[@id='menu-comments']/ul/li/a[@href='edit-comments.php?page=orgZhyweb-wpCommentContest']"));
+		final Actions action = new Actions(driver);
+		final WebElement ele = driver
+				.findElement(By.id("menu-comments")); //$NON-NLS-1$
+		action.moveToElement(ele).build().perform();
+		WpHtmlUtils.waitUntilVisibleState(plgCommentMenu, true, 10000);
+		final String linkStr = plgCommentMenu.getText();
+		Assertions.assertEquals("Comment Contest", linkStr);
 		// Check plugin page
 		final String homeURL = wpInfo.getTestServer().getHomeURL();
 		selenium.open(homeURL
@@ -190,6 +197,7 @@ public class WPCommentContestPluginTest {
 	 * It's not a JUnit 4 method, it's JUnit 5...
 	 */
 	// XXX On a toujours le même pattern pour tester les méthodes sur tous les navigateurs
+	// XXX Rajouter timeout
 	@TestFactory
 	public Collection<DynamicTest> testCommentsInTable() throws UtilsException {
 		final Collection<DynamicTest> dynamicTests = new ArrayList<>();

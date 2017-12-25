@@ -236,6 +236,7 @@ public final class WpHtmlUtils {
 		}
 	}
 
+	// XXX Possible mutualisation avec waitUntilVisibleState(WebElement, boolean, int) ?
 	private static void waitUntilVisibleState(final Selenium selenium,
 			final String locator, final boolean visible, final int maxTimeMilli)
 			throws UtilsException {
@@ -255,6 +256,31 @@ public final class WpHtmlUtils {
 		waitUntilCondition(condition, maxTimeMilli);
 	}
 
+	// XXX Possible mutualisation avec waitUntilVisibleState(Selenium, String, boolean, int) ?
+	public static void waitUntilVisibleState(final WebElement element,
+			final boolean visible, final int maxTimeMilli)
+			throws UtilsException {
+		final IRunnableCondition condition = new IRunnableCondition() {
+			@Override
+			public boolean run() {
+				return element.isDisplayed() == visible;
+			}
+
+			// XXX toString c'est nul
+			@Override
+			public String toString() {
+				return String.format("state 'visible = %s' for element '%s'", //$NON-NLS-1$
+						Boolean.toString(visible), element);
+			}
+		};
+		waitUntilCondition(condition, maxTimeMilli);
+	}
+
+	/*
+	 * XXX Methode un peu nulle car on attend 1000ms dès le début (car certains
+	 * bugs apparaissent si non) / que se passe t il si le temps max est
+	 * inférieur à 1000 ? / message d'exception mal formatté
+	 */
 	public static void waitUntilCondition(final IRunnableCondition condition,
 			final int maxTimeMilli) throws UtilsException {
 		waitMilli(1000);
@@ -293,32 +319,37 @@ public final class WpHtmlUtils {
 		final WebElement button = buttons.get(0);
 		final boolean visible = selenium.isVisible("id=collapse-button"); //$NON-NLS-1$
 		if (visible) {
-			expandMenu(button);
+			expandFrom(button);
 		} else {
 			throw new NoSuchElementException(
 					"Cannot get button to expand (doesn't work on mobile responsive UI)"); //$NON-NLS-1$
 		}
 	}
 
-	private static void expandMenu(final WebElement button)
+	private static void expandFrom(final WebElement element)
 			throws UtilsException {
-		button.click();
-		final IRunnableCondition condition = new IRunnableCondition() {
-			@Override
-			public boolean run() {
-				final String expandedState = button
-						.getAttribute("aria-expanded"); //$NON-NLS-1$
-				return Boolean.TRUE.equals(Boolean.valueOf(expandedState));
-			}
+		if (!isExpandedElement(element)) {
+			element.click();
+			final IRunnableCondition condition = new IRunnableCondition() {
+				@Override
+				public boolean run() {
+					return isExpandedElement(element);
+				}
 
-			// XXX toString c'est nul
-			@Override
-			public String toString() {
-				return String.format("state expanded for button '%s'", //$NON-NLS-1$
-						button.toString());
-			}
-		};
-		waitUntilCondition(condition, 10000);
+				// XXX toString c'est nul
+				@Override
+				public String toString() {
+					return String.format("state expanded for button '%s'", //$NON-NLS-1$
+							element.toString());
+				}
+			};
+			waitUntilCondition(condition, 10000);
+		}
+	}
+
+	protected static boolean isExpandedElement(final WebElement element) {
+		final String expandedState = element.getAttribute("aria-expanded"); //$NON-NLS-1$
+		return Boolean.TRUE.equals(Boolean.valueOf(expandedState));
 	}
 
 	// XXX Mutualiser avec expandAdminMenu
@@ -332,7 +363,7 @@ public final class WpHtmlUtils {
 		final WebElement button = buttons.get(0);
 		final boolean visible = selenium.isVisible("id=show-settings-link"); //$NON-NLS-1$
 		if (visible) {
-			expandMenu(button);
+			expandFrom(button);
 		} else {
 			throw new NoSuchElementException(
 					"Cannot get button to expand (doesn't work on mobile responsive UI)"); //$NON-NLS-1$
