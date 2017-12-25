@@ -242,7 +242,7 @@ public class WPCommentContestPluginTest {
 	}
 
 	@AfterEach
-	public void after() {
+	public void afterEach() {
 		if (this.driver != null) {
 			this.driver.quit();
 		}
