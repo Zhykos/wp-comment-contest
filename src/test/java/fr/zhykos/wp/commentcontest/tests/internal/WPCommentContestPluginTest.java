@@ -21,6 +21,7 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.BrowserUtils;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.IWordPressInformation;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils.Translations;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlugin;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginCatalog;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginToTest;
@@ -73,85 +74,110 @@ public class WPCommentContestPluginTest {
 		Utils.addFakeComments(wpInfo);
 	}
 
-	// @Test // (timeout = 60000) XXX
-	// @Disabled
-	// @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
-	// /*
-	// * @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert") tcicognani:
-	// * Assertions are in another method
-	// */
-	// public void testPluginInstallAndGlobalFeatures() throws UtilsException {
-	// this.driver = BrowserUtils.createChromeDriver(); // XXX test other
-	// browsers
-	// this.selenium = new WebDriverBackedSelenium(this.driver,
-	// wpInfo.getTestServer().getHomeURL());
-	// final String homeURL = wpInfo.getTestServer().getHomeURL();
-	// this.selenium.open(homeURL);
-	// this.selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-	// WpHtmlUtils.assertH1Tag(this.driver, wpInfo.getWebsiteName());
-	// WpHtmlUtils.connect(this.driver, this.selenium, wpInfo);
-	// testPluginCommentPage();
-	// testPluginArticlePage();
-	// }
-	//
-	// private void testPluginArticlePage() throws UtilsException {
-	// final String homeURL = wpInfo.getTestServer().getHomeURL();
-	// this.selenium.open(homeURL + "/wp-admin/edit.php"); //$NON-NLS-1$
-	// this.selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-	// WpHtmlUtils.assertH1Tag(this.driver, Translations.articles);
-	// final String commentsNb = this.driver.findElement(By.xpath(
-	// "//tr[@id='post-1']/td[@class='comments
-	// column-comments']/div/a/span[@class='comment-count-approved']"))
-	// //$NON-NLS-1$
-	// .getText();
-	// Assertions.assertEquals(Utils.FAKE_COMMENTS_NB + 1,
-	// Integer.parseInt(commentsNb));
-	// final String contestLinkTxt = this.driver.findElement(By.xpath(
-	// "//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest
-	// column-orgZhyweb-wpCommentContest']/a"))
-	// .getText();
-	// Assertions.assertEquals("Lancer le concours", contestLinkTxt);
-	// WpHtmlUtils.expandSettingsScreenMenu(this.driver, this.selenium);
-	// this.selenium.uncheck("id=orgZhyweb-wpCommentContest-hide");
-	// final List<WebElement> contestColumnElts = this.driver.findElements(By
-	// .xpath("//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest
-	// column-orgZhyweb-wpCommentContest']/a"));
-	// Assertions.assertTrue(contestColumnElts.isEmpty());
-	// this.selenium.check("id=orgZhyweb-wpCommentContest-hide");
-	// final WebElement contestLink = this.driver.findElement(By.xpath(
-	// "//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest
-	// column-orgZhyweb-wpCommentContest']/a"));
-	// Assertions.assertEquals("Lancer le concours", contestLink.getText());
-	// final String articleName = this.driver.findElement(By.xpath(
-	// "//tr[@id='post-1']/td[@class='title column-title has-row-actions
-	// column-primary page-title']/strong/a")) //$NON-NLS-1$
-	// .getText();
-	// this.selenium.open(contestLink.getAttribute("href")); //$NON-NLS-1$
-	// this.selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-	// WpHtmlUtils.assertH2Tag(this.driver, "Comment Contest");
-	// WpHtmlUtils.assertH3Tag(this.driver,
-	// String.format("Concours pour l'article \"%s\"", articleName));
-	// }
-	//
-	// private void testPluginCommentPage() throws UtilsException {
-	// // Test if plugin link if a comment sub menu
-	// WpHtmlUtils.expandAdminMenu(this.driver, this.selenium);
-	// final String link = this.driver.findElement(By.xpath(
-	// "//li[@id='menu-comments']/ul/li/a[@href='edit-comments.php?page=orgZhyweb-wpCommentContest']"))
-	// .getText();
-	// Assertions.assertEquals("Comment Contest", link);
-	// // Check plugin page
-	// final String homeURL = wpInfo.getTestServer().getHomeURL();
-	// this.selenium.open(homeURL
-	// + "/wp-admin/edit-comments.php?page=orgZhyweb-wpCommentContest");
-	// this.selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-	// WpHtmlUtils.assertH2Tag(this.driver, "Comment Contest");
-	// testReport();
-	// }
-	//
-	// private void testReport() {
-	// // TODO Auto-generated method stub
-	// }
+	@SuppressWarnings({ "static-method",
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
+	/*
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
+	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les navigateurs
+	@TestFactory
+	public Collection<DynamicTest> testPluginInstallAndGlobalFeatures()
+			throws UtilsException {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils
+				.createAllDriversForTests();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> testPluginInstallAndGlobalFeatures(
+					webDriver);
+			final String testName = String.format("test on browser '%s'", //$NON-NLS-1$
+					webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
+		}
+		return dynamicTests;
+	}
+
+	private static void testPluginInstallAndGlobalFeatures(
+			final WebDriver driver) throws UtilsException {
+		try {
+			internalTestPluginInstallAndGlobalFeatures(driver);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void internalTestPluginInstallAndGlobalFeatures(
+			final WebDriver driver) throws UtilsException {
+		final Selenium selenium = new WebDriverBackedSelenium(driver,
+				wpInfo.getTestServer().getHomeURL());
+		final String homeURL = wpInfo.getTestServer().getHomeURL();
+		selenium.open(homeURL);
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH1Tag(driver, wpInfo.getWebsiteName());
+		WpHtmlUtils.connect(driver, selenium, wpInfo);
+		testPluginCommentPage(driver, selenium);
+		testPluginArticlePage(driver, selenium);
+	}
+
+	private static void testPluginArticlePage(final WebDriver driver,
+			final Selenium selenium) throws UtilsException {
+		final String homeURL = wpInfo.getTestServer().getHomeURL();
+		selenium.open(homeURL + "/wp-admin/edit.php"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH1Tag(driver, Translations.articles);
+		final String commentsNb = driver.findElement(By.xpath(
+				"//tr[@id='post-1']/td[@class='comments column-comments']/div/a/span[@class='comment-count-approved']")) //$NON-NLS-1$
+				.getText();
+		Assertions.assertEquals(Utils.FAKE_COMMENTS_NB + 1,
+				Integer.parseInt(commentsNb));
+		final String contestLinkTxt = driver.findElement(By.xpath(
+				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"))
+				.getText();
+		Assertions.assertEquals("Lancer le concours", contestLinkTxt);
+		WpHtmlUtils.expandSettingsScreenMenu(driver, selenium);
+		selenium.uncheck("id=orgZhyweb-wpCommentContest-hide");
+		final List<WebElement> contestColumnElts = driver.findElements(By.xpath(
+				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
+		Assertions.assertTrue(contestColumnElts.isEmpty());
+		selenium.check("id=orgZhyweb-wpCommentContest-hide");
+		final WebElement contestLink = driver.findElement(By.xpath(
+				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
+		Assertions.assertEquals("Lancer le concours", contestLink.getText());
+		final String articleName = driver.findElement(By.xpath(
+				"//tr[@id='post-1']/td[@class='title column-title has-row-actions column-primary page-title']/strong/a")) //$NON-NLS-1$
+				.getText();
+		selenium.open(contestLink.getAttribute("href")); //$NON-NLS-1$
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH2Tag(driver, "Comment Contest");
+		WpHtmlUtils.assertH3Tag(driver,
+				String.format("Concours pour l'article \"%s\"", articleName));
+	}
+
+	private static void testPluginCommentPage(final WebDriver driver,
+			final Selenium selenium) throws UtilsException {
+		// Test if plugin link if a comment sub menu
+		WpHtmlUtils.expandAdminMenu(driver, selenium);
+		final String link = driver.findElement(By.xpath(
+				"//li[@id='menu-comments']/ul/li/a[@href='edit-comments.php?page=orgZhyweb-wpCommentContest']"))
+				.getText();
+		Assertions.assertEquals("Comment Contest", link);
+		// Check plugin page
+		final String homeURL = wpInfo.getTestServer().getHomeURL();
+		selenium.open(homeURL
+				+ "/wp-admin/edit-comments.php?page=orgZhyweb-wpCommentContest");
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH2Tag(driver, "Comment Contest");
+		testReport();
+	}
+
+	private static void testReport() {
+		// TODO Auto-generated method stub
+	}
 
 	@SuppressWarnings({ "static-method",
 			"PMD.JUnit4TestShouldUseTestAnnotation" })
@@ -163,15 +189,14 @@ public class WPCommentContestPluginTest {
 	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
 	 * It's not a JUnit 4 method, it's JUnit 5...
 	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les navigateurs
 	@TestFactory
-	public Collection<DynamicTest> testCommentsInTableAllBrowsers()
-			throws UtilsException {
+	public Collection<DynamicTest> testCommentsInTable() throws UtilsException {
 		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
 		final List<WebDriver> allDrivers = BrowserUtils
 				.createAllDriversForTests();
 		for (final WebDriver webDriver : allDrivers) {
-			final Executable exec = () -> testCommentsInTable(
-					webDriver);
+			final Executable exec = () -> testCommentsInTable(webDriver);
 			final String testName = String.format("test on browser '%s'", //$NON-NLS-1$
 					webDriver);
 			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
