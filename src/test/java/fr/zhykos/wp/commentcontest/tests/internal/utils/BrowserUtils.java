@@ -2,6 +2,8 @@ package fr.zhykos.wp.commentcontest.tests.internal.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -14,6 +16,22 @@ public final class BrowserUtils {
 
 	private BrowserUtils() {
 		// Do nothing and must not be called
+	}
+
+	/*
+	 * XXX Ajouter tous les autres navigateurs mais n'ajouter que ceux
+	 * disponibles et faire un assume (ou un truc dans le genre, je ne sais pas
+	 * si je veux faire planter le test si le navigateur n'est pas installé) sur
+	 * les navigateurs non installés
+	 */
+	public static List<WebDriver> createAllDriversForTests()
+			throws UtilsException {
+		final List<WebDriver> drivers = new ArrayList<>();
+		final WebDriver chrome = createChromeDriver();
+		drivers.add(chrome);
+		final WebDriver firefox = createFirefoxDriver();
+		drivers.add(firefox);
+		return drivers;
 	}
 
 	public static WebDriver createChromeDriver() throws UtilsException {

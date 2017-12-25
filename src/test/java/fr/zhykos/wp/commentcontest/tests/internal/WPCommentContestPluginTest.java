@@ -1,13 +1,15 @@
 package fr.zhykos.wp.commentcontest.tests.internal;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.TestFactory;
+import org.junit.jupiter.api.function.Executable;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -19,7 +21,6 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.BrowserUtils;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.IWordPressInformation;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils;
-import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils.Translations;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlugin;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginCatalog;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginToTest;
@@ -34,9 +35,6 @@ public class WPCommentContestPluginTest {
 	private static IWordPressPlugin fakerPlg;
 	private static IWordPressPluginToTest myPlugin;
 	private static IWordPressInformation wpInfo;
-
-	private WebDriver driver;
-	private Selenium selenium;
 
 	@BeforeAll
 	public static void beforeAll() throws UtilsException {
@@ -75,124 +73,136 @@ public class WPCommentContestPluginTest {
 		Utils.addFakeComments(wpInfo);
 	}
 
-	// @Test
-	// public void firefoxTest() throws Exception {
-	// driver = new FirefoxDriver();
-	// currentDriver = FIREFOX_DRIVER;
-	// selenium = new WebDriverBackedSelenium(driver, baseUrl);
-	// testSelenium();
-	// }
-
-	// @Test
-	// public void htmlUnitTest() throws Exception {
-	// driver = new HtmlUnitDriver(true);
-	// currentDriver = HTML_UNIT_DRIVER;
-	// selenium = new WebDriverBackedSelenium(driver, baseUrl);
-	// testSelenium();
-	// }
-
-	// @Test
-	// public void operaTest() throws Exception {
-	// driver = new OperaDriver();
-	// currentDriver = OPERA_DRIVER;
-	// selenium = new WebDriverBackedSelenium(driver, baseUrl);
-	// testSelenium();
-	// }
-
-	@Test // (timeout = 60000) XXX
-	@Disabled
-	@SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
-	/*
-	 * @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert") tcicognani:
-	 * Assertions are in another method
-	 */
-	public void testPluginInstallAndGlobalFeatures() throws UtilsException {
-		this.driver = BrowserUtils.createChromeDriver(); // XXX test other browsers
-		this.selenium = new WebDriverBackedSelenium(this.driver,
-				wpInfo.getTestServer().getHomeURL());
-		final String homeURL = wpInfo.getTestServer().getHomeURL();
-		this.selenium.open(homeURL);
-		this.selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-		WpHtmlUtils.assertH1Tag(this.driver, wpInfo.getWebsiteName());
-		WpHtmlUtils.connect(this.driver, this.selenium, wpInfo);
-		testPluginCommentPage();
-		testPluginArticlePage();
-	}
-
-	private void testPluginArticlePage() throws UtilsException {
-		final String homeURL = wpInfo.getTestServer().getHomeURL();
-		this.selenium.open(homeURL + "/wp-admin/edit.php"); //$NON-NLS-1$
-		this.selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-		WpHtmlUtils.assertH1Tag(this.driver, Translations.articles);
-		final String commentsNb = this.driver.findElement(By.xpath(
-				"//tr[@id='post-1']/td[@class='comments column-comments']/div/a/span[@class='comment-count-approved']")) //$NON-NLS-1$
-				.getText();
-		Assertions.assertEquals(Utils.FAKE_COMMENTS_NB + 1,
-				Integer.parseInt(commentsNb));
-		final String contestLinkTxt = this.driver.findElement(By.xpath(
-				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"))
-				.getText();
-		Assertions.assertEquals("Lancer le concours", contestLinkTxt);
-		WpHtmlUtils.expandSettingsScreenMenu(this.driver, this.selenium);
-		this.selenium.uncheck("id=orgZhyweb-wpCommentContest-hide");
-		final List<WebElement> contestColumnElts = this.driver.findElements(By
-				.xpath("//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
-		Assertions.assertTrue(contestColumnElts.isEmpty());
-		this.selenium.check("id=orgZhyweb-wpCommentContest-hide");
-		final WebElement contestLink = this.driver.findElement(By.xpath(
-				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
-		Assertions.assertEquals("Lancer le concours", contestLink.getText());
-		final String articleName = this.driver.findElement(By.xpath(
-				"//tr[@id='post-1']/td[@class='title column-title has-row-actions column-primary page-title']/strong/a")) //$NON-NLS-1$
-				.getText();
-		this.selenium.open(contestLink.getAttribute("href")); //$NON-NLS-1$
-		this.selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-		WpHtmlUtils.assertH2Tag(this.driver, "Comment Contest");
-		WpHtmlUtils.assertH3Tag(this.driver,
-				String.format("Concours pour l'article \"%s\"", articleName));
-	}
-
-	private void testPluginCommentPage() throws UtilsException {
-		// Test if plugin link if a comment sub menu
-		WpHtmlUtils.expandAdminMenu(this.driver, this.selenium);
-		final String link = this.driver.findElement(By.xpath(
-				"//li[@id='menu-comments']/ul/li/a[@href='edit-comments.php?page=orgZhyweb-wpCommentContest']"))
-				.getText();
-		Assertions.assertEquals("Comment Contest", link);
-		// Check plugin page
-		final String homeURL = wpInfo.getTestServer().getHomeURL();
-		this.selenium.open(homeURL
-				+ "/wp-admin/edit-comments.php?page=orgZhyweb-wpCommentContest");
-		this.selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-		WpHtmlUtils.assertH2Tag(this.driver, "Comment Contest");
-		testReport();
-	}
-
-	private void testReport() {
-		// TODO Auto-generated method stub
-	}
-
+	// @Test // (timeout = 60000) XXX
 	// @Disabled
-	@Test // (timeout = 200000) XXX
-	@SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
+	// @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert")
+	// /*
+	// * @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert") tcicognani:
+	// * Assertions are in another method
+	// */
+	// public void testPluginInstallAndGlobalFeatures() throws UtilsException {
+	// this.driver = BrowserUtils.createChromeDriver(); // XXX test other
+	// browsers
+	// this.selenium = new WebDriverBackedSelenium(this.driver,
+	// wpInfo.getTestServer().getHomeURL());
+	// final String homeURL = wpInfo.getTestServer().getHomeURL();
+	// this.selenium.open(homeURL);
+	// this.selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+	// WpHtmlUtils.assertH1Tag(this.driver, wpInfo.getWebsiteName());
+	// WpHtmlUtils.connect(this.driver, this.selenium, wpInfo);
+	// testPluginCommentPage();
+	// testPluginArticlePage();
+	// }
+	//
+	// private void testPluginArticlePage() throws UtilsException {
+	// final String homeURL = wpInfo.getTestServer().getHomeURL();
+	// this.selenium.open(homeURL + "/wp-admin/edit.php"); //$NON-NLS-1$
+	// this.selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+	// WpHtmlUtils.assertH1Tag(this.driver, Translations.articles);
+	// final String commentsNb = this.driver.findElement(By.xpath(
+	// "//tr[@id='post-1']/td[@class='comments
+	// column-comments']/div/a/span[@class='comment-count-approved']"))
+	// //$NON-NLS-1$
+	// .getText();
+	// Assertions.assertEquals(Utils.FAKE_COMMENTS_NB + 1,
+	// Integer.parseInt(commentsNb));
+	// final String contestLinkTxt = this.driver.findElement(By.xpath(
+	// "//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest
+	// column-orgZhyweb-wpCommentContest']/a"))
+	// .getText();
+	// Assertions.assertEquals("Lancer le concours", contestLinkTxt);
+	// WpHtmlUtils.expandSettingsScreenMenu(this.driver, this.selenium);
+	// this.selenium.uncheck("id=orgZhyweb-wpCommentContest-hide");
+	// final List<WebElement> contestColumnElts = this.driver.findElements(By
+	// .xpath("//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest
+	// column-orgZhyweb-wpCommentContest']/a"));
+	// Assertions.assertTrue(contestColumnElts.isEmpty());
+	// this.selenium.check("id=orgZhyweb-wpCommentContest-hide");
+	// final WebElement contestLink = this.driver.findElement(By.xpath(
+	// "//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest
+	// column-orgZhyweb-wpCommentContest']/a"));
+	// Assertions.assertEquals("Lancer le concours", contestLink.getText());
+	// final String articleName = this.driver.findElement(By.xpath(
+	// "//tr[@id='post-1']/td[@class='title column-title has-row-actions
+	// column-primary page-title']/strong/a")) //$NON-NLS-1$
+	// .getText();
+	// this.selenium.open(contestLink.getAttribute("href")); //$NON-NLS-1$
+	// this.selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+	// WpHtmlUtils.assertH2Tag(this.driver, "Comment Contest");
+	// WpHtmlUtils.assertH3Tag(this.driver,
+	// String.format("Concours pour l'article \"%s\"", articleName));
+	// }
+	//
+	// private void testPluginCommentPage() throws UtilsException {
+	// // Test if plugin link if a comment sub menu
+	// WpHtmlUtils.expandAdminMenu(this.driver, this.selenium);
+	// final String link = this.driver.findElement(By.xpath(
+	// "//li[@id='menu-comments']/ul/li/a[@href='edit-comments.php?page=orgZhyweb-wpCommentContest']"))
+	// .getText();
+	// Assertions.assertEquals("Comment Contest", link);
+	// // Check plugin page
+	// final String homeURL = wpInfo.getTestServer().getHomeURL();
+	// this.selenium.open(homeURL
+	// + "/wp-admin/edit-comments.php?page=orgZhyweb-wpCommentContest");
+	// this.selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+	// WpHtmlUtils.assertH2Tag(this.driver, "Comment Contest");
+	// testReport();
+	// }
+	//
+	// private void testReport() {
+	// // TODO Auto-generated method stub
+	// }
+
+	@SuppressWarnings({ "static-method",
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
 	/*
-	 * @SuppressWarnings("PMD.JUnitTestsShouldIncludeAssert") tcicognani: There
-	 * are JUnit 5 assertions!
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
 	 */
-	public void testCommentsInTable() throws UtilsException {
-		this.driver = BrowserUtils.createChromeDriver(); // XXX test other browsers
-		this.selenium = new WebDriverBackedSelenium(this.driver,
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	@TestFactory
+	public Collection<DynamicTest> testCommentsInTableAllBrowsers()
+			throws UtilsException {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils
+				.createAllDriversForTests();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> testCommentsInTable(
+					webDriver);
+			final String testName = String.format("test on browser '%s'", //$NON-NLS-1$
+					webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
+		}
+		return dynamicTests;
+	}
+
+	private static void testCommentsInTable(final WebDriver driver)
+			throws UtilsException {
+		try {
+			internalTestCommentsInTable(driver);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void internalTestCommentsInTable(final WebDriver driver)
+			throws UtilsException {
+		final Selenium selenium = new WebDriverBackedSelenium(driver,
 				wpInfo.getTestServer().getHomeURL());
-		WpHtmlUtils.connect(this.driver, this.selenium, wpInfo);
+		WpHtmlUtils.connect(driver, selenium, wpInfo);
 		final String homeURL = wpInfo.getTestServer().getHomeURL();
-		this.selenium.open(homeURL + "/wp-admin/edit.php"); //$NON-NLS-1$
-		this.selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-		final WebElement contestLink = this.driver.findElement(By.xpath(
+		selenium.open(homeURL + "/wp-admin/edit.php"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		final WebElement contestLink = driver.findElement(By.xpath(
 				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
-		this.selenium.open(contestLink.getAttribute("href")); //$NON-NLS-1$
-		this.selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-		this.driver.findElement(By.xpath("//div[@id='contestForm']/table")); //$NON-NLS-1$
-		final List<WebElement> linesElt = this.driver.findElements(
+		selenium.open(contestLink.getAttribute("href")); //$NON-NLS-1$
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		driver.findElement(By.xpath("//div[@id='contestForm']/table")); //$NON-NLS-1$
+		final List<WebElement> linesElt = driver.findElements(
 				By.xpath("//div[@id='contestForm']/table/tbody/tr")); //$NON-NLS-1$
 		// n fake comments plus one from install and one invisible fake
 		Assertions.assertEquals(Utils.FAKE_COMMENTS_NB + 2, linesElt.size());
@@ -222,7 +232,7 @@ public class WPCommentContestPluginTest {
 		}
 		// Assert.assertNotEquals(bckColorAlt2, bckColorAlt1); // FIXME
 		// Special links in table
-		final List<WebElement> actionSpans = this.driver.findElements(By.xpath(
+		final List<WebElement> actionSpans = driver.findElements(By.xpath(
 				"//tr[@id='comment-contest-1']/td[@class='comment column-comment']/div[@class='row-actions']/span")); //$NON-NLS-1$
 		Assertions.assertEquals(4, actionSpans.size());
 		final String span1 = actionSpans.get(0).getAttribute("class"); //$NON-NLS-1$
@@ -234,18 +244,11 @@ public class WPCommentContestPluginTest {
 		final String span4 = actionSpans.get(3).getAttribute("class"); //$NON-NLS-1$
 		Assertions.assertEquals("stopcheat", span4); //$NON-NLS-1$
 		// Check columns
-		this.driver.findElement(By.xpath(
+		driver.findElement(By.xpath(
 				"//tr[@id='comment-contest-1']/th[@class='check-column']/input[@type='checkbox']")); //$NON-NLS-1$
-		final List<WebElement> columns = this.driver
+		final List<WebElement> columns = driver
 				.findElements(By.xpath("//tr[@id='comment-contest-1']/td")); //$NON-NLS-1$
 		Assertions.assertEquals(2, columns.size());
-	}
-
-	@AfterEach
-	public void afterEach() {
-		if (this.driver != null) {
-			this.driver.quit();
-		}
 	}
 
 	@AfterAll
