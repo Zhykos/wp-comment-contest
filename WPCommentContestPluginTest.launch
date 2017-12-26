@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+<listEntry value="/wp-comment-contest/src/test/java/fr/zhykos/wp/commentcontest/tests/internal/WPCommentContestPluginTest.java"/>
+</listAttribute>
+<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+<listEntry value="1"/>
+</listAttribute>
+<stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
+<booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+<stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+<stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit5"/>
+<stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.m2e.launchconfig.classpathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="fr.zhykos.wp.commentcontest.tests.internal.WPCommentContestPluginTest"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="wp-comment-contest"/>
+<stringAttribute key="org.eclipse.jdt.launching.SOURCE_PATH_PROVIDER" value="org.eclipse.m2e.launchconfig.sourcepathProvider"/>
+<stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-ea -Dfr.zhykos.wp.commentcontest.tests.internal.WPCommentContestPluginTest.cleanworkspace=false -Dfr.zhykos.wp.commentcontest.tests.internal.WPCommentContestPluginTest.installwordpress=false -Dfr.zhykos.wp.commentcontest.tests.internal.utils.BrowserUtils.download.chromedriver.exe=false -Dfr.zhykos.wp.commentcontest.tests.internal.utils.BrowserUtils.download.geckodriver.exe=false -Dfr.zhykos.wp.commentcontest.tests.internal.utils.server.ITestServerFactory.server=fr.zhykos.wp.commentcontest.tests.internal.utils.server.WAMPServer -Dfr.zhykos.wp.commentcontest.tests.internal.utils.server.WAMPServer.wptestdir=&quot;C:\wamp64\www\wpcommentcontesttests&quot; -Dfr.zhykos.wp.commentcontest.tests.internal.utils.Utils.dbport=3306"/>
+</launchConfiguration>
