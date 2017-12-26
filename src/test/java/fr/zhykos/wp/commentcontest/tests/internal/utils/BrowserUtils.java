@@ -7,12 +7,14 @@ import java.util.List;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
 public final class BrowserUtils {
 
 	private static boolean chromeInstalled = false;
 	private static boolean geckoInstalled = false;
+	private static boolean edgeInstalled = false;
 
 	private BrowserUtils() {
 		// Do nothing and must not be called
@@ -31,6 +33,8 @@ public final class BrowserUtils {
 		drivers.add(chrome);
 		final WebDriver firefox = createFirefoxDriver();
 		drivers.add(firefox);
+		final WebDriver edge = createEdgeDriver();
+		drivers.add(edge);
 		return drivers;
 	}
 
@@ -58,6 +62,18 @@ public final class BrowserUtils {
 		return new FirefoxDriver();
 	}
 
+	public static WebDriver createEdgeDriver() throws UtilsException {
+		/*
+		 * https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
+		 * #downloads TODO Gérer le numéro de version XXX Exclusif windows !
+		 */
+		edgeInstalled = downloadAndInstallDriver(edgeInstalled,
+				"webdriver.edge.driver", //$NON-NLS-1$
+				"https://download.microsoft.com/download/D/4/1/D417998A-58EE-4EFE-A7CC-39EF9E020768/MicrosoftWebDriver.exe", //$NON-NLS-1$
+				"MicrosoftWebDriver.exe"); //$NON-NLS-1$
+		return new EdgeDriver();
+	}
+
 	private static boolean downloadAndInstallDriver(
 			final boolean alreadyInstalled, final String property,
 			final String downloadURL, final String exeName)
@@ -71,12 +87,16 @@ public final class BrowserUtils {
 				final boolean download = Utils
 						.getBooleanSystemProperty(propertyKey, true);
 				if (download) {
-					final File driverZip = File.createTempFile("temp", //$NON-NLS-1$
-							"driver.zip", //$NON-NLS-1$
-							tempDir);
-					Utils.downloadWebFile(downloadURL, driverZip);
-					Utils.unzipFile(driverZip, tempDir);
-					driverZip.deleteOnExit();
+					if (downloadURL.endsWith(".zip")) { //$NON-NLS-1$
+						final File driverZip = File.createTempFile("temp", //$NON-NLS-1$
+								"driver.zip", tempDir); //$NON-NLS-1$
+						Utils.downloadWebFile(downloadURL, driverZip);
+						Utils.unzipFile(driverZip, tempDir);
+						driverZip.deleteOnExit();
+					} else {
+						final File target = new File(tempDir, exeName);
+						Utils.downloadWebFile(downloadURL, target);
+					}
 				}
 				final File driverExe = new File(tempDir, exeName);
 				System.setProperty(property, driverExe.getAbsolutePath());
