@@ -32,6 +32,8 @@ import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.By;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
@@ -606,6 +608,31 @@ public final class Utils {
 			}
 		}
 		return newLine;
+	}
+
+	public static void takeScreenshot(final WebDriver driver) {
+		try {
+			final File target = File.createTempFile("screenshot", ".png", //$NON-NLS-1$ //$NON-NLS-2$
+					getTempDirectory());
+			takeScreenshot(driver, target);
+		} catch (final IOException e) {
+			LOGGER.warning("Cannot take screenshot: " + e.getMessage()); //$NON-NLS-1$
+		}
+	}
+
+	public static void takeScreenshot(final WebDriver driver,
+			final File target) {
+		try {
+			if (driver instanceof TakesScreenshot) {
+				final File scrFile = ((TakesScreenshot) driver)
+						.getScreenshotAs(OutputType.FILE);
+				FileUtils.copyFile(scrFile, target);
+			} else {
+				LOGGER.warning("Cannot take screenshot"); //$NON-NLS-1$
+			}
+		} catch (final IOException e) {
+			LOGGER.warning("Cannot take screenshot: " + e.getMessage()); //$NON-NLS-1$
+		}
 	}
 
 }
