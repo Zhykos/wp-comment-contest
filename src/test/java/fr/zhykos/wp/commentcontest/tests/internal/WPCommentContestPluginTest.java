@@ -143,9 +143,12 @@ public class WPCommentContestPluginTest {
 		Assertions.assertEquals("Lancer le concours", contestLinkTxt);
 		WpHtmlUtils.expandSettingsScreenMenu(driver, selenium);
 		selenium.uncheck("id=orgZhyweb-wpCommentContest-hide");
+		selenium.click("id=screen-options-apply"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		final List<WebElement> contestColumnElts = driver.findElements(By.xpath(
 				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
 		Assertions.assertTrue(contestColumnElts.isEmpty());
+		WpHtmlUtils.expandSettingsScreenMenu(driver, selenium);
 		selenium.check("id=orgZhyweb-wpCommentContest-hide");
 		final WebElement contestLink = driver.findElement(By.xpath(
 				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
@@ -153,7 +156,11 @@ public class WPCommentContestPluginTest {
 		final String articleName = driver.findElement(By.xpath(
 				"//tr[@id='post-1']/td[@class='title column-title has-row-actions column-primary page-title']/strong/a")) //$NON-NLS-1$
 				.getText();
-		selenium.open(contestLink.getAttribute("href")); //$NON-NLS-1$
+		selenium.click("id=screen-options-apply"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		final WebElement contestLink2 = driver.findElement(By.xpath(
+				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
+		selenium.open(contestLink2.getAttribute("href")); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH2Tag(driver, "Comment Contest");
 		WpHtmlUtils.assertH3Tag(driver,
