@@ -12,6 +12,7 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.opera.OperaOptions;
+import org.openqa.selenium.safari.SafariDriver;
 
 // XXX on a le même pattern pour créer un navigateur : tenter de faire mieux
 public final class BrowserUtils {
@@ -26,14 +27,9 @@ public final class BrowserUtils {
 		// Do nothing and must not be called
 	}
 
-	/*
-	 * XXX Ajouter tous les autres navigateurs mais n'ajouter que ceux
-	 * disponibles et faire un assume (ou un truc dans le genre, je ne sais pas
-	 * si je veux faire planter le test si le navigateur n'est pas installé) sur
-	 * les navigateurs non installés
-	 */
 	public static List<WebDriver> createAllDriversForTests()
 			throws UtilsException {
+		// FIXME Une exception ici fait péter tous les tests !
 		final List<WebDriver> drivers = new ArrayList<>();
 		final WebDriver chrome = createChromeDriver();
 		drivers.add(chrome);
@@ -45,6 +41,8 @@ public final class BrowserUtils {
 		drivers.add(internetExplorer);
 		final WebDriver opera = createOperaDriver();
 		drivers.add(opera);
+		// final WebDriver safari = createSafariDriver();
+		// drivers.add(safari);
 		return drivers;
 	}
 
@@ -114,6 +112,24 @@ public final class BrowserUtils {
 			operaOptions.setBinary(
 					"C:\\Program Files\\Opera\\49.0.2725.64\\opera.exe"); //$NON-NLS-1$
 			driver = new OperaDriver(operaOptions);
+			return driver;
+		} catch (final Exception e) {
+			if (driver != null) {
+				driver.quit();
+			}
+			throw new UtilsException(e);
+		}
+	}
+
+	// XXX tcicognani: Never tested (I don't have any MacOS device)
+	public static WebDriver createSafariDriver() throws UtilsException {
+		SafariDriver driver = null;
+		try {
+			/*
+			 * XXX faire en sorte ne pas planter si on ne peut pas lancer le
+			 * driver comme ici un driver spécifique macos
+			 */
+			driver = new SafariDriver();
 			return driver;
 		} catch (final Exception e) {
 			if (driver != null) {
