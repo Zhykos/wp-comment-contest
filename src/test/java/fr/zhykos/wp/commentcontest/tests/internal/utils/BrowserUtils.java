@@ -10,13 +10,17 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.opera.OperaDriver;
+import org.openqa.selenium.opera.OperaOptions;
 
+// XXX on a le même pattern pour créer un navigateur : tenter de faire mieux
 public final class BrowserUtils {
 
 	private static boolean chromeInstalled = false;
 	private static boolean geckoInstalled = false;
 	private static boolean edgeInstalled = false;
 	private static boolean ieInstalled = false;
+	private static boolean operaInstalled = false;
 
 	private BrowserUtils() {
 		// Do nothing and must not be called
@@ -39,6 +43,8 @@ public final class BrowserUtils {
 		drivers.add(edge);
 		final WebDriver internetExplorer = createInternetExplorerDriver();
 		drivers.add(internetExplorer);
+		final WebDriver opera = createOperaDriver();
+		drivers.add(opera);
 		return drivers;
 	}
 
@@ -91,6 +97,32 @@ public final class BrowserUtils {
 		return new InternetExplorerDriver();
 	}
 
+	public static WebDriver createOperaDriver() throws UtilsException {
+		/*
+		 * https://github.com/operasoftware/operachromiumdriver TODO Gérer le
+		 * numéro de version et l'OS
+		 */
+		operaInstalled = downloadAndInstallDriver(operaInstalled,
+				"webdriver.opera.driver", //$NON-NLS-1$
+				"https://github.com/operasoftware/operachromiumdriver/releases/download/v.2.32/operadriver_win64.zip", //$NON-NLS-1$
+				"operadriver_win64/operadriver.exe"); //$NON-NLS-1$
+		// XXX Adapter ce pattern pour tous les autres navigateurs
+		OperaDriver driver = null;
+		try {
+			final OperaOptions operaOptions = new OperaOptions();
+			// XXX C'est quoi cette merde d'être obligé d'ajouter le chemin??
+			operaOptions.setBinary(
+					"C:\\Program Files\\Opera\\49.0.2725.64\\opera.exe"); //$NON-NLS-1$
+			driver = new OperaDriver(operaOptions);
+			return driver;
+		} catch (final Exception e) {
+			if (driver != null) {
+				driver.quit();
+			}
+			throw new UtilsException(e);
+		}
+	}
+
 	private static boolean downloadAndInstallDriver(
 			final boolean alreadyInstalled, final String property,
 			final String downloadURL, final String exeName)
@@ -99,8 +131,11 @@ public final class BrowserUtils {
 		try {
 			if (!installed) {
 				final File tempDir = Utils.getTempDirectory();
+				// XXX Faire mieux pour keySuffix car par exemple on "operadriver_win64" dans le nom de la clé
+				final String keySuffix = exeName.replace("/", ".").replace("\\", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						"."); //$NON-NLS-1$
 				final String propertyKey = String.format("%s.download.%s", //$NON-NLS-1$
-						BrowserUtils.class.getName(), exeName);
+						BrowserUtils.class.getName(), keySuffix);
 				final boolean download = Utils
 						.getBooleanSystemProperty(propertyKey, true);
 				if (download) {
