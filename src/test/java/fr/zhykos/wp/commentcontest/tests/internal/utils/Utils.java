@@ -139,6 +139,7 @@ public final class Utils {
 		final File wordpressFile = getWordPressFile();
 		// https://wordpress.org/download/
 		downloadWebFile("https://wordpress.org/latest.zip", wordpressFile); //$NON-NLS-1$
+		wordpressFile.deleteOnExit();
 		LOGGER.info(DONE_STR);
 	}
 
