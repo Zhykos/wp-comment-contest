@@ -9,12 +9,14 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.ie.InternetExplorerDriver;
 
 public final class BrowserUtils {
 
 	private static boolean chromeInstalled = false;
 	private static boolean geckoInstalled = false;
 	private static boolean edgeInstalled = false;
+	private static boolean ieInstalled = false;
 
 	private BrowserUtils() {
 		// Do nothing and must not be called
@@ -35,6 +37,8 @@ public final class BrowserUtils {
 		drivers.add(firefox);
 		final WebDriver edge = createEdgeDriver();
 		drivers.add(edge);
+		final WebDriver internetExplorer = createInternetExplorerDriver();
+		drivers.add(internetExplorer);
 		return drivers;
 	}
 
@@ -72,6 +76,19 @@ public final class BrowserUtils {
 				"https://download.microsoft.com/download/D/4/1/D417998A-58EE-4EFE-A7CC-39EF9E020768/MicrosoftWebDriver.exe", //$NON-NLS-1$
 				"MicrosoftWebDriver.exe"); //$NON-NLS-1$
 		return new EdgeDriver();
+	}
+
+	public static WebDriver createInternetExplorerDriver()
+			throws UtilsException {
+		/*
+		 * https://github.com/SeleniumHQ/selenium/wiki/InternetExplorerDriver
+		 * TODO Gérer le numéro de version XXX Exclusif windows !
+		 */
+		ieInstalled = downloadAndInstallDriver(ieInstalled,
+				"webdriver.ie.driver", //$NON-NLS-1$
+				"https://selenium-release.storage.googleapis.com/3.8/IEDriverServer_x64_3.8.0.zip", //$NON-NLS-1$
+				"IEDriverServer.exe"); //$NON-NLS-1$
+		return new InternetExplorerDriver();
 	}
 
 	private static boolean downloadAndInstallDriver(
