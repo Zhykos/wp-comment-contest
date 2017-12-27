@@ -177,6 +177,8 @@ public class WPCommentContestPluginTest {
 		final WebElement ele = driver
 				.findElement(By.id("menu-comments")); //$NON-NLS-1$
 		action.moveToElement(ele).build().perform();
+		// XXX Edge specific hack. Please die!!!!!!!!
+		action.moveToElement(ele).build().perform();
 		WpHtmlUtils.waitUntilVisibleState(plgCommentMenu, true, 10000);
 		final String linkStr = plgCommentMenu.getText();
 		Assertions.assertEquals("Comment Contest", linkStr);
