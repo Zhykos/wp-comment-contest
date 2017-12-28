@@ -32,9 +32,7 @@ public final class BrowserUtils {
 		// Do nothing and must not be called
 	}
 
-	public static List<WebDriver> createAllDriversForTests()
-			throws UtilsException {
-		// FIXME Une exception ici fait péter tous les tests !
+	public static List<WebDriver> createAllDriversForTests() {
 		final List<WebDriver> drivers = new ArrayList<>();
 		final WebDriver chrome = createChromeDriver();
 		drivers.add(chrome);
@@ -51,98 +49,132 @@ public final class BrowserUtils {
 		return drivers;
 	}
 
-	public static WebDriver createChromeDriver() throws UtilsException {
+	public static WebDriver createChromeDriver() {
 		/*
 		 * https://chromedriver.storage.googleapis.com/index.html?path=2.33/
 		 * TODO Gérer le numéro de version et Linux / Mac
 		 */
-		chromeInstalled = downloadAndInstallDriver(chromeInstalled,
-				"webdriver.chrome.driver", //$NON-NLS-1$
-				"https://chromedriver.storage.googleapis.com/2.33/chromedriver_win32.zip", //$NON-NLS-1$
-				"chromedriver.exe"); //$NON-NLS-1$
-		return new ChromeDriver();
+		WebDriver result = null;
+		try {
+			chromeInstalled = downloadAndInstallDriver(chromeInstalled,
+					"webdriver.chrome.driver", //$NON-NLS-1$
+					"https://chromedriver.storage.googleapis.com/2.33/chromedriver_win32.zip", //$NON-NLS-1$
+					"chromedriver.exe"); //$NON-NLS-1$
+			result = new ChromeDriver();
+		} catch (final Exception e) {
+			if (result != null) {
+				result.quit();
+			}
+			result = new ErrorDriver(e);
+		}
+		return result;
 	}
 
-	public static WebDriver createFirefoxDriver() throws UtilsException {
+	public static WebDriver createFirefoxDriver() {
 		/*
 		 * https://github.com/mozilla/geckodriver/releases TODO Gérer le numéro
 		 * de version et Linux / Mac
 		 */
-		geckoInstalled = downloadAndInstallDriver(geckoInstalled,
-				"webdriver.gecko.driver", //$NON-NLS-1$
-				"https://github.com/mozilla/geckodriver/releases/download/v0.19.1/geckodriver-v0.19.1-win64.zip", //$NON-NLS-1$
-				"geckodriver.exe"); //$NON-NLS-1$
-		return new FirefoxDriver();
+		WebDriver result = null;
+		try {
+			geckoInstalled = downloadAndInstallDriver(geckoInstalled,
+					"webdriver.gecko.driver", //$NON-NLS-1$
+					"https://github.com/mozilla/geckodriver/releases/download/v0.19.1/geckodriver-v0.19.1-win64.zip", //$NON-NLS-1$
+					"geckodriver.exe"); //$NON-NLS-1$
+			result = new FirefoxDriver();
+		} catch (final Exception e) {
+			if (result != null) {
+				result.quit();
+			}
+			result = new ErrorDriver(e);
+		}
+		return result;
 	}
 
-	public static WebDriver createEdgeDriver() throws UtilsException {
+	public static WebDriver createEdgeDriver() {
 		/*
 		 * https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
 		 * #downloads TODO Gérer le numéro de version XXX Exclusif windows !
 		 */
-		edgeInstalled = downloadAndInstallDriver(edgeInstalled,
-				"webdriver.edge.driver", //$NON-NLS-1$
-				"https://download.microsoft.com/download/D/4/1/D417998A-58EE-4EFE-A7CC-39EF9E020768/MicrosoftWebDriver.exe", //$NON-NLS-1$
-				"MicrosoftWebDriver.exe"); //$NON-NLS-1$
-		return new EdgeDriver();
+		WebDriver result = null;
+		try {
+			edgeInstalled = downloadAndInstallDriver(edgeInstalled,
+					"webdriver.edge.driver", //$NON-NLS-1$
+					"https://download.microsoft.com/download/D/4/1/D417998A-58EE-4EFE-A7CC-39EF9E020768/MicrosoftWebDriver.exe", //$NON-NLS-1$
+					"MicrosoftWebDriver.exe"); //$NON-NLS-1$
+			result = new EdgeDriver();
+		} catch (final Exception e) {
+			if (result != null) {
+				result.quit();
+			}
+			result = new ErrorDriver(e);
+		}
+		return result;
 	}
 
-	public static WebDriver createInternetExplorerDriver()
-			throws UtilsException {
+	public static WebDriver createInternetExplorerDriver() {
 		/*
 		 * https://github.com/SeleniumHQ/selenium/wiki/InternetExplorerDriver
 		 * TODO Gérer le numéro de version XXX Exclusif windows !
 		 */
-		ieInstalled = downloadAndInstallDriver(ieInstalled,
-				"webdriver.ie.driver", //$NON-NLS-1$
-				"https://selenium-release.storage.googleapis.com/3.8/IEDriverServer_x64_3.8.0.zip", //$NON-NLS-1$
-				"IEDriverServer.exe"); //$NON-NLS-1$
-		return new InternetExplorerDriver();
+		WebDriver result = null;
+		try {
+			ieInstalled = downloadAndInstallDriver(ieInstalled,
+					"webdriver.ie.driver", //$NON-NLS-1$
+					"https://selenium-release.storage.googleapis.com/3.8/IEDriverServer_x64_3.8.0.zip", //$NON-NLS-1$
+					"IEDriverServer.exe"); //$NON-NLS-1$
+			result = new InternetExplorerDriver();
+		} catch (final Exception e) {
+			if (result != null) {
+				result.quit();
+			}
+			result = new ErrorDriver(e);
+		}
+		return result;
 	}
 
-	public static WebDriver createOperaDriver() throws UtilsException {
+	public static WebDriver createOperaDriver() {
 		/*
 		 * https://github.com/operasoftware/operachromiumdriver TODO Gérer le
 		 * numéro de version et l'OS
 		 */
-		operaInstalled = downloadAndInstallDriver(operaInstalled,
-				"webdriver.opera.driver", //$NON-NLS-1$
-				"https://github.com/operasoftware/operachromiumdriver/releases/download/v.2.32/operadriver_win64.zip", //$NON-NLS-1$
-				"operadriver_win64/operadriver.exe"); //$NON-NLS-1$
-		// XXX Adapter ce pattern pour tous les autres navigateurs
-		OperaDriver driver = null;
+		WebDriver result = null;
 		try {
+			operaInstalled = downloadAndInstallDriver(operaInstalled,
+					"webdriver.opera.driver", //$NON-NLS-1$
+					"https://github.com/operasoftware/operachromiumdriver/releases/download/v.2.32/operadriver_win64.zip", //$NON-NLS-1$
+					"operadriver_win64/operadriver.exe"); //$NON-NLS-1$
 			final OperaOptions operaOptions = new OperaOptions();
 			// XXX C'est quoi cette merde d'être obligé d'ajouter le chemin??
 			operaOptions.setBinary(
 					"C:\\Program Files\\Opera\\49.0.2725.64\\opera.exe"); //$NON-NLS-1$
-			driver = new OperaDriver(operaOptions);
-			return driver;
+			result = new OperaDriver(operaOptions);
 		} catch (final Exception e) {
-			if (driver != null) {
-				driver.quit();
+			if (result != null) {
+				result.quit();
 			}
-			throw new UtilsException(e);
+			result = new ErrorDriver(e);
 		}
+		return result;
 	}
 
 	// XXX tcicognani: Never tested (I don't have any MacOS device)
 	public static WebDriver createSafariDriver() {
-		WebDriver driver = null;
+		WebDriver result = null;
 		try {
 			if (IOSUtils.DEFAULT.isMacOS()) {
-				driver = new SafariDriver();
+				result = new SafariDriver();
 			} else {
-				driver = new ErrorDriver(
+				result = new ErrorDriver(
 						"Safari driver is only compatible with MacOS"); //$NON-NLS-1$
 			}
 		} catch (final Exception e) {
-			if (driver != null) {
-				driver.quit();
+			if (result != null) {
+				result.quit();
 			}
-			driver = new ErrorDriver(e.getMessage());
+			result = new ErrorDriver(e);
 		}
-		return driver;
+		return result;
 	}
 
 	private static boolean downloadAndInstallDriver(
@@ -187,6 +219,10 @@ public final class BrowserUtils {
 
 		public ErrorDriver(final String errorMessage) {
 			this.errorMessage = errorMessage;
+		}
+
+		public ErrorDriver(final Throwable throwable) {
+			this(throwable.getMessage());
 		}
 
 		@Override

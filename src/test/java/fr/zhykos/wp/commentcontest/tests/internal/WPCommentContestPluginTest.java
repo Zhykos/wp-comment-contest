@@ -89,8 +89,7 @@ public class WPCommentContestPluginTest {
 	// XXX On a toujours le même pattern pour tester les méthodes sur tous les navigateurs
 	// XXX Rajouter timeout
 	@TestFactory
-	public Collection<DynamicTest> testPluginInstallAndGlobalFeatures()
-			throws UtilsException {
+	public Collection<DynamicTest> testPluginInstallAndGlobalFeatures() {
 		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
 		final List<WebDriver> allDrivers = BrowserUtils
 				.createAllDriversForTests();
@@ -106,7 +105,7 @@ public class WPCommentContestPluginTest {
 	}
 
 	private static void testPluginInstallAndGlobalFeatures(
-			final WebDriver driver) throws UtilsException {
+			final WebDriver driver) {
 		try {
 			if (driver instanceof ErrorDriver) {
 				// XXX Pas sûr de devoir lancer un fail...
@@ -114,6 +113,8 @@ public class WPCommentContestPluginTest {
 			} else {
 				internalTestPluginInstallAndGlobalFeatures(driver);
 			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
 		} finally {
 			driver.quit();
 		}
@@ -214,7 +215,7 @@ public class WPCommentContestPluginTest {
 	// XXX On a toujours le même pattern pour tester les méthodes sur tous les navigateurs
 	// XXX Rajouter timeout
 	@TestFactory
-	public Collection<DynamicTest> testCommentsInTable() throws UtilsException {
+	public Collection<DynamicTest> testCommentsInTable() {
 		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
 		final List<WebDriver> allDrivers = BrowserUtils
 				.createAllDriversForTests();
@@ -228,8 +229,7 @@ public class WPCommentContestPluginTest {
 		return dynamicTests;
 	}
 
-	private static void testCommentsInTable(final WebDriver driver)
-			throws UtilsException {
+	private static void testCommentsInTable(final WebDriver driver) {
 		try {
 			if (driver instanceof ErrorDriver) {
 				// XXX Pas sûr de devoir lancer un fail...
@@ -237,6 +237,8 @@ public class WPCommentContestPluginTest {
 			} else {
 				internalTestCommentsInTable(driver);
 			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
 		} finally {
 			driver.quit();
 		}
