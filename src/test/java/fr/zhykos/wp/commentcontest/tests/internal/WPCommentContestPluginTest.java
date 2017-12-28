@@ -19,6 +19,7 @@ import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 
 import fr.zhykos.wp.commentcontest.tests.internal.utils.BrowserUtils;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.BrowserUtils.ErrorDriver;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.IWordPressInformation;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils;
@@ -107,7 +108,12 @@ public class WPCommentContestPluginTest {
 	private static void testPluginInstallAndGlobalFeatures(
 			final WebDriver driver) throws UtilsException {
 		try {
-			internalTestPluginInstallAndGlobalFeatures(driver);
+			if (driver instanceof ErrorDriver) {
+				// XXX Pas sûr de devoir lancer un fail...
+				Assertions.fail(driver.toString());
+			} else {
+				internalTestPluginInstallAndGlobalFeatures(driver);
+			}
 		} finally {
 			driver.quit();
 		}
@@ -225,7 +231,12 @@ public class WPCommentContestPluginTest {
 	private static void testCommentsInTable(final WebDriver driver)
 			throws UtilsException {
 		try {
-			internalTestCommentsInTable(driver);
+			if (driver instanceof ErrorDriver) {
+				// XXX Pas sûr de devoir lancer un fail...
+				Assertions.fail(driver.toString());
+			} else {
+				internalTestCommentsInTable(driver);
+			}
 		} finally {
 			driver.quit();
 		}

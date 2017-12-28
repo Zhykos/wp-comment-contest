@@ -2,6 +2,8 @@ package fr.zhykos.wp.commentcontest.tests.internal.utils.os;
 
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 
+// XXX Renommer cette interface si c'est bien une interface
+// XXX Et si c'était une classe utilitaire plutôt qu'une interface ?
 public interface IOSUtils {
 
 	IOSUtils DEFAULT = CommonOSUtils.createOSUtils();
@@ -20,6 +22,12 @@ public interface IOSUtils {
 
 	void checkServiceRunning(final String serviceName) throws UtilsException;
 
-	boolean isWindows();
+	default boolean isWindows() {
+		return false;
+	}
+
+	default boolean isMacOS() {
+		return false;
+	}
 
 }

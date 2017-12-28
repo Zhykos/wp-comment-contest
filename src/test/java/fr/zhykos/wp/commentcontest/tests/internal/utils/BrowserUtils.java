@@ -4,8 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
@@ -13,6 +16,8 @@ import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.opera.OperaOptions;
 import org.openqa.selenium.safari.SafariDriver;
+
+import fr.zhykos.wp.commentcontest.tests.internal.utils.os.IOSUtils;
 
 // XXX on a le même pattern pour créer un navigateur : tenter de faire mieux
 public final class BrowserUtils {
@@ -41,8 +46,8 @@ public final class BrowserUtils {
 		drivers.add(internetExplorer);
 		final WebDriver opera = createOperaDriver();
 		drivers.add(opera);
-		// final WebDriver safari = createSafariDriver();
-		// drivers.add(safari);
+		final WebDriver safari = createSafariDriver();
+		drivers.add(safari);
 		return drivers;
 	}
 
@@ -122,21 +127,22 @@ public final class BrowserUtils {
 	}
 
 	// XXX tcicognani: Never tested (I don't have any MacOS device)
-	public static WebDriver createSafariDriver() throws UtilsException {
-		SafariDriver driver = null;
+	public static WebDriver createSafariDriver() {
+		WebDriver driver = null;
 		try {
-			/*
-			 * XXX faire en sorte ne pas planter si on ne peut pas lancer le
-			 * driver comme ici un driver spécifique macos
-			 */
-			driver = new SafariDriver();
-			return driver;
+			if (IOSUtils.DEFAULT.isMacOS()) {
+				driver = new SafariDriver();
+			} else {
+				driver = new ErrorDriver(
+						"Safari driver is only compatible with MacOS"); //$NON-NLS-1$
+			}
 		} catch (final Exception e) {
 			if (driver != null) {
 				driver.quit();
 			}
-			throw new UtilsException(e);
+			driver = new ErrorDriver(e.getMessage());
 		}
+		return driver;
 	}
 
 	private static boolean downloadAndInstallDriver(
@@ -174,6 +180,84 @@ public final class BrowserUtils {
 			throw new UtilsException(e);
 		}
 		return installed;
+	}
+
+	public static class ErrorDriver implements WebDriver {
+		private final String errorMessage;
+
+		public ErrorDriver(final String errorMessage) {
+			this.errorMessage = errorMessage;
+		}
+
+		@Override
+		public String toString() {
+			return this.errorMessage;
+		}
+
+		@Override
+		public void get(final String url) {
+			// Do nothing
+		}
+
+		@Override
+		public String getCurrentUrl() {
+			return null;
+		}
+
+		@Override
+		public String getTitle() {
+			return null;
+		}
+
+		@Override
+		public List<WebElement> findElements(final By byLocator) {
+			return null;
+		}
+
+		@Override
+		public WebElement findElement(final By byLocator) {
+			return null;
+		}
+
+		@Override
+		public String getPageSource() {
+			return null;
+		}
+
+		@Override
+		public void close() {
+			// Do nothing
+		}
+
+		@Override
+		public void quit() {
+			// Do nothing
+		}
+
+		@Override
+		public Set<String> getWindowHandles() {
+			return null;
+		}
+
+		@Override
+		public String getWindowHandle() {
+			return null;
+		}
+
+		@Override
+		public TargetLocator switchTo() {
+			return null;
+		}
+
+		@Override
+		public Navigation navigate() {
+			return null;
+		}
+
+		@Override
+		public Options manage() {
+			return null;
+		}
 	}
 
 }
