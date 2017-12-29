@@ -232,7 +232,7 @@ public final class WpHtmlUtils {
 				@Override
 				public String toString() {
 					return String.format(
-							"activate button after installating plugin '%s'", //$NON-NLS-1$
+							"activated class after installating plugin '%s'", //$NON-NLS-1$
 							name);
 				}
 			};
