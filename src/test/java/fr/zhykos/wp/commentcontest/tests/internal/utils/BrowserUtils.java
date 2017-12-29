@@ -42,8 +42,15 @@ public final class BrowserUtils {
 		drivers.add(firefox);
 		final WebDriver edge = createEdgeDriver();
 		drivers.add(edge);
-		final WebDriver internetExplorer = createInternetExplorerDriver();
-		drivers.add(internetExplorer);
+		if (edge instanceof ErrorDriver) {
+			/*
+			 * Only create IE driver if Edge cannot be created (maybe an old
+			 * computer / and it's better because IE is a pain in the ass to
+			 * deal with)
+			 */
+			final WebDriver internetExplorer = createInternetExplorerDriver();
+			drivers.add(internetExplorer);
+		}
 		final WebDriver opera = createOperaDriver();
 		drivers.add(opera);
 		final WebDriver safari = createSafariDriver();
@@ -79,7 +86,8 @@ public final class BrowserUtils {
 		final int random = new Random().nextInt(drivers.size());
 		for (int i = 0; i < drivers.size(); i++) {
 			final WebDriver webDriver = drivers.get(i);
-			if (i == random) {
+			// Too much issues with IE so fuck it!
+			if (i == random && !(webDriver instanceof InternetExplorerDriver)) {
 				result = webDriver;
 			} else {
 				webDriver.quit();
