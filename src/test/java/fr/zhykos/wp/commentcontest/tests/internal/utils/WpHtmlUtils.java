@@ -144,11 +144,18 @@ public final class WpHtmlUtils {
 					xpath));
 		} else {
 			/*
-			 * tcicognani: useless else statement but Eclipse says expected can
-			 * be null (with is impossible due to the fail assertion...)
+			 * tcicognani: useless 'else' statement but Eclipse says 'expected'
+			 * variable can be null (with is impossible due to the fail
+			 * assertion...)
 			 */
 			final String text = driver.findElement(By.xpath(xpath)).getText();
-			Assert.assertEquals(expected.toLowerCase(), text.toLowerCase());
+				/*
+			 * In French we add a NBSP (char160) right after a opening guillemet
+			 * and right before an ending guillemet: sometimes the browser
+			 * transforms spaces into NBSP or not...
+			 */
+			Assert.assertEquals(expected.toLowerCase().replace((char) 160, ' '),
+					text.toLowerCase().replace((char) 160, ' '));
 		}
 	}
 
@@ -199,9 +206,10 @@ public final class WpHtmlUtils {
 		final String name = plugin.getName();
 		selenium.type(
 				"//div[@id='wpbody-content']//div[@class='wp-filter']/form/label/input[@class='wp-filter-search']", //$NON-NLS-1$
-				name);
-		selenium.submit(
-				"//div[@id='wpbody-content']//div[@class='wp-filter']/form"); //$NON-NLS-1$
+				""); //$NON-NLS-1$
+		driver.findElement(By.xpath(
+				"//div[@id='wpbody-content']//div[@class='wp-filter']/form/label/input[@class='wp-filter-search']")) //$NON-NLS-1$
+				.sendKeys(name);
 		waitUntilVisibleState(selenium,
 				"//div[@id='wpbody-content']/div[@class='wrap plugin-install-tab-featured']/span[@class='spinner']", //$NON-NLS-1$
 				false, 10000);

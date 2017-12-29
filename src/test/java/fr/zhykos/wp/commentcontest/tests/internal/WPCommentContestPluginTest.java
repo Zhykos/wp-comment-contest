@@ -91,10 +91,9 @@ public class WPCommentContestPluginTest {
 	@TestFactory
 	public Collection<DynamicTest> testPluginInstallAndGlobalFeatures() {
 		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
-		final List<WebDriver> allDrivers = BrowserUtils
-				.createAllDriversForTests();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
 		for (final WebDriver webDriver : allDrivers) {
-			final Executable exec = () -> testPluginInstallAndGlobalFeatures(
+			final Executable exec = () -> initTestPluginInstallAndGlobalFeatures(
 					webDriver);
 			final String testName = String.format("test on browser '%s'", //$NON-NLS-1$
 					webDriver);
@@ -104,14 +103,14 @@ public class WPCommentContestPluginTest {
 		return dynamicTests;
 	}
 
-	private static void testPluginInstallAndGlobalFeatures(
+	private static void initTestPluginInstallAndGlobalFeatures(
 			final WebDriver driver) {
 		try {
 			if (driver instanceof ErrorDriver) {
 				// XXX Pas sûr de devoir lancer un fail...
 				Assertions.fail(driver.toString());
 			} else {
-				internalTestPluginInstallAndGlobalFeatures(driver);
+				assertTestPluginInstallAndGlobalFeatures(driver);
 			}
 		} catch (final UtilsException e) {
 			Assertions.fail(e);
@@ -120,7 +119,7 @@ public class WPCommentContestPluginTest {
 		}
 	}
 
-	private static void internalTestPluginInstallAndGlobalFeatures(
+	private static void assertTestPluginInstallAndGlobalFeatures(
 			final WebDriver driver) throws UtilsException {
 		final Selenium selenium = new WebDriverBackedSelenium(driver,
 				wpInfo.getTestServer().getHomeURL());
@@ -129,11 +128,11 @@ public class WPCommentContestPluginTest {
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH1Tag(driver, wpInfo.getWebsiteName());
 		WpHtmlUtils.connect(driver, selenium, wpInfo);
-		testPluginCommentPage(driver, selenium);
-		testPluginArticlePage(driver, selenium);
+		internalTestPluginCommentPage(driver, selenium);
+		internalTestPluginArticlePage(driver, selenium);
 	}
 
-	private static void testPluginArticlePage(final WebDriver driver,
+	private static void internalTestPluginArticlePage(final WebDriver driver,
 			final Selenium selenium) throws UtilsException {
 		final String homeURL = wpInfo.getTestServer().getHomeURL();
 		selenium.open(homeURL + "/wp-admin/edit.php"); //$NON-NLS-1$
@@ -174,7 +173,7 @@ public class WPCommentContestPluginTest {
 				String.format("Concours pour l'article \"%s\"", articleName));
 	}
 
-	private static void testPluginCommentPage(final WebDriver driver,
+	private static void internalTestPluginCommentPage(final WebDriver driver,
 			final Selenium selenium) throws UtilsException {
 		// Test if plugin link is a comment sub menu
 		WpHtmlUtils.expandAdminMenu(driver, selenium);
@@ -195,10 +194,10 @@ public class WPCommentContestPluginTest {
 				+ "/wp-admin/edit-comments.php?page=orgZhyweb-wpCommentContest");
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH2Tag(driver, "Comment Contest");
-		testReport();
+		internalTestReport();
 	}
 
-	private static void testReport() {
+	private static void internalTestReport() {
 		// TODO Auto-generated method stub
 	}
 
@@ -217,10 +216,9 @@ public class WPCommentContestPluginTest {
 	@TestFactory
 	public Collection<DynamicTest> testCommentsInTable() {
 		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
-		final List<WebDriver> allDrivers = BrowserUtils
-				.createAllDriversForTests();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
 		for (final WebDriver webDriver : allDrivers) {
-			final Executable exec = () -> testCommentsInTable(webDriver);
+			final Executable exec = () -> initTestCommentsInTable(webDriver);
 			final String testName = String.format("test on browser '%s'", //$NON-NLS-1$
 					webDriver);
 			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
@@ -229,13 +227,13 @@ public class WPCommentContestPluginTest {
 		return dynamicTests;
 	}
 
-	private static void testCommentsInTable(final WebDriver driver) {
+	private static void initTestCommentsInTable(final WebDriver driver) {
 		try {
 			if (driver instanceof ErrorDriver) {
 				// XXX Pas sûr de devoir lancer un fail...
 				Assertions.fail(driver.toString());
 			} else {
-				internalTestCommentsInTable(driver);
+				assertTestCommentsInTable(driver);
 			}
 		} catch (final UtilsException e) {
 			Assertions.fail(e);
@@ -244,7 +242,7 @@ public class WPCommentContestPluginTest {
 		}
 	}
 
-	private static void internalTestCommentsInTable(final WebDriver driver)
+	private static void assertTestCommentsInTable(final WebDriver driver)
 			throws UtilsException {
 		final Selenium selenium = new WebDriverBackedSelenium(driver,
 				wpInfo.getTestServer().getHomeURL());

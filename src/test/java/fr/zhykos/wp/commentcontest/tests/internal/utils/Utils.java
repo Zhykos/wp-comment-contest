@@ -254,7 +254,8 @@ public final class Utils {
 	private static IWordPressInformation configureWordpress(
 			final ITestServer server, final IWordPressPluginToTest pluginToTest,
 			final IWordPressPlugin[] otherPlugins) throws UtilsException {
-		final WebDriver driver = BrowserUtils.createChromeDriver();
+		final WebDriver driver = BrowserUtils
+				.createAllCompatibleDriversAndGetRandom();
 		try {
 			// TODO Check H1 in each page
 			cleanDatabase();

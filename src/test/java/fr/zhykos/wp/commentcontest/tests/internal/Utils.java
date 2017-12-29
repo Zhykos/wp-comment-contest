@@ -30,7 +30,8 @@ final class Utils {
 	// XXX faire en sorte d'ajouter une API sur le plugin fakerpress
 	public static void addFakeComments(final IWordPressInformation wpInfo)
 			throws UtilsException {
-		final WebDriver currentDriver = BrowserUtils.createChromeDriver();
+		final WebDriver currentDriver = BrowserUtils
+				.createAllCompatibleDriversAndGetRandom();
 		try {
 			internalAddFakeComments(currentDriver, wpInfo);
 		} finally {
@@ -54,10 +55,9 @@ final class Utils {
 		currentSelenium.type("id=fakerpress-field-qty-min", //$NON-NLS-1$
 				String.valueOf(FAKE_COMMENTS_NB));
 		currentSelenium.uncheck("id=fakerpress-field-use_html-1"); //$NON-NLS-1$
-		currentDriver
-				.findElement(
-						By.xpath("//body//form[@class='fp-module-generator']")) //$NON-NLS-1$
-				.submit();
+		currentDriver.findElement(By.xpath(
+				"//body//form[@class='fp-module-generator']/div[@class='fp-submit']/input")) //$NON-NLS-1$
+				.click();
 		final IRunnableCondition condition = new IRunnableCondition() {
 			@Override
 			public boolean run() {
@@ -90,7 +90,7 @@ final class Utils {
 		final String articleName = currentDriver.findElement(By.xpath(
 				"//div[@id='misc-publishing-actions']/div[@class='misc-pub-section misc-pub-response-to']/b/a")) //$NON-NLS-1$
 				.getText();
-		currentSelenium.submit("id=post"); //$NON-NLS-1$
+		currentSelenium.click("id=save"); //$NON-NLS-1$
 		currentSelenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH1Tag(currentDriver, Translations.commentsOnArticle,
 				articleName);

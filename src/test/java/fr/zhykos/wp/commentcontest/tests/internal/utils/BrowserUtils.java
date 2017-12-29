@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -32,7 +34,7 @@ public final class BrowserUtils {
 		// Do nothing and must not be called
 	}
 
-	public static List<WebDriver> createAllDriversForTests() {
+	public static List<WebDriver> createAllDrivers() {
 		final List<WebDriver> drivers = new ArrayList<>();
 		final WebDriver chrome = createChromeDriver();
 		drivers.add(chrome);
@@ -49,7 +51,44 @@ public final class BrowserUtils {
 		return drivers;
 	}
 
-	public static WebDriver createChromeDriver() {
+	public static List<WebDriver> createAllCompatibleDrivers()
+			throws UtilsException {
+		final List<WebDriver> result = new ArrayList<>();
+		final List<WebDriver> drivers = createAllDrivers();
+		final List<String> messages = new ArrayList<>();
+		for (final WebDriver webDriver : drivers) {
+			if (webDriver instanceof ErrorDriver) {
+				messages.add(webDriver.toString());
+			} else {
+				result.add(webDriver);
+			}
+		}
+		if (result.isEmpty()) {
+			final String messagesStr = messages.stream()
+					.collect(Collectors.joining(" / ")); //$NON-NLS-1$
+			throw new UtilsException(
+					"No WebDriver compatible with your system: " + messagesStr); //$NON-NLS-1$
+		}
+		return result;
+	}
+
+	public static WebDriver createAllCompatibleDriversAndGetRandom()
+			throws UtilsException {
+		WebDriver result = null;
+		final List<WebDriver> drivers = createAllCompatibleDrivers();
+		final int random = new Random().nextInt(drivers.size());
+		for (int i = 0; i < drivers.size(); i++) {
+			final WebDriver webDriver = drivers.get(i);
+			if (i == random) {
+				result = webDriver;
+			} else {
+				webDriver.quit();
+			}
+		}
+		return result;
+	}
+
+	private static WebDriver createChromeDriver() {
 		/*
 		 * https://chromedriver.storage.googleapis.com/index.html?path=2.33/
 		 * TODO Gérer le numéro de version et Linux / Mac
@@ -70,7 +109,7 @@ public final class BrowserUtils {
 		return result;
 	}
 
-	public static WebDriver createFirefoxDriver() {
+	private static WebDriver createFirefoxDriver() {
 		/*
 		 * https://github.com/mozilla/geckodriver/releases TODO Gérer le numéro
 		 * de version et Linux / Mac
@@ -91,7 +130,7 @@ public final class BrowserUtils {
 		return result;
 	}
 
-	public static WebDriver createEdgeDriver() {
+	private static WebDriver createEdgeDriver() {
 		/*
 		 * https://developer.microsoft.com/en-us/microsoft-edge/tools/webdriver/
 		 * #downloads TODO Gérer le numéro de version XXX Exclusif windows !
@@ -112,7 +151,7 @@ public final class BrowserUtils {
 		return result;
 	}
 
-	public static WebDriver createInternetExplorerDriver() {
+	private static WebDriver createInternetExplorerDriver() {
 		/*
 		 * https://github.com/SeleniumHQ/selenium/wiki/InternetExplorerDriver
 		 * TODO Gérer le numéro de version XXX Exclusif windows !
@@ -133,7 +172,7 @@ public final class BrowserUtils {
 		return result;
 	}
 
-	public static WebDriver createOperaDriver() {
+	private static WebDriver createOperaDriver() {
 		/*
 		 * https://github.com/operasoftware/operachromiumdriver TODO Gérer le
 		 * numéro de version et l'OS
@@ -159,7 +198,7 @@ public final class BrowserUtils {
 	}
 
 	// XXX tcicognani: Never tested (I don't have any MacOS device)
-	public static WebDriver createSafariDriver() {
+	private static WebDriver createSafariDriver() {
 		WebDriver result = null;
 		try {
 			if (IOSUtils.DEFAULT.isMacOS()) {
@@ -216,6 +255,7 @@ public final class BrowserUtils {
 
 	public static class ErrorDriver implements WebDriver {
 		private final String errorMessage;
+		private Throwable throwable;
 
 		public ErrorDriver(final String errorMessage) {
 			this.errorMessage = errorMessage;
@@ -223,6 +263,11 @@ public final class BrowserUtils {
 
 		public ErrorDriver(final Throwable throwable) {
 			this(throwable.getMessage());
+			this.throwable = throwable;
+		}
+
+		public Throwable getThrowable() {
+			return this.throwable;
 		}
 
 		@Override
