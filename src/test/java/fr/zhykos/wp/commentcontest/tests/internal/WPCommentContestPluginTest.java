@@ -303,6 +303,82 @@ public class WPCommentContestPluginTest {
 		Assertions.assertEquals(2, columns.size());
 	}
 
+	@SuppressWarnings({ "static-method",
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
+	/*
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
+	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les
+	// navigateurs
+	// XXX Rajouter timeout
+	@TestFactory
+	public Collection<DynamicTest> testJustDraw() {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> initTestJustDraw(webDriver);
+			final String testName = String.format("test on browser '%s'", //$NON-NLS-1$
+					webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
+		}
+		return dynamicTests;
+	}
+
+	private static void initTestJustDraw(final WebDriver driver) {
+		try {
+			if (driver instanceof ErrorDriver) {
+				// XXX Pas sûr de devoir lancer un fail...
+				Assertions.fail(driver.toString());
+			} else {
+				assertTestJustDraw(driver);
+			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void assertTestJustDraw(final WebDriver driver)
+			throws UtilsException {
+		final Selenium selenium = new WebDriverBackedSelenium(driver,
+				wpInfo.getTestServer().getHomeURL());
+		WpHtmlUtils.connect(driver, selenium, wpInfo);
+		final String homeURL = wpInfo.getTestServer().getHomeURL();
+		selenium.open(homeURL + "/wp-admin/edit.php"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		final WebElement contestLink = driver.findElement(By.xpath(
+				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
+		selenium.open(contestLink.getAttribute("href")); //$NON-NLS-1$
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		final String nbWinners = selenium.getValue("id=zwpcc_nb_winners"); //$NON-NLS-1$
+		Assertions.assertEquals(1, Integer.parseInt(nbWinners));
+		Assertions.assertFalse(selenium.isVisible("id=dialog-modal-winners")); //$NON-NLS-1$
+		driver.findElement(By.xpath(
+				"//form[@id='zwpcc_form']/input[@class='button action']"))
+				.click();
+		Assertions.assertTrue(selenium.isVisible("id=dialog-modal-winners")); //$NON-NLS-1$
+		final List<WebElement> winnerLines = driver.findElements(By.xpath(
+				"//div[@id='dialog-modal-winners']/table/tbody[@id='the-list-contest']/tr")); //$NON-NLS-1$
+		int nbLinesVisible = 0;
+		for (final WebElement line : winnerLines) {
+			if (line.isDisplayed()) {
+				nbLinesVisible++;
+			}
+		}
+		Assertions.assertEquals(Integer.parseInt(nbWinners), nbLinesVisible);
+		driver.findElement(By.xpath(
+				"//div[@class='ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix ui-draggable-handle']/button")) //$NON-NLS-1$
+				.click();
+		Assertions.assertFalse(selenium.isVisible("id=dialog-modal-winners")); //$NON-NLS-1$
+	}
+
 	@AfterAll
 	public static void afterAll() {
 		if (wpInfo != null) {
