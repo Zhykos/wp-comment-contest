@@ -379,6 +379,14 @@ public class WPCommentContestPluginTest {
 		Assertions.assertFalse(selenium.isVisible("id=dialog-modal-winners")); //$NON-NLS-1$
 	}
 
+	/*
+	 * TODO Tests:
+	 * - vérifier les tooltips
+	 * - créer un deuxième article avec des commentaires et bien vérifier si on a les bons commentaires
+	 * - lancer un concours de base plusieurs fois et voir si on a bien un commentaire de l'article et que le random fonctionne
+	 * - tests en changeant les valeurs par défaut des configurations
+	 */
+
 	@AfterAll
 	public static void afterAll() {
 		if (wpInfo != null) {
