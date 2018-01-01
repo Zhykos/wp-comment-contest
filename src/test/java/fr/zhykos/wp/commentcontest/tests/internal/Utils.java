@@ -81,6 +81,9 @@ final class Utils {
 		WpHtmlUtils.assertH1Tag(currentDriver, Translations.editComment);
 		final Calendar cal = Calendar.getInstance();
 		cal.add(Calendar.DATE, -1);
+		currentDriver.findElement(By.xpath(
+				"//div[@id='misc-publishing-actions']/div[@class='misc-pub-section curtime misc-pub-curtime']/a[@class='edit-timestamp hide-if-no-js']")) //$NON-NLS-1$
+				.click();
 		currentSelenium.type("id=jj", //$NON-NLS-1$
 				Integer.toString(cal.get(Calendar.DAY_OF_MONTH)));
 		currentSelenium.select("id=mm", //$NON-NLS-1$
