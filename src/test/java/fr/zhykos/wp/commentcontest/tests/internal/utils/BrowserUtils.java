@@ -48,6 +48,7 @@ public final class BrowserUtils {
 			 * computer / and it's better because IE is a pain in the ass to
 			 * deal with)
 			 */
+			// XXX Ajouter une clé -D pour permettre aux dev de forcer les tests sur IE
 			final WebDriver internetExplorer = createInternetExplorerDriver();
 			drivers.add(internetExplorer);
 		}
@@ -233,6 +234,7 @@ public final class BrowserUtils {
 			if (!installed) {
 				final File tempDir = Utils.getTempDirectory();
 				// XXX Faire mieux pour keySuffix car par exemple on "operadriver_win64" dans le nom de la clé
+				// XXX Au lieu de mettre une clé pour savoir si on doit télécharger, ce serait mieux de mettre une clé pour spécifier le chemin du driver et s'il est spécifié et présent, on n'a pas à le télécharger
 				final String keySuffix = exeName.replace("/", ".").replace("\\", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						"."); //$NON-NLS-1$
 				final String propertyKey = String.format("%s.download.%s", //$NON-NLS-1$

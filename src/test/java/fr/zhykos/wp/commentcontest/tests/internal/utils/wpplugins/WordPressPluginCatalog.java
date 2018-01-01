@@ -12,8 +12,8 @@ class WordPressPluginCatalog implements IWordPressPluginCatalog {
 	public WordPressPluginCatalog() {
 		/*
 		 * XXX tcicognani: I wanted to have all classes through reflection but
-		 * it doesn't work this way and I had to do so with external librairies:
-		 * for now list all classes like a noob
+		 * it doesn't work this way and I had to do so with external librairies
+		 * (to get subclasses): for now list all classes like a noob
 		 */
 		this.plugins.add(new PluginCommentContest());
 		this.plugins.add(new PluginWPRSSAggregator());
