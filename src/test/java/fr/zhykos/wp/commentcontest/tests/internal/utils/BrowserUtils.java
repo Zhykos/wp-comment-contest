@@ -3,8 +3,9 @@ package fr.zhykos.wp.commentcontest.tests.internal.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,16 @@ public final class BrowserUtils {
 	private static boolean edgeInstalled = false;
 	private static boolean ieInstalled = false;
 	private static boolean operaInstalled = false;
+
+	private static final List<Class<? extends WebDriver>> TCI_DRIVER_SORT = new ArrayList<>();
+	static {
+		TCI_DRIVER_SORT.add(ChromeDriver.class);
+		TCI_DRIVER_SORT.add(FirefoxDriver.class);
+		TCI_DRIVER_SORT.add(OperaDriver.class);
+		TCI_DRIVER_SORT.add(SafariDriver.class);
+		TCI_DRIVER_SORT.add(EdgeDriver.class);
+		TCI_DRIVER_SORT.add(InternetExplorerDriver.class);
+	}
 
 	private BrowserUtils() {
 		// Do nothing and must not be called
@@ -80,21 +91,28 @@ public final class BrowserUtils {
 		return result;
 	}
 
-	public static WebDriver createAllCompatibleDriversAndGetRandom()
+	protected static List<Class<? extends WebDriver>> getDriverSort() {
+		return Collections.unmodifiableList(TCI_DRIVER_SORT);
+	}
+
+	public static WebDriver createAllCompatibleDriversAndGetTheBetter()
 			throws UtilsException {
-		WebDriver result = null;
+		// TODO est-il possible de permettre aux dev de modifier l'ordre de préférence ? (une clé avec la liste des drivers séparés par point virgule ?)
 		final List<WebDriver> drivers = createAllCompatibleDrivers();
-		final int random = new Random().nextInt(drivers.size());
-		for (int i = 0; i < drivers.size(); i++) {
-			final WebDriver webDriver = drivers.get(i);
-			// Too much issues with IE so fuck it!
-			if (i == random && !(webDriver instanceof InternetExplorerDriver)) {
-				result = webDriver;
-			} else {
-				webDriver.quit();
+		final List<Class<? extends WebDriver>> driverSort = getDriverSort();
+		Collections.sort(drivers, new Comparator<WebDriver>() {
+			@Override
+			public int compare(final WebDriver driver1,
+					final WebDriver driver2) {
+				final int index1 = driverSort.indexOf(driver1.getClass());
+				final int index2 = driverSort.indexOf(driver2.getClass());
+				return index1 - index2;
 			}
+		});
+		for (int i = 1; i < drivers.size(); i++) {
+			drivers.get(i).quit();
 		}
-		return result;
+		return drivers.get(0);
 	}
 
 	private static WebDriver createChromeDriver() {

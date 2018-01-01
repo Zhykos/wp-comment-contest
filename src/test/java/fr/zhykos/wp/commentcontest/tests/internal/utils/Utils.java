@@ -255,7 +255,7 @@ public final class Utils {
 			final ITestServer server, final IWordPressPluginToTest pluginToTest,
 			final IWordPressPlugin[] otherPlugins) throws UtilsException {
 		final WebDriver driver = BrowserUtils
-				.createAllCompatibleDriversAndGetRandom();
+				.createAllCompatibleDriversAndGetTheBetter();
 		try {
 			// TODO Check H1 in each page
 			cleanDatabase();

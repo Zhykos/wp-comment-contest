@@ -31,7 +31,7 @@ final class Utils {
 	public static void addFakeComments(final IWordPressInformation wpInfo)
 			throws UtilsException {
 		final WebDriver currentDriver = BrowserUtils
-				.createAllCompatibleDriversAndGetRandom();
+				.createAllCompatibleDriversAndGetTheBetter();
 		try {
 			internalAddFakeComments(currentDriver, wpInfo);
 		} finally {
