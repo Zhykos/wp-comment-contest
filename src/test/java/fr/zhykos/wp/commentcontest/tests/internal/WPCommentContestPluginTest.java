@@ -70,6 +70,8 @@ public class WPCommentContestPluginTest {
 					.installWordPress();
 		}
 		// XXX startServer c'est nul comme nom...
+		// TODO Avoir la possibilité de lancer les tests avec le code minimisé
+		// et les fichiers supprimés (filesToRemove)
 		wpInfo = fr.zhykos.wp.commentcontest.tests.internal.utils.Utils
 				.startServer(myPlugin,
 						new IWordPressPlugin[] { wpRssPlg, fakerPlg });
