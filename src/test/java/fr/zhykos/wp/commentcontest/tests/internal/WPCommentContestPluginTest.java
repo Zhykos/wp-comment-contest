@@ -106,10 +106,7 @@ public class WPCommentContestPluginTest {
 	private static void initTestPluginInstallAndGlobalFeatures(
 			final WebDriver driver) {
 		try {
-			if (driver instanceof ErrorDriver) {
-				// XXX Pas sûr de devoir lancer un fail...
-				Assertions.fail(driver.toString());
-			} else {
+			if (!(driver instanceof ErrorDriver)) {
 				assertTestPluginInstallAndGlobalFeatures(driver);
 			}
 		} catch (final UtilsException e) {
@@ -228,10 +225,7 @@ public class WPCommentContestPluginTest {
 
 	private static void initTestCommentsInTable(final WebDriver driver) {
 		try {
-			if (driver instanceof ErrorDriver) {
-				// XXX Pas sûr de devoir lancer un fail...
-				Assertions.fail(driver.toString());
-			} else {
+			if (!(driver instanceof ErrorDriver)) {
 				assertTestCommentsInTable(driver);
 			}
 		} catch (final UtilsException e) {
@@ -332,10 +326,7 @@ public class WPCommentContestPluginTest {
 
 	private static void initTestJustDraw(final WebDriver driver) {
 		try {
-			if (driver instanceof ErrorDriver) {
-				// XXX Pas sûr de devoir lancer un fail...
-				Assertions.fail(driver.toString());
-			} else {
+			if (!(driver instanceof ErrorDriver)) {
 				assertTestJustDraw(driver);
 			}
 		} catch (final UtilsException e) {

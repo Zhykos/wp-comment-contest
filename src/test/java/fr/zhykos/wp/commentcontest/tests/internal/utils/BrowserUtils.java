@@ -86,7 +86,8 @@ public final class BrowserUtils {
 			final String messagesStr = messages.stream()
 					.collect(Collectors.joining(" / ")); //$NON-NLS-1$
 			throw new UtilsException(
-					"No WebDriver compatible with your system: " + messagesStr); //$NON-NLS-1$
+					"No WebDriver compatible with your system! All errors: " //$NON-NLS-1$
+							+ messagesStr);
 		}
 		return result;
 	}
@@ -283,7 +284,6 @@ public final class BrowserUtils {
 
 	public static class ErrorDriver implements WebDriver {
 		private final String errorMessage;
-		private Throwable throwable;
 
 		public ErrorDriver(final String errorMessage) {
 			this.errorMessage = errorMessage;
@@ -291,11 +291,6 @@ public final class BrowserUtils {
 
 		public ErrorDriver(final Throwable throwable) {
 			this(throwable.getMessage());
-			this.throwable = throwable;
-		}
-
-		public Throwable getThrowable() {
-			return this.throwable;
 		}
 
 		@Override
