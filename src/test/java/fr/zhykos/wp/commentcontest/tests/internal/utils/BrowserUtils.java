@@ -99,6 +99,7 @@ public final class BrowserUtils {
 	public static WebDriver createAllCompatibleDriversAndGetTheBetter()
 			throws UtilsException {
 		// TODO est-il possible de permettre aux dev de modifier l'ordre de préférence ? (une clé avec la liste des drivers séparés par point virgule ?)
+		// XXX Eviter de créer tous les drivers pour les fermer ensuite : les créer dans l'ordre de préférence puis dès qu'un fonctionne, on s'arrête
 		final List<WebDriver> drivers = createAllCompatibleDrivers();
 		final List<Class<? extends WebDriver>> driverSort = getDriverSort();
 		Collections.sort(drivers, new Comparator<WebDriver>() {
