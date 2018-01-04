@@ -1,6 +1,8 @@
 package fr.zhykos.wp.commentcontest.tests.internal;
 
+import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
@@ -414,12 +416,95 @@ public class WPCommentContestPluginTest {
 		Assertions.assertEquals(2, nbLinesVisible);
 	}
 
+	@SuppressWarnings({ "static-method",
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
+	/*
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
+	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les
+	// navigateurs
+	// XXX Rajouter timeout
+	@TestFactory
+	public Collection<DynamicTest> testDateSelection() {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> initTestDateSelection(webDriver);
+			final String testName = String.format("test on browser '%s'", //$NON-NLS-1$
+					webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
+		}
+		return dynamicTests;
+	}
+
+	private static void initTestDateSelection(final WebDriver driver) {
+		try {
+			if (!(driver instanceof ErrorDriver)) {
+				assertTestDateSelection(driver);
+			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void assertTestDateSelection(final WebDriver driver)
+			throws UtilsException {
+		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+				driver);
+		WpHtmlUtils.elementVisibilityBlock(driver, "filters"); //$NON-NLS-1$
+		Assertions.assertFalse(
+				selenium.isVisible("id=zwpcc_dateFilter_error_message")); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=filters")); //$NON-NLS-1$
+		selenium.click("id=datepicker"); //$NON-NLS-1$
+		final String selectedDayStr = driver.findElement(By.xpath(
+				"//div[@id='ui-datepicker-div']//a[@class='ui-state-default ui-state-highlight ui-state-hover']")) //$NON-NLS-1$
+				.getText();
+		final int selectedDay = Integer.parseInt(selectedDayStr);
+		// Select yesterday
+		if (selectedDay == 1) {
+			// If 1st day: select last day of previous month
+			driver.findElement(By.xpath(
+					"//div[@id='ui-datepicker-div']//a[@data-handler='prev']")) //$NON-NLS-1$
+					.click();
+		}
+		// XXX il faudrait gérer la date autrement car on pourrait changer de jour entre le moment où on a modifié le commentaire et maintenant. Faut aussi gérer le cas du 23h59 car ça pourrait faire la merde
+		final Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.DATE, -1);
+		final List<WebElement> dayLinks = driver.findElements(By.xpath(
+				"//div[@id='ui-datepicker-div']//table[@class='ui-datepicker-calendar']//td/a")); //$NON-NLS-1$
+		final int dayYesterday = cal.get(Calendar.DAY_OF_MONTH);
+		final YearMonth yearMonthObject = YearMonth.of(cal.get(Calendar.YEAR),
+				cal.get(Calendar.MONTH) + 1);
+		Assertions.assertEquals(yearMonthObject.lengthOfMonth(),
+				dayLinks.size());
+		dayLinks.get(dayYesterday - 1).click();
+		selenium.type("id=dateHours", Integer.toString(cal.get(Calendar.HOUR))); //$NON-NLS-1$
+		selenium.type("id=dateMinutes", //$NON-NLS-1$
+				Integer.toString(cal.get(Calendar.MINUTE)));
+		final WebElement element = driver
+				.findElement(By.id("ui-datepicker-div")); //$NON-NLS-1$
+		WpHtmlUtils.waitUntilVisibleState(element, false, 10000);
+		selenium.click("id=dateSubmit"); //$NON-NLS-1$
+		Assertions.assertFalse(
+				selenium.isVisible("id=zwpcc_dateFilter_error_message")); //$NON-NLS-1$
+		System.out.println();
+	}
+
 	/*
 	 * TODO Tests:
 	 * - vérifier les tooltips
 	 * - créer un deuxième article avec des commentaires et bien vérifier si on a les bons commentaires
 	 * - lancer un concours de base plusieurs fois et voir si on a bien un commentaire de l'article et que le random fonctionne
 	 * - tests en changeant les valeurs par défaut des configurations
+	 * - test qui déplie les filtres et vérifie qu'ils sont affichés
 	 */
 
 	private static Selenium openCommentContestPluginOnArticleNumber1(

@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Assert;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -376,6 +377,13 @@ public final class WpHtmlUtils {
 			throw new NoSuchElementException(
 					"Cannot get button to expand (doesn't work on mobile responsive UI)"); //$NON-NLS-1$
 		}
+	}
+
+	public static void elementVisibilityBlock(final WebDriver driver,
+			final String elementId) {
+		final WebElement element = driver.findElement(By.id(elementId));
+		((JavascriptExecutor) driver).executeScript(
+				"arguments[0].style.display='block'", element); //$NON-NLS-1$
 	}
 
 }
