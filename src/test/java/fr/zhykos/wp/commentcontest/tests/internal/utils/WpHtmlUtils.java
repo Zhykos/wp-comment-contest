@@ -211,7 +211,7 @@ public final class WpHtmlUtils {
 		driver.findElement(By.xpath(
 				"//div[@id='wpbody-content']//div[@class='wp-filter']/form/label/input[@class='wp-filter-search']")) //$NON-NLS-1$
 				.sendKeys(name);
-		waitUntilVisibleState(selenium,
+		waitUntilVisibleStateByXPath(driver,
 				"//div[@id='wpbody-content']/div[@class='wrap plugin-install-tab-featured']/span[@class='spinner']", //$NON-NLS-1$
 				false, 10000);
 		final String pluginId = plugin.getId();
@@ -245,40 +245,46 @@ public final class WpHtmlUtils {
 		}
 	}
 
-	// XXX Possible mutualisation avec waitUntilVisibleState(WebElement, boolean, int) ?
-	private static void waitUntilVisibleState(final Selenium selenium,
-			final String locator, final boolean visible, final int maxTimeMilli)
+	public static void waitUntilVisibleStateByXPath(final WebDriver driver,
+			final String xpath, final boolean visible, final int maxTimeMilli)
+			throws UtilsException {
+		final WebElement element = driver.findElement(By.xpath(xpath));
+		waitUntilVisibleStateByElement(element, visible, maxTimeMilli);
+	}
+
+	public static void waitUntilVisibleStateByElementId(final Selenium selenium,
+			final WebDriver driver, final String elementId,
+			final boolean visible, final int maxTimeMilli)
 			throws UtilsException {
 		final IRunnableCondition condition = new IRunnableCondition() {
 			@Override
 			public boolean run() {
-				return selenium.isVisible(locator) == visible;
+				return isVisible(elementId, selenium, driver) == visible;
 			}
 
 			// XXX toString c'est nul
 			@Override
 			public String toString() {
 				return String.format("state 'visible = %s' for locator '%s'", //$NON-NLS-1$
-						Boolean.toString(visible), locator);
+						Boolean.toString(visible), elementId);
 			}
 		};
 		waitUntilCondition(condition, maxTimeMilli);
 	}
 
-	// XXX Possible mutualisation avec waitUntilVisibleState(Selenium, String, boolean, int) ?
-	public static void waitUntilVisibleState(final WebElement element,
+	public static void waitUntilVisibleStateByElement(final WebElement element,
 			final boolean visible, final int maxTimeMilli)
 			throws UtilsException {
 		final IRunnableCondition condition = new IRunnableCondition() {
 			@Override
 			public boolean run() {
-				return element.isDisplayed() == visible;
+				return isVisible(element) == visible;
 			}
 
 			// XXX toString c'est nul
 			@Override
 			public String toString() {
-				return String.format("state 'visible = %s' for element '%s'", //$NON-NLS-1$
+				return String.format("state 'visible = %s' for locator '%s'", //$NON-NLS-1$
 						Boolean.toString(visible), element);
 			}
 		};
@@ -384,6 +390,19 @@ public final class WpHtmlUtils {
 		final WebElement element = driver.findElement(By.id(elementId));
 		((JavascriptExecutor) driver).executeScript(
 				"arguments[0].style.display='block'", element); //$NON-NLS-1$
+	}
+
+	public static boolean isVisible(final String elementId,
+			final Selenium selenium, final WebDriver driver) {
+		final WebElement element = driver.findElement(By.id(elementId));
+		return selenium.isVisible("id=" + elementId) || isVisible(element); //$NON-NLS-1$
+	}
+
+	public static boolean isVisible(final WebElement element) {
+		final String cssDisplay = element.getCssValue("display"); //$NON-NLS-1$
+		final String cssVisibility = element.getCssValue("visibility"); //$NON-NLS-1$
+		return element.isDisplayed() || (!"none".equals(cssDisplay) //$NON-NLS-1$
+				&& !"hidden".equals(cssVisibility)); //$NON-NLS-1$
 	}
 
 }

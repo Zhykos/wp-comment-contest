@@ -16,6 +16,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.opera.OperaDriver;
 
 import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
@@ -181,11 +182,10 @@ public class WPCommentContestPluginTest {
 		final WebElement plgCommentMenu = driver.findElement(By.xpath(
 				"//li[@id='menu-comments']/ul/li/a[@href='edit-comments.php?page=orgZhyweb-wpCommentContest']"));
 		final Actions action = new Actions(driver);
-		final WebElement ele = driver
-				.findElement(By.id("menu-comments")); //$NON-NLS-1$
-		action.moveToElement(ele).build().perform();
-		action.moveToElement(ele).build().perform(); // XXX Edge specific hack. Please die!!!!!!!!
-		WpHtmlUtils.waitUntilVisibleState(plgCommentMenu, true, 10000);
+		final WebElement element = driver.findElement(By.id("menu-comments")); //$NON-NLS-1$
+		action.moveToElement(element).build().perform();
+		action.moveToElement(element).build().perform(); // XXX Edge specific hack. Please die!!!!!!!!
+		WpHtmlUtils.waitUntilVisibleStateByElement(plgCommentMenu, true, 10000);
 		final String linkStr = plgCommentMenu.getText();
 		Assertions.assertEquals("Comment Contest", linkStr);
 		// Check plugin page
@@ -446,6 +446,16 @@ public class WPCommentContestPluginTest {
 	private static void initTestDateSelection(final WebDriver driver) {
 		try {
 			if (!(driver instanceof ErrorDriver)) {
+				// XXX Un peu nul la condition pour opera mais on est obligé...
+				if (!(driver instanceof OperaDriver)) {
+					/*
+					 * tcicognani: Mandatory maximize to prevent some bugs with
+					 * Firefox which detect some visible elements as not
+					 * visible. I maximize all windows just to have the same
+					 * behavior for each browser
+					 */
+					driver.manage().window().maximize();
+				}
 				assertTestDateSelection(driver);
 			}
 		} catch (final UtilsException e) {
@@ -464,6 +474,8 @@ public class WPCommentContestPluginTest {
 				selenium.isVisible("id=zwpcc_dateFilter_error_message")); //$NON-NLS-1$
 		Assertions.assertTrue(selenium.isVisible("id=filters")); //$NON-NLS-1$
 		selenium.click("id=datepicker"); //$NON-NLS-1$
+		WpHtmlUtils.waitUntilVisibleStateByElementId(selenium, driver,
+				"ui-datepicker-div", true, 10000); //$NON-NLS-1$
 		final String selectedDayStr = driver.findElement(By.xpath(
 				"//div[@id='ui-datepicker-div']//a[@class='ui-state-default ui-state-highlight ui-state-hover']")) //$NON-NLS-1$
 				.getText();
@@ -489,13 +501,11 @@ public class WPCommentContestPluginTest {
 		selenium.type("id=dateHours", Integer.toString(cal.get(Calendar.HOUR))); //$NON-NLS-1$
 		selenium.type("id=dateMinutes", //$NON-NLS-1$
 				Integer.toString(cal.get(Calendar.MINUTE)));
-		final WebElement element = driver
-				.findElement(By.id("ui-datepicker-div")); //$NON-NLS-1$
-		WpHtmlUtils.waitUntilVisibleState(element, false, 10000);
+		WpHtmlUtils.waitUntilVisibleStateByElementId(selenium, driver,
+				"ui-datepicker-div", false, 10000); //$NON-NLS-1$
 		selenium.click("id=dateSubmit"); //$NON-NLS-1$
-		Assertions.assertFalse(
-				selenium.isVisible("id=zwpcc_dateFilter_error_message")); //$NON-NLS-1$
-		System.out.println();
+		Assertions.assertFalse(WpHtmlUtils
+				.isVisible("zwpcc_dateFilter_error_message", selenium, driver)); //$NON-NLS-1$
 	}
 
 	/*
