@@ -277,6 +277,7 @@ jQuery(document).ready(function() {
     // ------------------------ Date filter ------------------------------------
     
     jQuery('#datepicker').datepicker();
+    jQuery('#datepicker').datepicker("option", "dateFormat", "mm/dd/yy");
     
     jQuery('#dateSubmit').click(function() {
         // Clear error messages
