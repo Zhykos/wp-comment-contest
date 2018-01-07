@@ -81,6 +81,8 @@ final class Utils {
 		fakeDate.add(Calendar.DATE, -1);
 		modifyCommentDate(driver, selenium, homeURL, FAKE_COMMENTS_NB + 1,
 				fakeDate);
+		modifyCommentAuthor(driver, selenium, homeURL, 1, "Zhykos"); //$NON-NLS-1$
+		modifyCommentAuthor(driver, selenium, homeURL, 2, "Zhykos"); //$NON-NLS-1$
 	}
 
 	public static Calendar getDateSecondJanuary2018Noon() {
@@ -90,10 +92,7 @@ final class Utils {
 	private static void modifyCommentDate(final WebDriver driver,
 			final Selenium selenium, final String homeURL, final int commentId,
 			final Calendar fakeDate) {
-		selenium.open(homeURL + "/wp-admin/comment.php?action=editcomment&c=" //$NON-NLS-1$
-				+ commentId);
-		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-		WpHtmlUtils.assertH1Tag(driver, Translations.editComment);
+		openCommentPage(driver, selenium, homeURL, commentId);
 		driver.findElement(By.xpath(
 				"//div[@id='misc-publishing-actions']/div[@class='misc-pub-section curtime misc-pub-curtime']/a[@class='edit-timestamp hide-if-no-js']")) //$NON-NLS-1$
 				.click();
@@ -107,6 +106,19 @@ final class Utils {
 				Integer.toString(fakeDate.get(Calendar.HOUR_OF_DAY)));
 		selenium.type("id=mn", //$NON-NLS-1$
 				Integer.toString(fakeDate.get(Calendar.MINUTE)));
+		saveCommentPage(driver, selenium);
+	}
+
+	private static void modifyCommentAuthor(final WebDriver driver,
+			final Selenium selenium, final String homeURL, final int commentId,
+			final String newName) {
+		openCommentPage(driver, selenium, homeURL, commentId);
+		selenium.type("id=name", newName); //$NON-NLS-1$
+		saveCommentPage(driver, selenium);
+	}
+
+	private static void saveCommentPage(final WebDriver driver,
+			final Selenium selenium) {
 		final String articleName = driver.findElement(By.xpath(
 				"//div[@id='misc-publishing-actions']/div[@class='misc-pub-section misc-pub-response-to']/b/a")) //$NON-NLS-1$
 				.getText();
@@ -114,6 +126,15 @@ final class Utils {
 		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH1Tag(driver, Translations.commentsOnArticle,
 				articleName);
+	}
+
+	private static void openCommentPage(final WebDriver driver,
+			final Selenium selenium, final String homeURL,
+			final int commentId) {
+		selenium.open(homeURL + "/wp-admin/comment.php?action=editcomment&c=" //$NON-NLS-1$
+				+ commentId);
+		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH1Tag(driver, Translations.editComment);
 	}
 
 }

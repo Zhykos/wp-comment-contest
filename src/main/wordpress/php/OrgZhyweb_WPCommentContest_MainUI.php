@@ -77,7 +77,7 @@ class OrgZhyweb_WPCommentContest_MainUI {
             echo "<div id=\"zwpcc_nbWinners_error_message\" style=\"color: red; display: none;\">" . __('Number of winners error', "comment-contest") . "</div>"
                . __('Number of winners:', "comment-contest") . " <input type=\"text\" id=\"zwpcc_nb_winners\" value=\"1\"/>"
                . "<img src=\"$this->pluginDir/img/help.png\" alt=\"Help\" class=\"help\" title=\"". __('Number of comments used to determine winners', "comment-contest") . "\" /><br /><br />"
-               . "<input type=\"submit\" class=\"button action\" value=\"" . __('Launch contest', "comment-contest") . "\" />";
+               . "<input type=\"submit\" id=\"zwpcc_form_submit\" class=\"button action\" value=\"" . __('Launch contest', "comment-contest") . "\" />";
             echo "</form>";
 
             // Result table : opened in a modal window

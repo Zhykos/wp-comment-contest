@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.function.Executable;
 import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
@@ -38,6 +39,9 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlug
  */
 public class WPCommentContestPluginTest {
 
+	private static final String STYLE_ATTRIBUTE = "style"; //$NON-NLS-1$
+	private static final String ALIAS_CONFIG = "aliasConfig"; //$NON-NLS-1$
+	private static final String ID_ALIAS_CONFIG = "id=" + ALIAS_CONFIG; //$NON-NLS-1$
 	private static final String TEST_ON_BROWSER = "test on browser '%s'"; //$NON-NLS-1$
 	private static final String CLASS_ATTRIBUTE = "class"; //$NON-NLS-1$
 	private static final String CONTEST_LK_XPATH = "//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"; //$NON-NLS-1$
@@ -351,9 +355,8 @@ public class WPCommentContestPluginTest {
 	private static void launchContestThenAssertNbWinners(
 			final Selenium selenium, final WebDriver driver,
 			final int nbWinners) {
-		driver.findElement(By.xpath(
-				"//form[@id='zwpcc_form']/input[@class='button action']")) //$NON-NLS-1$
-				.click();
+		scrollToY(driver, 0);
+		driver.findElement(By.id("zwpcc_form_submit")).click(); //$NON-NLS-1$
 		Assertions.assertTrue(selenium.isVisible("id=dialog-modal-winners")); //$NON-NLS-1$
 		final List<WebElement> winnerLines = driver.findElements(By.xpath(
 				"//div[@id='dialog-modal-winners']/table/tbody[@id='the-list-contest']/tr")); //$NON-NLS-1$
@@ -364,6 +367,11 @@ public class WPCommentContestPluginTest {
 			}
 		}
 		Assertions.assertEquals(nbWinners, nbLinesVisible);
+	}
+
+	private static void scrollToY(final WebDriver driver, final int yPosition) {
+		((JavascriptExecutor) driver).executeScript(String
+				.format("window.scrollTo(0, %d);", Integer.valueOf(yPosition))); //$NON-NLS-1$
 	}
 
 	@SuppressWarnings({ STATIC_METHOD,
@@ -464,8 +472,7 @@ public class WPCommentContestPluginTest {
 			throws UtilsException {
 		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
 				driver);
-		WpHtmlUtils.elementVisibilityBlock(driver, "filters"); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=filters")); //$NON-NLS-1$
+		expandFilters(driver, selenium);
 		Assertions.assertFalse(
 				selenium.isVisible("id=zwpcc_dateFilter_error_message")); //$NON-NLS-1$
 		submitThenAssertDateFieldsStyle(true, true, selenium, driver);
@@ -505,6 +512,12 @@ public class WPCommentContestPluginTest {
 		selenium.type("id=dateMinutes", //$NON-NLS-1$
 				Integer.toString(fakeDate.get(Calendar.MINUTE) + 1));
 		submitThenAssertDateFieldsStyle(false, false, selenium, driver);
+		assertCommentsTable(driver, Utils.FAKE_COMMENTS_NB);
+		launchContestThenAssertNbWinners(selenium, driver, 1);
+	}
+
+	private static void assertCommentsTable(final WebDriver driver,
+			final int expectedChecked) {
 		final List<WebElement> checkCols = driver.findElements(
 				By.xpath("//div[@id='contestForm']/table/tbody/tr/th/input")); //$NON-NLS-1$
 		Assertions.assertEquals(Utils.FAKE_COMMENTS_NB + 1, checkCols.size());
@@ -514,8 +527,13 @@ public class WPCommentContestPluginTest {
 				nbChecked++;
 			}
 		}
-		Assertions.assertEquals(Utils.FAKE_COMMENTS_NB, nbChecked);
-		launchContestThenAssertNbWinners(selenium, driver, 1);
+		Assertions.assertEquals(expectedChecked, nbChecked);
+	}
+
+	public static void expandFilters(final WebDriver driver,
+			final Selenium selenium) {
+		WpHtmlUtils.elementVisibilityBlock(driver, "filters"); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=filters")); //$NON-NLS-1$
 	}
 
 	private static void submitThenAssertDateFieldsStyle(
@@ -524,26 +542,114 @@ public class WPCommentContestPluginTest {
 		selenium.click("id=dateSubmit"); //$NON-NLS-1$
 		final boolean visible = WpHtmlUtils
 				.isVisible("zwpcc_dateFilter_error_message", selenium, driver); //$NON-NLS-1$
+		Assertions.assertEquals(Boolean.valueOf(mustHaveError),
+				Boolean.valueOf(visible));
 		final String dateCssStyle = driver.findElement(By.id("datepicker")) //$NON-NLS-1$
-				.getAttribute("style"); //$NON-NLS-1$
+				.getAttribute(STYLE_ATTRIBUTE);
 		final String hoursCssStyle = driver.findElement(By.id("dateHours")) //$NON-NLS-1$
-				.getAttribute("style"); //$NON-NLS-1$
+				.getAttribute(STYLE_ATTRIBUTE);
 		final String minCssStyle = driver.findElement(By.id("dateMinutes")) //$NON-NLS-1$
-				.getAttribute("style"); //$NON-NLS-1$
-		if (mustHaveError) {
-			Assertions.assertTrue(visible);
-			if (errorOnDate) {
-				Assertions.assertTrue(dateCssStyle.contains(BORDER_ERROR));
-			} else {
-				Assertions.assertTrue(hoursCssStyle.contains(BORDER_ERROR));
-				Assertions.assertTrue(minCssStyle.contains(BORDER_ERROR));
-			}
-		} else {
-			Assertions.assertFalse(visible);
-			Assertions.assertFalse(dateCssStyle.contains(BORDER_ERROR));
-			Assertions.assertFalse(hoursCssStyle.contains(BORDER_ERROR));
-			Assertions.assertFalse(minCssStyle.contains(BORDER_ERROR));
+				.getAttribute(STYLE_ATTRIBUTE);
+		Assertions.assertEquals(Boolean.valueOf(mustHaveError && errorOnDate),
+				Boolean.valueOf(dateCssStyle.contains(BORDER_ERROR)));
+		Assertions.assertEquals(Boolean.valueOf(mustHaveError && errorOnDate),
+				Boolean.valueOf(hoursCssStyle.contains(BORDER_ERROR)));
+		Assertions.assertEquals(Boolean.valueOf(mustHaveError && errorOnDate),
+				Boolean.valueOf(minCssStyle.contains(BORDER_ERROR)));
+	}
+
+	@SuppressWarnings({ "static-method",
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
+	/*
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
+	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les
+	// navigateurs
+	// XXX Rajouter timeout
+	@TestFactory
+	public Collection<DynamicTest> testAliasLimitation() {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> initTestAliasLimitation(webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
 		}
+		return dynamicTests;
+	}
+
+	private static void initTestAliasLimitation(final WebDriver driver) {
+		try {
+			if (!(driver instanceof ErrorDriver)) {
+				assertTestAliasLimitation(driver);
+			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void assertTestAliasLimitation(final WebDriver driver)
+			throws UtilsException {
+		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+				driver);
+		expandFilters(driver, selenium);
+		Assertions.assertFalse(
+				selenium.isVisible("id=zwpcc_aliasFilter_error_message")); //$NON-NLS-1$
+		submitThenAssertAliasFieldStyle(false, selenium, driver);
+		selenium.type(ID_ALIAS_CONFIG, ""); //$NON-NLS-1$
+		submitThenAssertAliasFieldStyle(true, selenium, driver);
+		selenium.type(ID_ALIAS_CONFIG, "a"); //$NON-NLS-1$
+		submitThenAssertAliasFieldStyle(true, selenium, driver);
+		selenium.type(ID_ALIAS_CONFIG, "-1"); //$NON-NLS-1$
+		submitThenAssertAliasFieldStyle(true, selenium, driver);
+		selenium.type(ID_ALIAS_CONFIG, "1"); //$NON-NLS-1$
+		submitThenAssertAliasFieldStyle(false, selenium, driver);
+		uncheckAllTable(selenium);
+		selenium.type(ID_ALIAS_CONFIG, "1"); //$NON-NLS-1$
+		submitThenAssertAliasFieldStyle(false, selenium, driver);
+		assertCommentsTable(driver, 1);
+		launchContestThenAssertNbWinners(selenium, driver, 1);
+	}
+
+	private static void uncheckAllTable(final Selenium selenium)
+			throws UtilsException {
+		selenium.click("id=cb-select-all-1"); //$NON-NLS-1$
+		try {
+			Thread.sleep(1000);
+		} catch (final InterruptedException e) {
+			throw new UtilsException(e);
+		}
+		if (selenium.isChecked("id=cb-select-all-1")) { //$NON-NLS-1$
+			selenium.click("id=cb-select-all-1"); //$NON-NLS-1$
+		}
+		try {
+			Thread.sleep(1000);
+		} catch (final InterruptedException e) {
+			throw new UtilsException(e);
+		}
+	}
+
+	private static void submitThenAssertAliasFieldStyle(
+			final boolean mustHaveError, final Selenium selenium,
+			final WebDriver driver) {
+		scrollToY(driver, 200);
+		selenium.click("id=aliasAddressFilter"); //$NON-NLS-1$
+		final boolean visible = WpHtmlUtils
+				.isVisible("zwpcc_aliasFilter_error_message", selenium, driver); //$NON-NLS-1$
+		Assertions.assertEquals(Boolean.valueOf(mustHaveError),
+				Boolean.valueOf(visible));
+		final String aliasCssStyle = driver.findElement(By.id(ALIAS_CONFIG))
+				.getAttribute(STYLE_ATTRIBUTE);
+		Assertions.assertEquals(Boolean.valueOf(mustHaveError),
+				Boolean.valueOf(aliasCssStyle.contains(BORDER_ERROR)));
 	}
 
 	/*
@@ -552,7 +658,8 @@ public class WPCommentContestPluginTest {
 	 * - créer un deuxième article avec des commentaires et bien vérifier si on a les bons commentaires
 	 * - lancer un concours de base plusieurs fois et voir si on a bien un commentaire de l'article et que le random fonctionne
 	 * - tests en changeant les valeurs par défaut des configurations
-	 * - test qui déplie les filtres et vérifie qu'ils sont affichés
+	 * - test qui (dé)plie les filtres et vérifie qu'ils sont affichés
+	 * - test pour vérifier que seuls les commentaires cochés sont bien mis en dans les résultats
 	 */
 
 	private static Selenium openCommentContestPluginOnArticleNumber1(
