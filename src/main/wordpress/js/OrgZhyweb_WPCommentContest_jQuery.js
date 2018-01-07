@@ -222,7 +222,7 @@ jQuery(document).ready(function() {
 
             // Check input format and launch the process if it's ok
             var inputValue = jQuery('#' + actionID + 'Config').val();
-            if (jQuery.isNumeric(inputValue) && inputValue >= 0) {
+            if (jQuery.isNumeric(inputValue) && inputValue >= 0 && Math.floor(inputValue) == inputValue) {
                 checkInputsOfWrongComments(function(line1, line2) {
                     var data1 = line1.find('.zhyweb_comment_contest_' + actionID).text();
                     var data2 = line2.find('.zhyweb_comment_contest_' + actionID).text();
@@ -250,7 +250,7 @@ jQuery(document).ready(function() {
 
         // Check input format and launch the process if it's ok
         var inputValue = jQuery('#timeBetween').val();
-        if (jQuery.isNumeric(inputValue) && inputValue > 0) {
+        if (jQuery.isNumeric(inputValue) && inputValue > 0 && Math.floor(inputValue) == inputValue) {
             var useName = jQuery('#timeBetweenFilterName').is(':checked');
             var useEmail = jQuery('#timeBetweenFilterEmail').is(':checked');
             var useIP = jQuery('#timeBetweenFilterIP').is(':checked');
@@ -307,7 +307,9 @@ jQuery(document).ready(function() {
             // Check hours format
             var dateHours = jQuery('#dateHours').val();
             var dateMinutes = jQuery('#dateMinutes').val();
-            if (dateHours !== "" && dateHours >= 0 && dateHours < 24 && dateMinutes !== "" && dateMinutes >= 0 && dateMinutes < 60) {
+            if (dateHours !== "" && dateHours >= 0 && dateHours < 24 && dateMinutes !== "" && dateMinutes >= 0 && dateMinutes < 60
+            		&& jQuery.isNumeric(dateHours) && Math.floor(dateHours) == dateHours
+            		&& jQuery.isNumeric(dateMinutes) && Math.floor(dateMinutes) == dateMinutes) {
                 // Date OK => Launch selection
                 jQuery('#contestForm tr').each(function() {
                     // Browse all table lines

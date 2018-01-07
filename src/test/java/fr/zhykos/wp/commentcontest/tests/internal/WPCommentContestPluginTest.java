@@ -514,6 +514,7 @@ public class WPCommentContestPluginTest {
 		submitThenAssertDateFieldsStyle(false, false, selenium, driver);
 		assertCommentsTable(driver, Utils.FAKE_COMMENTS_NB);
 		launchContestThenAssertNbWinners(selenium, driver, 1);
+		// XXX Je n'ai pas ajouté de tests en mettant des valeurs fausses...
 	}
 
 	private static void assertCommentsTable(final WebDriver driver,
@@ -610,11 +611,14 @@ public class WPCommentContestPluginTest {
 		submitThenAssertAliasFieldStyle(true, selenium, driver);
 		selenium.type(ID_ALIAS_CONFIG, "-1"); //$NON-NLS-1$
 		submitThenAssertAliasFieldStyle(true, selenium, driver);
+		selenium.type(ID_ALIAS_CONFIG, ".1"); //$NON-NLS-1$
+		submitThenAssertAliasFieldStyle(true, selenium, driver);
 		selenium.type(ID_ALIAS_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertAliasFieldStyle(false, selenium, driver);
 		uncheckAllTable(selenium);
 		selenium.type(ID_ALIAS_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertAliasFieldStyle(false, selenium, driver);
+		// TODO Ajouter des tests avec 0 et 2 puis vérifier le nombre de commentaires sélectionnés
 		assertCommentsTable(driver, 1);
 		launchContestThenAssertNbWinners(selenium, driver, 1);
 	}
