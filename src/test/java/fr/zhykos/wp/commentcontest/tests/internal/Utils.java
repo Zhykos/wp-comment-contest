@@ -1,6 +1,7 @@
 package fr.zhykos.wp.commentcontest.tests.internal;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.openqa.selenium.By;
@@ -39,31 +40,30 @@ final class Utils {
 		}
 	}
 
-	private static void internalAddFakeComments(final WebDriver currentDriver,
+	private static void internalAddFakeComments(final WebDriver driver,
 			final IWordPressInformation wpInfo) throws UtilsException {
-		final Selenium currentSelenium = new WebDriverBackedSelenium(
-				currentDriver, wpInfo.getTestServer().getHomeURL());
+		final Selenium selenium = new WebDriverBackedSelenium(driver,
+				wpInfo.getTestServer().getHomeURL());
 		final String homeURL = wpInfo.getTestServer().getHomeURL();
-		currentSelenium.open(homeURL);
-		currentSelenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-		WpHtmlUtils.assertH1Tag(currentDriver, wpInfo.getWebsiteName());
-		WpHtmlUtils.connect(currentDriver, currentSelenium, wpInfo);
+		selenium.open(homeURL);
+		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH1Tag(driver, wpInfo.getWebsiteName());
+		WpHtmlUtils.connect(driver, selenium, wpInfo);
 		// Generate fakes
-		currentSelenium.open(
+		selenium.open(
 				homeURL + "/wp-admin/admin.php?page=fakerpress&view=comments"); //$NON-NLS-1$
-		currentSelenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-		currentSelenium.type("id=fakerpress-field-qty-min", //$NON-NLS-1$
+		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		selenium.type("id=fakerpress-field-qty-min", //$NON-NLS-1$
 				String.valueOf(FAKE_COMMENTS_NB));
-		currentSelenium.uncheck("id=fakerpress-field-use_html-1"); //$NON-NLS-1$
-		currentDriver.findElement(By.xpath(
+		selenium.uncheck("id=fakerpress-field-use_html-1"); //$NON-NLS-1$
+		driver.findElement(By.xpath(
 				"//body//form[@class='fp-module-generator']/div[@class='fp-submit']/input")) //$NON-NLS-1$
 				.click();
 		final IRunnableCondition condition = new IRunnableCondition() {
 			@Override
 			public boolean run() {
-				final List<WebElement> foundElements = currentDriver
-						.findElements(By.xpath(
-								"//div[@class='fp-response']//div[@class='notice is-dismissible notice-success']")); //$NON-NLS-1$
+				final List<WebElement> foundElements = driver.findElements(By
+						.xpath("//div[@class='fp-response']//div[@class='notice is-dismissible notice-success']")); //$NON-NLS-1$
 				return (!foundElements.isEmpty());
 			}
 
@@ -74,28 +74,45 @@ final class Utils {
 			}
 		};
 		WpHtmlUtils.waitUntilCondition(condition, 60000);
-		// Modify one comment date (for tests)
-		currentSelenium
-				.open(homeURL + "/wp-admin/comment.php?action=editcomment&c=2"); //$NON-NLS-1$
-		currentSelenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-		WpHtmlUtils.assertH1Tag(currentDriver, Translations.editComment);
-		final Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -1);
-		currentDriver.findElement(By.xpath(
+		final Calendar fakeDate = getDateSecondJanuary2018Noon();
+		for (int i = 1; i <= FAKE_COMMENTS_NB; i++) {
+			modifyCommentDate(driver, selenium, homeURL, i, fakeDate);
+		}
+		fakeDate.add(Calendar.DATE, -1);
+		modifyCommentDate(driver, selenium, homeURL, FAKE_COMMENTS_NB + 1,
+				fakeDate);
+	}
+
+	public static Calendar getDateSecondJanuary2018Noon() {
+		return new GregorianCalendar(2018, 0, 2, 12, 0);
+	}
+
+	private static void modifyCommentDate(final WebDriver driver,
+			final Selenium selenium, final String homeURL, final int commentId,
+			final Calendar fakeDate) {
+		selenium.open(homeURL + "/wp-admin/comment.php?action=editcomment&c=" //$NON-NLS-1$
+				+ commentId);
+		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH1Tag(driver, Translations.editComment);
+		driver.findElement(By.xpath(
 				"//div[@id='misc-publishing-actions']/div[@class='misc-pub-section curtime misc-pub-curtime']/a[@class='edit-timestamp hide-if-no-js']")) //$NON-NLS-1$
 				.click();
-		currentSelenium.type("id=jj", //$NON-NLS-1$
-				Integer.toString(cal.get(Calendar.DAY_OF_MONTH)));
-		currentSelenium.select("id=mm", //$NON-NLS-1$
-				"index=" + Integer.toString(cal.get(Calendar.MONTH))); //$NON-NLS-1$
-		currentSelenium.type("id=aa", //$NON-NLS-1$
-				Integer.toString(cal.get(Calendar.YEAR)));
-		final String articleName = currentDriver.findElement(By.xpath(
+		selenium.type("id=jj", //$NON-NLS-1$
+				Integer.toString(fakeDate.get(Calendar.DAY_OF_MONTH)));
+		selenium.select("id=mm", //$NON-NLS-1$
+				"index=" + Integer.toString(fakeDate.get(Calendar.MONTH))); //$NON-NLS-1$
+		selenium.type("id=aa", //$NON-NLS-1$
+				Integer.toString(fakeDate.get(Calendar.YEAR)));
+		selenium.type("id=hh", //$NON-NLS-1$
+				Integer.toString(fakeDate.get(Calendar.HOUR_OF_DAY)));
+		selenium.type("id=mn", //$NON-NLS-1$
+				Integer.toString(fakeDate.get(Calendar.MINUTE)));
+		final String articleName = driver.findElement(By.xpath(
 				"//div[@id='misc-publishing-actions']/div[@class='misc-pub-section misc-pub-response-to']/b/a")) //$NON-NLS-1$
 				.getText();
-		currentSelenium.click("id=save"); //$NON-NLS-1$
-		currentSelenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-		WpHtmlUtils.assertH1Tag(currentDriver, Translations.commentsOnArticle,
+		selenium.click("id=save"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH1Tag(driver, Translations.commentsOnArticle,
 				articleName);
 	}
 

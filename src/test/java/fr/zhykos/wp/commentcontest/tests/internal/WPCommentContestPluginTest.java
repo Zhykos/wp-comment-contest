@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -37,6 +38,7 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlug
  */
 public class WPCommentContestPluginTest {
 
+	private static final String BORDER_ERROR = "border: 2px solid red;"; //$NON-NLS-1$
 	private static IWordPressPlugin wpRssPlg;
 	private static IWordPressPlugin fakerPlg;
 	private static IWordPressPluginToTest myPlugin;
@@ -338,6 +340,17 @@ public class WPCommentContestPluginTest {
 		final String nbWinners = selenium.getValue("id=zwpcc_nb_winners"); //$NON-NLS-1$
 		Assertions.assertEquals(1, Integer.parseInt(nbWinners));
 		Assertions.assertFalse(selenium.isVisible("id=dialog-modal-winners")); //$NON-NLS-1$
+		launchContestThenAssertNbWinners(selenium, driver,
+				Integer.parseInt(nbWinners));
+		driver.findElement(By.xpath(
+				"//div[@class='ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix ui-draggable-handle']/button")) //$NON-NLS-1$
+				.click();
+		Assertions.assertFalse(selenium.isVisible("id=dialog-modal-winners")); //$NON-NLS-1$
+	}
+
+	private static void launchContestThenAssertNbWinners(
+			final Selenium selenium, final WebDriver driver,
+			final int nbWinners) {
 		driver.findElement(By.xpath(
 				"//form[@id='zwpcc_form']/input[@class='button action']"))
 				.click();
@@ -346,15 +359,11 @@ public class WPCommentContestPluginTest {
 				"//div[@id='dialog-modal-winners']/table/tbody[@id='the-list-contest']/tr")); //$NON-NLS-1$
 		int nbLinesVisible = 0;
 		for (final WebElement line : winnerLines) {
-			if (line.isDisplayed()) {
+			if (WpHtmlUtils.isVisible(line)) {
 				nbLinesVisible++;
 			}
 		}
-		Assertions.assertEquals(Integer.parseInt(nbWinners), nbLinesVisible);
-		driver.findElement(By.xpath(
-				"//div[@class='ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix ui-draggable-handle']/button")) //$NON-NLS-1$
-				.click();
-		Assertions.assertFalse(selenium.isVisible("id=dialog-modal-winners")); //$NON-NLS-1$
+		Assertions.assertEquals(nbWinners, nbLinesVisible);
 	}
 
 	@SuppressWarnings({ "static-method",
@@ -401,19 +410,7 @@ public class WPCommentContestPluginTest {
 		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
 				driver);
 		selenium.type("id=zwpcc_nb_winners", "2"); //$NON-NLS-1$ //$NON-NLS-2$
-		driver.findElement(By.xpath(
-				"//form[@id='zwpcc_form']/input[@class='button action']"))
-				.click();
-		final List<WebElement> winnerLines = driver.findElements(By.xpath(
-				"//div[@id='dialog-modal-winners']/table/tbody[@id='the-list-contest']/tr")); //$NON-NLS-1$
-		int nbLinesVisible = 0;
-		for (final WebElement line : winnerLines) {
-			final String cssDisplay = line.getCssValue("display"); //$NON-NLS-1$
-			if (!"none".equals(cssDisplay)) { //$NON-NLS-1$
-				nbLinesVisible++;
-			}
-		}
-		Assertions.assertEquals(2, nbLinesVisible);
+		launchContestThenAssertNbWinners(selenium, driver, 2);
 	}
 
 	@SuppressWarnings({ "static-method",
@@ -470,42 +467,85 @@ public class WPCommentContestPluginTest {
 		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
 				driver);
 		WpHtmlUtils.elementVisibilityBlock(driver, "filters"); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=filters")); //$NON-NLS-1$
 		Assertions.assertFalse(
 				selenium.isVisible("id=zwpcc_dateFilter_error_message")); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=filters")); //$NON-NLS-1$
+		submitThenAssertDateFieldsStyle(true, true, selenium, driver);
 		selenium.click("id=datepicker"); //$NON-NLS-1$
 		WpHtmlUtils.waitUntilVisibleStateByElementId(selenium, driver,
 				"ui-datepicker-div", true, 10000); //$NON-NLS-1$
-		final String selectedDayStr = driver.findElement(By.xpath(
-				"//div[@id='ui-datepicker-div']//a[@class='ui-state-default ui-state-highlight ui-state-hover']")) //$NON-NLS-1$
-				.getText();
-		final int selectedDay = Integer.parseInt(selectedDayStr);
-		// Select yesterday
-		if (selectedDay == 1) {
-			// If 1st day: select last day of previous month
+		final Calendar fakeDate = Utils.getDateSecondJanuary2018Noon();
+		WebElement dateMonthElt = driver.findElement(By.xpath(
+				"//div[@id='ui-datepicker-div']//span[@class='ui-datepicker-month']")); //$NON-NLS-1$
+		WebElement dateYearElt = driver.findElement(By.xpath(
+				"//div[@id='ui-datepicker-div']//span[@class='ui-datepicker-year']")); //$NON-NLS-1$
+		final String targetYear = Integer.toString(fakeDate.get(Calendar.YEAR));
+		final String targetMonth = fakeDate.getDisplayName(Calendar.MONTH,
+				Calendar.LONG, Locale.getDefault());
+		while (!targetYear.equals(dateYearElt.getText())
+				&& !targetMonth.equals(dateMonthElt.getText())) {
 			driver.findElement(By.xpath(
 					"//div[@id='ui-datepicker-div']//a[@data-handler='prev']")) //$NON-NLS-1$
 					.click();
+			dateMonthElt = driver.findElement(By.xpath(
+					"//div[@id='ui-datepicker-div']//span[@class='ui-datepicker-month']")); //$NON-NLS-1$
+			dateYearElt = driver.findElement(By.xpath(
+					"//div[@id='ui-datepicker-div']//span[@class='ui-datepicker-year']")); //$NON-NLS-1$
 		}
-		// XXX il faudrait gérer la date autrement car on pourrait changer de jour entre le moment où on a modifié le commentaire et maintenant. Faut aussi gérer le cas du 23h59 car ça pourrait faire la merde
-		final Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DATE, -1);
 		final List<WebElement> dayLinks = driver.findElements(By.xpath(
 				"//div[@id='ui-datepicker-div']//table[@class='ui-datepicker-calendar']//td/a")); //$NON-NLS-1$
-		final int dayYesterday = cal.get(Calendar.DAY_OF_MONTH);
-		final YearMonth yearMonthObject = YearMonth.of(cal.get(Calendar.YEAR),
-				cal.get(Calendar.MONTH) + 1);
+		final YearMonth yearMonthObject = YearMonth.of(
+				fakeDate.get(Calendar.YEAR), fakeDate.get(Calendar.MONTH) + 1);
 		Assertions.assertEquals(yearMonthObject.lengthOfMonth(),
 				dayLinks.size());
-		dayLinks.get(dayYesterday - 1).click();
-		selenium.type("id=dateHours", Integer.toString(cal.get(Calendar.HOUR))); //$NON-NLS-1$
-		selenium.type("id=dateMinutes", //$NON-NLS-1$
-				Integer.toString(cal.get(Calendar.MINUTE)));
+		dayLinks.get(0).click();
 		WpHtmlUtils.waitUntilVisibleStateByElementId(selenium, driver,
 				"ui-datepicker-div", false, 10000); //$NON-NLS-1$
+		submitThenAssertDateFieldsStyle(true, false, selenium, driver);
+		selenium.type("id=dateHours", //$NON-NLS-1$
+				Integer.toString(fakeDate.get(Calendar.HOUR_OF_DAY)));
+		selenium.type("id=dateMinutes", //$NON-NLS-1$
+				Integer.toString(fakeDate.get(Calendar.MINUTE) + 1));
+		submitThenAssertDateFieldsStyle(false, false, selenium, driver);
+		final List<WebElement> checkCols = driver.findElements(
+				By.xpath("//div[@id='contestForm']/table/tbody/tr/th/input")); //$NON-NLS-1$
+		Assertions.assertEquals(Utils.FAKE_COMMENTS_NB + 1, checkCols.size());
+		int nbChecked = 0;
+		for (final WebElement column : checkCols) {
+			if (column.isSelected()) {
+				nbChecked++;
+			}
+		}
+		Assertions.assertEquals(Utils.FAKE_COMMENTS_NB, nbChecked);
+		launchContestThenAssertNbWinners(selenium, driver, 1);
+	}
+
+	private static void submitThenAssertDateFieldsStyle(
+			final boolean mustHaveError, final boolean errorOnDate,
+			final Selenium selenium, final WebDriver driver) {
 		selenium.click("id=dateSubmit"); //$NON-NLS-1$
-		Assertions.assertFalse(WpHtmlUtils
-				.isVisible("zwpcc_dateFilter_error_message", selenium, driver)); //$NON-NLS-1$
+		final boolean visible = WpHtmlUtils
+				.isVisible("zwpcc_dateFilter_error_message", selenium, driver); //$NON-NLS-1$
+		final String dateCssStyle = driver.findElement(By.id("datepicker")) //$NON-NLS-1$
+				.getAttribute("style"); //$NON-NLS-1$
+		final String hoursCssStyle = driver.findElement(By.id("dateHours")) //$NON-NLS-1$
+				.getAttribute("style"); //$NON-NLS-1$
+		final String minCssStyle = driver.findElement(By.id("dateMinutes")) //$NON-NLS-1$
+				.getAttribute("style"); //$NON-NLS-1$
+		if (mustHaveError) {
+			Assertions.assertTrue(visible);
+			if (errorOnDate) {
+				Assertions.assertTrue(dateCssStyle.contains(BORDER_ERROR));
+			} else {
+				Assertions.assertTrue(hoursCssStyle.contains(BORDER_ERROR));
+				Assertions.assertTrue(minCssStyle.contains(BORDER_ERROR));
+			}
+		} else {
+			Assertions.assertFalse(visible);
+			Assertions.assertFalse(dateCssStyle.contains(BORDER_ERROR));
+			Assertions.assertFalse(hoursCssStyle.contains(BORDER_ERROR));
+			Assertions.assertFalse(minCssStyle.contains(BORDER_ERROR));
+		}
 	}
 
 	/*
@@ -545,6 +585,8 @@ public class WPCommentContestPluginTest {
 		// test unitaire pour savoir si on peut packager
 		// Utils.packagePlugin(this.myPlugin);
 		// fail();
+		// TODO Lister les navigateurs testés avec des détails genre le numéro de version
+		// TODO Afficher le mot de passe en debug (avec un "-D")
 	}
 
 }
