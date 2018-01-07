@@ -38,6 +38,10 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlug
  */
 public class WPCommentContestPluginTest {
 
+	private static final String TEST_ON_BROWSER = "test on browser '%s'"; //$NON-NLS-1$
+	private static final String CLASS_ATTRIBUTE = "class"; //$NON-NLS-1$
+	private static final String CONTEST_LK_XPATH = "//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"; //$NON-NLS-1$
+	private static final String STATIC_METHOD = "static-method"; //$NON-NLS-1$
 	private static final String BORDER_ERROR = "border: 2px solid red;"; //$NON-NLS-1$
 	private static IWordPressPlugin wpRssPlg;
 	private static IWordPressPlugin fakerPlg;
@@ -83,8 +87,8 @@ public class WPCommentContestPluginTest {
 		Utils.addFakeComments(wpInfo);
 	}
 
-	@SuppressWarnings({ "static-method",
-			"PMD.JUnit4TestShouldUseTestAnnotation" })
+	@SuppressWarnings({ STATIC_METHOD,
+			"PMD.JUnit4TestShouldUseTestAnnotation" }) // NOPMD tcicognani: cannot create constant for PMD SuppressWarnings
 	/*
 	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
 	 * static
@@ -102,8 +106,7 @@ public class WPCommentContestPluginTest {
 		for (final WebDriver webDriver : allDrivers) {
 			final Executable exec = () -> initTestPluginInstallAndGlobalFeatures(
 					webDriver);
-			final String testName = String.format("test on browser '%s'", //$NON-NLS-1$
-					webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
 			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
 			dynamicTests.add(test);
 		}
@@ -147,29 +150,28 @@ public class WPCommentContestPluginTest {
 				.getText();
 		Assertions.assertEquals(Utils.FAKE_COMMENTS_NB + 1,
 				Integer.parseInt(commentsNb));
-		final String contestLinkTxt = driver.findElement(By.xpath(
-				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"))
-				.getText();
+		final String contestLinkTxt = driver
+				.findElement(By.xpath(CONTEST_LK_XPATH)).getText();
 		Assertions.assertEquals("Lancer le concours", contestLinkTxt);
 		WpHtmlUtils.expandSettingsScreenMenu(driver, selenium);
-		selenium.uncheck("id=orgZhyweb-wpCommentContest-hide");
+		selenium.uncheck("id=orgZhyweb-wpCommentContest-hide"); //$NON-NLS-1$
 		selenium.click("id=screen-options-apply"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-		final List<WebElement> contestColumnElts = driver.findElements(By.xpath(
-				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
+		final List<WebElement> contestColumnElts = driver
+				.findElements(By.xpath(CONTEST_LK_XPATH));
 		Assertions.assertTrue(contestColumnElts.isEmpty());
 		WpHtmlUtils.expandSettingsScreenMenu(driver, selenium);
-		selenium.check("id=orgZhyweb-wpCommentContest-hide");
-		final WebElement contestLink = driver.findElement(By.xpath(
-				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
+		selenium.check("id=orgZhyweb-wpCommentContest-hide"); //$NON-NLS-1$
+		final WebElement contestLink = driver
+				.findElement(By.xpath(CONTEST_LK_XPATH));
 		Assertions.assertEquals("Lancer le concours", contestLink.getText());
 		final String articleName = driver.findElement(By.xpath(
 				"//tr[@id='post-1']/td[@class='title column-title has-row-actions column-primary page-title']/strong/a")) //$NON-NLS-1$
 				.getText();
 		selenium.click("id=screen-options-apply"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-		final WebElement contestLink2 = driver.findElement(By.xpath(
-				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
+		final WebElement contestLink2 = driver
+				.findElement(By.xpath(CONTEST_LK_XPATH));
 		selenium.open(contestLink2.getAttribute("href")); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH2Tag(driver, "Comment Contest");
@@ -182,7 +184,7 @@ public class WPCommentContestPluginTest {
 		// Test if plugin link is a comment sub menu
 		WpHtmlUtils.expandAdminMenu(driver, selenium);
 		final WebElement plgCommentMenu = driver.findElement(By.xpath(
-				"//li[@id='menu-comments']/ul/li/a[@href='edit-comments.php?page=orgZhyweb-wpCommentContest']"));
+				"//li[@id='menu-comments']/ul/li/a[@href='edit-comments.php?page=orgZhyweb-wpCommentContest']")); //$NON-NLS-1$
 		final Actions action = new Actions(driver);
 		final WebElement element = driver.findElement(By.id("menu-comments")); //$NON-NLS-1$
 		action.moveToElement(element).build().perform();
@@ -193,7 +195,7 @@ public class WPCommentContestPluginTest {
 		// Check plugin page
 		final String homeURL = wpInfo.getTestServer().getHomeURL();
 		selenium.open(homeURL
-				+ "/wp-admin/edit-comments.php?page=orgZhyweb-wpCommentContest");
+				+ "/wp-admin/edit-comments.php?page=orgZhyweb-wpCommentContest"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH2Tag(driver, "Comment Contest");
 		internalTestReport();
@@ -203,7 +205,7 @@ public class WPCommentContestPluginTest {
 		// TODO Auto-generated method stub
 	}
 
-	@SuppressWarnings({ "static-method",
+	@SuppressWarnings({ STATIC_METHOD,
 			"PMD.JUnit4TestShouldUseTestAnnotation" })
 	/*
 	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
@@ -221,8 +223,7 @@ public class WPCommentContestPluginTest {
 		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
 		for (final WebDriver webDriver : allDrivers) {
 			final Executable exec = () -> initTestCommentsInTable(webDriver);
-			final String testName = String.format("test on browser '%s'", //$NON-NLS-1$
-					webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
 			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
 			dynamicTests.add(test);
 		}
@@ -278,13 +279,13 @@ public class WPCommentContestPluginTest {
 		final List<WebElement> actionSpans = driver.findElements(By.xpath(
 				"//tr[@id='comment-contest-1']/td[@class='comment column-comment']/div[@class='row-actions']/span")); //$NON-NLS-1$
 		Assertions.assertEquals(4, actionSpans.size());
-		final String span1 = actionSpans.get(0).getAttribute("class"); //$NON-NLS-1$
+		final String span1 = actionSpans.get(0).getAttribute(CLASS_ATTRIBUTE);
 		Assertions.assertEquals("delete", span1); //$NON-NLS-1$
-		final String span2 = actionSpans.get(1).getAttribute("class"); //$NON-NLS-1$
+		final String span2 = actionSpans.get(1).getAttribute(CLASS_ATTRIBUTE);
 		Assertions.assertEquals("restore", span2); //$NON-NLS-1$
-		final String span3 = actionSpans.get(2).getAttribute("class"); //$NON-NLS-1$
+		final String span3 = actionSpans.get(2).getAttribute(CLASS_ATTRIBUTE);
 		Assertions.assertEquals("cheat", span3); //$NON-NLS-1$
-		final String span4 = actionSpans.get(3).getAttribute("class"); //$NON-NLS-1$
+		final String span4 = actionSpans.get(3).getAttribute(CLASS_ATTRIBUTE);
 		Assertions.assertEquals("stopcheat", span4); //$NON-NLS-1$
 		// Check columns
 		driver.findElement(By.xpath(
@@ -294,7 +295,7 @@ public class WPCommentContestPluginTest {
 		Assertions.assertEquals(2, columns.size());
 	}
 
-	@SuppressWarnings({ "static-method",
+	@SuppressWarnings({ STATIC_METHOD,
 			"PMD.JUnit4TestShouldUseTestAnnotation" })
 	/*
 	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
@@ -313,8 +314,7 @@ public class WPCommentContestPluginTest {
 		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
 		for (final WebDriver webDriver : allDrivers) {
 			final Executable exec = () -> initTestJustDraw(webDriver);
-			final String testName = String.format("test on browser '%s'", //$NON-NLS-1$
-					webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
 			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
 			dynamicTests.add(test);
 		}
@@ -352,7 +352,7 @@ public class WPCommentContestPluginTest {
 			final Selenium selenium, final WebDriver driver,
 			final int nbWinners) {
 		driver.findElement(By.xpath(
-				"//form[@id='zwpcc_form']/input[@class='button action']"))
+				"//form[@id='zwpcc_form']/input[@class='button action']")) //$NON-NLS-1$
 				.click();
 		Assertions.assertTrue(selenium.isVisible("id=dialog-modal-winners")); //$NON-NLS-1$
 		final List<WebElement> winnerLines = driver.findElements(By.xpath(
@@ -366,7 +366,7 @@ public class WPCommentContestPluginTest {
 		Assertions.assertEquals(nbWinners, nbLinesVisible);
 	}
 
-	@SuppressWarnings({ "static-method",
+	@SuppressWarnings({ STATIC_METHOD,
 			"PMD.JUnit4TestShouldUseTestAnnotation" })
 	/*
 	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
@@ -385,8 +385,7 @@ public class WPCommentContestPluginTest {
 		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
 		for (final WebDriver webDriver : allDrivers) {
 			final Executable exec = () -> initTestDrawTwoComments(webDriver);
-			final String testName = String.format("test on browser '%s'", //$NON-NLS-1$
-					webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
 			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
 			dynamicTests.add(test);
 		}
@@ -413,7 +412,7 @@ public class WPCommentContestPluginTest {
 		launchContestThenAssertNbWinners(selenium, driver, 2);
 	}
 
-	@SuppressWarnings({ "static-method",
+	@SuppressWarnings({ STATIC_METHOD,
 			"PMD.JUnit4TestShouldUseTestAnnotation" })
 	/*
 	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
@@ -432,8 +431,7 @@ public class WPCommentContestPluginTest {
 		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
 		for (final WebDriver webDriver : allDrivers) {
 			final Executable exec = () -> initTestDateSelection(webDriver);
-			final String testName = String.format("test on browser '%s'", //$NON-NLS-1$
-					webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
 			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
 			dynamicTests.add(test);
 		}
@@ -565,8 +563,8 @@ public class WPCommentContestPluginTest {
 		final String homeURL = wpInfo.getTestServer().getHomeURL();
 		selenium.open(homeURL + "/wp-admin/edit.php"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-		final WebElement contestLink = driver.findElement(By.xpath(
-				"//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"));
+		final WebElement contestLink = driver
+				.findElement(By.xpath(CONTEST_LK_XPATH));
 		selenium.open(contestLink.getAttribute("href")); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		return selenium;
