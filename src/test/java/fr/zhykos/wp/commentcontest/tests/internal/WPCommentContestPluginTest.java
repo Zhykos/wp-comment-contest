@@ -547,15 +547,15 @@ public class WPCommentContestPluginTest {
 				Boolean.valueOf(visible));
 		final String dateCssStyle = driver.findElement(By.id("datepicker")) //$NON-NLS-1$
 				.getAttribute(STYLE_ATTRIBUTE);
-		final String hoursCssStyle = driver.findElement(By.id("dateHours")) //$NON-NLS-1$
-				.getAttribute(STYLE_ATTRIBUTE);
-		final String minCssStyle = driver.findElement(By.id("dateMinutes")) //$NON-NLS-1$
-				.getAttribute(STYLE_ATTRIBUTE);
 		Assertions.assertEquals(Boolean.valueOf(mustHaveError && errorOnDate),
 				Boolean.valueOf(dateCssStyle.contains(BORDER_ERROR)));
-		Assertions.assertEquals(Boolean.valueOf(mustHaveError && errorOnDate),
+		final String hoursCssStyle = driver.findElement(By.id("dateHours")) //$NON-NLS-1$
+				.getAttribute(STYLE_ATTRIBUTE);
+		Assertions.assertEquals(Boolean.valueOf(mustHaveError && !errorOnDate),
 				Boolean.valueOf(hoursCssStyle.contains(BORDER_ERROR)));
-		Assertions.assertEquals(Boolean.valueOf(mustHaveError && errorOnDate),
+		final String minCssStyle = driver.findElement(By.id("dateMinutes")) //$NON-NLS-1$
+				.getAttribute(STYLE_ATTRIBUTE);
+		Assertions.assertEquals(Boolean.valueOf(mustHaveError && !errorOnDate),
 				Boolean.valueOf(minCssStyle.contains(BORDER_ERROR)));
 	}
 
