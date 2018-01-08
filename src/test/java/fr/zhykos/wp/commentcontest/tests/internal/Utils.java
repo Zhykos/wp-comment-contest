@@ -81,8 +81,12 @@ final class Utils {
 		fakeDate.add(Calendar.DATE, -1);
 		modifyCommentDate(driver, selenium, homeURL, FAKE_COMMENTS_NB + 1,
 				fakeDate);
-		modifyCommentAuthor(driver, selenium, homeURL, 1, "Zhykos"); //$NON-NLS-1$
-		modifyCommentAuthor(driver, selenium, homeURL, 2, "Zhykos"); //$NON-NLS-1$
+		modifyCommentAuthor(driver, selenium, homeURL, 1, getZhykosName());
+		modifyCommentAuthor(driver, selenium, homeURL, 2, getZhykosName());
+	}
+
+	public static String getZhykosName() {
+		return "Zhykos"; //$NON-NLS-1$
 	}
 
 	public static Calendar getDateSecondJanuary2018Noon() {

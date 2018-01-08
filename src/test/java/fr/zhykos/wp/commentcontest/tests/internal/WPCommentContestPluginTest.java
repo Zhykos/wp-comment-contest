@@ -616,10 +616,22 @@ public class WPCommentContestPluginTest {
 		selenium.type(ID_ALIAS_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertAliasFieldStyle(false, selenium, driver);
 		uncheckAllTable(selenium);
+		selenium.type(ID_ALIAS_CONFIG, "0"); //$NON-NLS-1$
+		submitThenAssertAliasFieldStyle(false, selenium, driver);
+		assertCommentsTable(driver, 2);
+		uncheckAllTable(selenium);
+		selenium.type(ID_ALIAS_CONFIG, "2"); //$NON-NLS-1$
+		submitThenAssertAliasFieldStyle(false, selenium, driver);
+		assertCommentsTable(driver, 0);
+		uncheckAllTable(selenium);
 		selenium.type(ID_ALIAS_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertAliasFieldStyle(false, selenium, driver);
-		// TODO Ajouter des tests avec 0 et 2 puis vérifier le nombre de commentaires sélectionnés
 		assertCommentsTable(driver, 1);
+		Assertions.assertTrue(
+				driver.findElement(By.id("cb-select-2")).isSelected()); //$NON-NLS-1$
+		Assertions.assertEquals(Utils.getZhykosName(), driver.findElement(By
+				.xpath("//tr[@id='comment-contest-2']/td[@class='author column-author has-row-actions column-primary']/strong")) //$NON-NLS-1$
+				.getText());
 		launchContestThenAssertNbWinners(selenium, driver, 1);
 	}
 
