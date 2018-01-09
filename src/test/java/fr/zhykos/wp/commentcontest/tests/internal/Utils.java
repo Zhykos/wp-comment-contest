@@ -81,10 +81,29 @@ final class Utils {
 		fakeDate.add(Calendar.DATE, -1);
 		modifyCommentDate(driver, selenium, homeURL, FAKE_COMMENTS_NB + 1,
 				fakeDate);
-		modifyCommentAuthor(driver, selenium, homeURL, 1, getZhykosName());
-		modifyCommentAuthor(driver, selenium, homeURL, 2, getZhykosName());
-		modifyCommentEmail(driver, selenium, homeURL, 2, getZhykosEmail());
-		modifyCommentEmail(driver, selenium, homeURL, 3, getZhykosEmail());
+		modifyCommentAuthor(driver, selenium, homeURL, 1);
+		modifyCommentAuthor(driver, selenium, homeURL, 2);
+		modifyCommentEmail(driver, selenium, homeURL, 2);
+		modifyCommentEmail(driver, selenium, homeURL, 3);
+		modifyCommentIPAddress(3);
+		modifyCommentIPAddress(4);
+	}
+
+	private static void modifyCommentIPAddress(final int commentId)
+			throws UtilsException {
+		fr.zhykos.wp.commentcontest.tests.internal.utils.Utils.executeSQL(String
+				.format("UPDATE %scomments SET comment_author_IP = '%s' WHERE wp_comments.comment_ID = %d;", //$NON-NLS-1$
+						fr.zhykos.wp.commentcontest.tests.internal.utils.Utils.TABLE_PREFIX,
+						getZhykosIPAddress(), Integer.valueOf(commentId)));
+	}
+
+	@SuppressWarnings("PMD.AvoidUsingHardCodedIP")
+	/*
+	 * @SuppressWarnings("PMD.AvoidUsingHardCodedIP") tcicognani: it's a fake IP
+	 * Address PMD!
+	 */
+	public static String getZhykosIPAddress() {
+		return "123.234.198.0"; //$NON-NLS-1$
 	}
 
 	public static String getZhykosName() {
@@ -120,18 +139,18 @@ final class Utils {
 	}
 
 	private static void modifyCommentAuthor(final WebDriver driver,
-			final Selenium selenium, final String homeURL, final int commentId,
-			final String newName) {
+			final Selenium selenium, final String homeURL,
+			final int commentId) {
 		openCommentPage(driver, selenium, homeURL, commentId);
-		selenium.type("id=name", newName); //$NON-NLS-1$
+		selenium.type("id=name", getZhykosName()); //$NON-NLS-1$
 		saveCommentPage(driver, selenium);
 	}
 
 	private static void modifyCommentEmail(final WebDriver driver,
-			final Selenium selenium, final String homeURL, final int commentId,
-			final String newEmail) {
+			final Selenium selenium, final String homeURL,
+			final int commentId) {
 		openCommentPage(driver, selenium, homeURL, commentId);
-		selenium.type("id=email", newEmail); //$NON-NLS-1$
+		selenium.type("id=email", getZhykosEmail()); //$NON-NLS-1$
 		saveCommentPage(driver, selenium);
 	}
 

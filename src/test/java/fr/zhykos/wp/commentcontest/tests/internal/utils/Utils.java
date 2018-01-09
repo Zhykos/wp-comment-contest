@@ -21,7 +21,10 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.function.Consumer;
@@ -73,6 +76,8 @@ public final class Utils {
 					getLogin(), getPassword(), getBaseName());
 		}
 	}
+
+	public static final String TABLE_PREFIX = "wp_"; //$NON-NLS-1$
 
 	private static final Logger LOGGER = Logger
 			.getLogger(Utils.class.getName());
@@ -280,7 +285,7 @@ public final class Utils {
 			selenium.type("id=uname", databaseInfo.getLogin()); //$NON-NLS-1$
 			selenium.type("id=pwd", databaseInfo.getPassword()); //$NON-NLS-1$
 			selenium.type("id=dbhost", databaseInfo.getAddress()); //$NON-NLS-1$
-			selenium.type("id=prefix", "wp_"); //$NON-NLS-1$ //$NON-NLS-2$
+			selenium.type("id=prefix", TABLE_PREFIX); //$NON-NLS-1$
 			driver.findElement(By.xpath("//body//form//p[@class='step']/input")) //$NON-NLS-1$
 					.click();
 			selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
@@ -301,6 +306,7 @@ public final class Utils {
 			selenium.type("id=admin_email", "zhykos@gmail.com"); //$NON-NLS-1$
 			selenium.check("id=blog_public"); //$NON-NLS-1$
 			final String wpPassword = selenium.getValue("id=pass1-text"); //$NON-NLS-1$
+//			System.out.println("Utils.configureWordpress(" + wpPassword + ")"); // XXX Mettre uniquement en debug //$NON-NLS-1$ //$NON-NLS-2$
 			selenium.click("id=submit"); //$NON-NLS-1$
 			selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 			final List<WebElement> installMessages = driver
@@ -351,27 +357,39 @@ public final class Utils {
 
 	private static void cleanDatabase() throws UtilsException {
 		final IDatabase databaseInfo = getDatabaseInfo();
+		final String dropDatabase = String.format("DROP DATABASE IF EXISTS %s", //$NON-NLS-1$
+				databaseInfo.getBaseName());
+		final String createDatabase = String.format("CREATE DATABASE %s", //$NON-NLS-1$
+				databaseInfo.getBaseName());
+		final List<String> sqls = new ArrayList<>();
+		sqls.add(dropDatabase);
+		sqls.add(createDatabase);
+		executeSQL(sqls);
+	}
+
+	public static void executeSQL(final String sql) throws UtilsException {
+		executeSQL(Collections.singleton(sql));
+	}
+
+	public static void executeSQL(final Collection<String> sqls)
+			throws UtilsException {
+		final IDatabase databaseInfo = getDatabaseInfo();
 		try {
 			Class.forName(databaseInfo.getDriver());
 		} catch (final ClassNotFoundException e) {
 			throw new UtilsException(e);
 		}
 		final String url = String.format(
-				"jdbc:mysql://%s:%d/?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", //$NON-NLS-1$
+				"jdbc:mysql://%s:%d/%s?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", //$NON-NLS-1$
 				databaseInfo.getAddress(),
-				Integer.valueOf(databaseInfo.getPort()));
+				Integer.valueOf(databaseInfo.getPort()), databaseInfo.getBaseName());
 		try (final Connection connection = DriverManager.getConnection(url,
 				databaseInfo.getLogin(), databaseInfo.getPassword());
 				final Statement statement = connection.createStatement();) {
-			final String dropDatabase = String.format(
-					"DROP DATABASE IF EXISTS %s", //$NON-NLS-1$
-					databaseInfo.getBaseName());
-			LOGGER.info(dropDatabase);
-			statement.executeUpdate(dropDatabase);
-			final String createDatabase = String.format("CREATE DATABASE %s", //$NON-NLS-1$
-					databaseInfo.getBaseName());
-			LOGGER.info(createDatabase);
-			statement.executeUpdate(createDatabase);
+			for (final String sql : sqls) {
+				LOGGER.info(sql);
+				statement.executeUpdate(sql);
+			}
 		} catch (final SQLException e) {
 			throw new UtilsException(e);
 		}

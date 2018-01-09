@@ -40,10 +40,13 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlug
 public class WPCommentContestPluginTest {
 
 	private static final String STYLE_ATTRIBUTE = "style"; //$NON-NLS-1$
+	private static final String ID_PREFIX = "id="; //$NON-NLS-1$
 	private static final String ALIAS_CONFIG = "aliasConfig"; //$NON-NLS-1$
-	private static final String ID_ALIAS_CONFIG = "id=" + ALIAS_CONFIG; //$NON-NLS-1$
+	private static final String ID_ALIAS_CONFIG = ID_PREFIX + ALIAS_CONFIG;
 	private static final String EMAIL_CONFIG = "emailConfig"; //$NON-NLS-1$
-	private static final String ID_EMAIL_CONFIG = "id=" + EMAIL_CONFIG; //$NON-NLS-1$
+	private static final String ID_EMAIL_CONFIG = ID_PREFIX + EMAIL_CONFIG;
+	private static final String IPADDRESS_CONFIG = "ipConfig"; //$NON-NLS-1$
+	private static final String ID_IPADRS_CONFIG = ID_PREFIX + IPADDRESS_CONFIG;
 	private static final String TEST_ON_BROWSER = "test on browser '%s'"; //$NON-NLS-1$
 	private static final String CLASS_ATTRIBUTE = "class"; //$NON-NLS-1$
 	private static final String CONTEST_LK_XPATH = "//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"; //$NON-NLS-1$
@@ -561,7 +564,7 @@ public class WPCommentContestPluginTest {
 				Boolean.valueOf(minCssStyle.contains(BORDER_ERROR)));
 	}
 
-	@SuppressWarnings({ "static-method",
+	@SuppressWarnings({ STATIC_METHOD,
 			"PMD.JUnit4TestShouldUseTestAnnotation" })
 	/*
 	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
@@ -667,7 +670,7 @@ public class WPCommentContestPluginTest {
 			final Selenium selenium, final WebDriver driver,
 			final String buttonId, final String errorId, final String fieldId) {
 		scrollToY(driver, 200);
-		selenium.click("id=" + buttonId); //$NON-NLS-1$
+		selenium.click(ID_PREFIX + buttonId);
 		final boolean visible = WpHtmlUtils.isVisible(errorId, selenium,
 				driver);
 		Assertions.assertEquals(Boolean.valueOf(mustHaveError),
@@ -678,7 +681,7 @@ public class WPCommentContestPluginTest {
 				Boolean.valueOf(cssStyle.contains(BORDER_ERROR)));
 	}
 
-	@SuppressWarnings({ "static-method",
+	@SuppressWarnings({ STATIC_METHOD,
 			"PMD.JUnit4TestShouldUseTestAnnotation" })
 	/*
 	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
@@ -760,6 +763,91 @@ public class WPCommentContestPluginTest {
 		submitThenAssertFieldStyle(mustHaveError, selenium, driver,
 				"emailAddressFilter", "zwpcc_emailFilter_error_message", //$NON-NLS-1$ //$NON-NLS-2$
 				EMAIL_CONFIG);
+	}
+
+	@SuppressWarnings({ STATIC_METHOD,
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
+	/*
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
+	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les
+	// navigateurs
+	// XXX Rajouter timeout
+	@TestFactory
+	public Collection<DynamicTest> testIPAddressLimitation() {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> initTestIPAddressLimitation(
+					webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
+		}
+		return dynamicTests;
+	}
+
+	private static void initTestIPAddressLimitation(final WebDriver driver) {
+		try {
+			if (!(driver instanceof ErrorDriver)) {
+				assertTestIPAddressLimitation(driver);
+			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void assertTestIPAddressLimitation(final WebDriver driver)
+			throws UtilsException {
+		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+				driver);
+		expandFilters(driver, selenium);
+		Assertions.assertFalse(
+				selenium.isVisible("id=zwpcc_ipFilter_error_message")); //$NON-NLS-1$
+		submitThenAssertIpAddressFieldStyle(false, selenium, driver);
+		selenium.type(ID_IPADRS_CONFIG, ""); //$NON-NLS-1$
+		submitThenAssertIpAddressFieldStyle(true, selenium, driver);
+		selenium.type(ID_IPADRS_CONFIG, "a"); //$NON-NLS-1$
+		submitThenAssertIpAddressFieldStyle(true, selenium, driver);
+		selenium.type(ID_IPADRS_CONFIG, "-1"); //$NON-NLS-1$
+		submitThenAssertIpAddressFieldStyle(true, selenium, driver);
+		selenium.type(ID_IPADRS_CONFIG, ".1"); //$NON-NLS-1$
+		submitThenAssertIpAddressFieldStyle(true, selenium, driver);
+		selenium.type(ID_IPADRS_CONFIG, "1"); //$NON-NLS-1$
+		submitThenAssertIpAddressFieldStyle(false, selenium, driver);
+		uncheckAllTable(selenium);
+		selenium.type(ID_IPADRS_CONFIG, "0"); //$NON-NLS-1$
+		submitThenAssertIpAddressFieldStyle(false, selenium, driver);
+		assertCommentsTable(driver, 2);
+		uncheckAllTable(selenium);
+		selenium.type(ID_IPADRS_CONFIG, "2"); //$NON-NLS-1$
+		submitThenAssertIpAddressFieldStyle(false, selenium, driver);
+		assertCommentsTable(driver, 0);
+		uncheckAllTable(selenium);
+		selenium.type(ID_IPADRS_CONFIG, "1"); //$NON-NLS-1$
+		submitThenAssertIpAddressFieldStyle(false, selenium, driver);
+		assertCommentsTable(driver, 1);
+		Assertions.assertTrue(
+				driver.findElement(By.id("cb-select-4")).isSelected()); //$NON-NLS-1$
+		Assertions.assertTrue(driver.findElement(By.xpath(
+				"//tr[@id='comment-contest-4']/td[@class='author column-author has-row-actions column-primary']")) //$NON-NLS-1$
+				.getText().contains(Utils.getZhykosIPAddress()));
+		launchContestThenAssertNbWinners(selenium, driver, 1);
+	}
+
+	private static void submitThenAssertIpAddressFieldStyle(
+			final boolean mustHaveError, final Selenium selenium,
+			final WebDriver driver) {
+		submitThenAssertFieldStyle(mustHaveError, selenium, driver,
+				"ipAddressFilter", "zwpcc_ipFilter_error_message", //$NON-NLS-1$ //$NON-NLS-2$
+				IPADDRESS_CONFIG);
 	}
 
 	/*
