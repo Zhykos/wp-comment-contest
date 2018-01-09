@@ -42,6 +42,8 @@ public class WPCommentContestPluginTest {
 	private static final String STYLE_ATTRIBUTE = "style"; //$NON-NLS-1$
 	private static final String ALIAS_CONFIG = "aliasConfig"; //$NON-NLS-1$
 	private static final String ID_ALIAS_CONFIG = "id=" + ALIAS_CONFIG; //$NON-NLS-1$
+	private static final String EMAIL_CONFIG = "emailConfig"; //$NON-NLS-1$
+	private static final String ID_EMAIL_CONFIG = "id=" + EMAIL_CONFIG; //$NON-NLS-1$
 	private static final String TEST_ON_BROWSER = "test on browser '%s'"; //$NON-NLS-1$
 	private static final String CLASS_ATTRIBUTE = "class"; //$NON-NLS-1$
 	private static final String CONTEST_LK_XPATH = "//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"; //$NON-NLS-1$
@@ -656,16 +658,108 @@ public class WPCommentContestPluginTest {
 	private static void submitThenAssertAliasFieldStyle(
 			final boolean mustHaveError, final Selenium selenium,
 			final WebDriver driver) {
+		submitThenAssertFieldStyle(mustHaveError, selenium, driver,
+				"aliasAddressFilter", "zwpcc_aliasFilter_error_message", //$NON-NLS-1$ //$NON-NLS-2$
+				ALIAS_CONFIG);
+	}
+
+	private static void submitThenAssertFieldStyle(final boolean mustHaveError,
+			final Selenium selenium, final WebDriver driver,
+			final String buttonId, final String errorId, final String fieldId) {
 		scrollToY(driver, 200);
-		selenium.click("id=aliasAddressFilter"); //$NON-NLS-1$
-		final boolean visible = WpHtmlUtils
-				.isVisible("zwpcc_aliasFilter_error_message", selenium, driver); //$NON-NLS-1$
+		selenium.click("id=" + buttonId); //$NON-NLS-1$
+		final boolean visible = WpHtmlUtils.isVisible(errorId, selenium,
+				driver);
 		Assertions.assertEquals(Boolean.valueOf(mustHaveError),
 				Boolean.valueOf(visible));
-		final String aliasCssStyle = driver.findElement(By.id(ALIAS_CONFIG))
+		final String cssStyle = driver.findElement(By.id(fieldId))
 				.getAttribute(STYLE_ATTRIBUTE);
 		Assertions.assertEquals(Boolean.valueOf(mustHaveError),
-				Boolean.valueOf(aliasCssStyle.contains(BORDER_ERROR)));
+				Boolean.valueOf(cssStyle.contains(BORDER_ERROR)));
+	}
+
+	@SuppressWarnings({ "static-method",
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
+	/*
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
+	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les
+	// navigateurs
+	// XXX Rajouter timeout
+	@TestFactory
+	public Collection<DynamicTest> testEmailLimitation() {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> initTestEmailLimitation(webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
+		}
+		return dynamicTests;
+	}
+
+	private static void initTestEmailLimitation(final WebDriver driver) {
+		try {
+			if (!(driver instanceof ErrorDriver)) {
+				assertTestEmailLimitation(driver);
+			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void assertTestEmailLimitation(final WebDriver driver)
+			throws UtilsException {
+		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+				driver);
+		expandFilters(driver, selenium);
+		Assertions.assertFalse(
+				selenium.isVisible("id=zwpcc_emailFilter_error_message")); //$NON-NLS-1$
+		submitThenAssertEmailFieldStyle(false, selenium, driver);
+		selenium.type(ID_EMAIL_CONFIG, ""); //$NON-NLS-1$
+		submitThenAssertEmailFieldStyle(true, selenium, driver);
+		selenium.type(ID_EMAIL_CONFIG, "a"); //$NON-NLS-1$
+		submitThenAssertEmailFieldStyle(true, selenium, driver);
+		selenium.type(ID_EMAIL_CONFIG, "-1"); //$NON-NLS-1$
+		submitThenAssertEmailFieldStyle(true, selenium, driver);
+		selenium.type(ID_EMAIL_CONFIG, ".1"); //$NON-NLS-1$
+		submitThenAssertEmailFieldStyle(true, selenium, driver);
+		selenium.type(ID_EMAIL_CONFIG, "1"); //$NON-NLS-1$
+		submitThenAssertEmailFieldStyle(false, selenium, driver);
+		uncheckAllTable(selenium);
+		selenium.type(ID_EMAIL_CONFIG, "0"); //$NON-NLS-1$
+		submitThenAssertEmailFieldStyle(false, selenium, driver);
+		assertCommentsTable(driver, 2);
+		uncheckAllTable(selenium);
+		selenium.type(ID_EMAIL_CONFIG, "2"); //$NON-NLS-1$
+		submitThenAssertEmailFieldStyle(false, selenium, driver);
+		assertCommentsTable(driver, 0);
+		uncheckAllTable(selenium);
+		selenium.type(ID_EMAIL_CONFIG, "1"); //$NON-NLS-1$
+		submitThenAssertEmailFieldStyle(false, selenium, driver);
+		assertCommentsTable(driver, 1);
+		Assertions.assertTrue(
+				driver.findElement(By.id("cb-select-3")).isSelected()); //$NON-NLS-1$
+		Assertions.assertTrue(driver.findElement(By.xpath(
+				"//tr[@id='comment-contest-3']/td[@class='author column-author has-row-actions column-primary']")) //$NON-NLS-1$
+				.getText().contains(Utils.getZhykosEmail()));
+		launchContestThenAssertNbWinners(selenium, driver, 1);
+	}
+
+	private static void submitThenAssertEmailFieldStyle(
+			final boolean mustHaveError, final Selenium selenium,
+			final WebDriver driver) {
+		submitThenAssertFieldStyle(mustHaveError, selenium, driver,
+				"emailAddressFilter", "zwpcc_emailFilter_error_message", //$NON-NLS-1$ //$NON-NLS-2$
+				EMAIL_CONFIG);
 	}
 
 	/*

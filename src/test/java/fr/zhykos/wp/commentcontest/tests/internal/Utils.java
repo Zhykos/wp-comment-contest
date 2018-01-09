@@ -83,10 +83,16 @@ final class Utils {
 				fakeDate);
 		modifyCommentAuthor(driver, selenium, homeURL, 1, getZhykosName());
 		modifyCommentAuthor(driver, selenium, homeURL, 2, getZhykosName());
+		modifyCommentEmail(driver, selenium, homeURL, 2, getZhykosEmail());
+		modifyCommentEmail(driver, selenium, homeURL, 3, getZhykosEmail());
 	}
 
 	public static String getZhykosName() {
 		return "Zhykos"; //$NON-NLS-1$
+	}
+
+	public static String getZhykosEmail() {
+		return "zhykos@gmail.com"; //$NON-NLS-1$
 	}
 
 	public static Calendar getDateSecondJanuary2018Noon() {
@@ -118,6 +124,14 @@ final class Utils {
 			final String newName) {
 		openCommentPage(driver, selenium, homeURL, commentId);
 		selenium.type("id=name", newName); //$NON-NLS-1$
+		saveCommentPage(driver, selenium);
+	}
+
+	private static void modifyCommentEmail(final WebDriver driver,
+			final Selenium selenium, final String homeURL, final int commentId,
+			final String newEmail) {
+		openCommentPage(driver, selenium, homeURL, commentId);
+		selenium.type("id=email", newEmail); //$NON-NLS-1$
 		saveCommentPage(driver, selenium);
 	}
 
