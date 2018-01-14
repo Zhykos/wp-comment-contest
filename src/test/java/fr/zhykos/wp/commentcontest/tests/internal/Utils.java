@@ -87,6 +87,10 @@ final class Utils {
 		modifyCommentEmail(driver, selenium, homeURL, 3);
 		modifyCommentIPAddress(3);
 		modifyCommentIPAddress(4);
+		modifyCommentText(driver, selenium, homeURL, 4,
+				"coucou texte commentaire4"); //$NON-NLS-1$
+		modifyCommentText(driver, selenium, homeURL, 5,
+				"coucou commentaire5 texte salut"); //$NON-NLS-1$
 	}
 
 	private static void modifyCommentIPAddress(final int commentId)
@@ -151,6 +155,14 @@ final class Utils {
 			final int commentId) {
 		openCommentPage(driver, selenium, homeURL, commentId);
 		selenium.type("id=email", getZhykosEmail()); //$NON-NLS-1$
+		saveCommentPage(driver, selenium);
+	}
+
+	private static void modifyCommentText(final WebDriver driver,
+			final Selenium selenium, final String homeURL, final int commentId,
+			final String text) {
+		openCommentPage(driver, selenium, homeURL, commentId);
+		selenium.type("id=content", text); //$NON-NLS-1$
 		saveCommentPage(driver, selenium);
 	}
 

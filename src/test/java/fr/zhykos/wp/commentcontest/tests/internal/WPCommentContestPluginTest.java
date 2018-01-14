@@ -620,15 +620,15 @@ public class WPCommentContestPluginTest {
 		submitThenAssertAliasFieldStyle(true, selenium, driver);
 		selenium.type(ID_ALIAS_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertAliasFieldStyle(false, selenium, driver);
-		uncheckAllTable(selenium);
+		uncheckAllTable(selenium, driver);
 		selenium.type(ID_ALIAS_CONFIG, "0"); //$NON-NLS-1$
 		submitThenAssertAliasFieldStyle(false, selenium, driver);
 		assertCommentsTable(driver, 2);
-		uncheckAllTable(selenium);
+		uncheckAllTable(selenium, driver);
 		selenium.type(ID_ALIAS_CONFIG, "2"); //$NON-NLS-1$
 		submitThenAssertAliasFieldStyle(false, selenium, driver);
 		assertCommentsTable(driver, 0);
-		uncheckAllTable(selenium);
+		uncheckAllTable(selenium, driver);
 		selenium.type(ID_ALIAS_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertAliasFieldStyle(false, selenium, driver);
 		assertCommentsTable(driver, 1);
@@ -640,8 +640,10 @@ public class WPCommentContestPluginTest {
 		launchContestThenAssertNbWinners(selenium, driver, 1);
 	}
 
-	private static void uncheckAllTable(final Selenium selenium)
+	private static void uncheckAllTable(final Selenium selenium,
+			final WebDriver driver)
 			throws UtilsException {
+		scrollToY(driver, 600);
 		selenium.click("id=cb-select-all-1"); //$NON-NLS-1$
 		try {
 			Thread.sleep(1000);
@@ -737,15 +739,15 @@ public class WPCommentContestPluginTest {
 		submitThenAssertEmailFieldStyle(true, selenium, driver);
 		selenium.type(ID_EMAIL_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertEmailFieldStyle(false, selenium, driver);
-		uncheckAllTable(selenium);
+		uncheckAllTable(selenium, driver);
 		selenium.type(ID_EMAIL_CONFIG, "0"); //$NON-NLS-1$
 		submitThenAssertEmailFieldStyle(false, selenium, driver);
 		assertCommentsTable(driver, 2);
-		uncheckAllTable(selenium);
+		uncheckAllTable(selenium, driver);
 		selenium.type(ID_EMAIL_CONFIG, "2"); //$NON-NLS-1$
 		submitThenAssertEmailFieldStyle(false, selenium, driver);
 		assertCommentsTable(driver, 0);
-		uncheckAllTable(selenium);
+		uncheckAllTable(selenium, driver);
 		selenium.type(ID_EMAIL_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertEmailFieldStyle(false, selenium, driver);
 		assertCommentsTable(driver, 1);
@@ -822,15 +824,15 @@ public class WPCommentContestPluginTest {
 		submitThenAssertIpAddressFieldStyle(true, selenium, driver);
 		selenium.type(ID_IPADRS_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertIpAddressFieldStyle(false, selenium, driver);
-		uncheckAllTable(selenium);
+		uncheckAllTable(selenium, driver);
 		selenium.type(ID_IPADRS_CONFIG, "0"); //$NON-NLS-1$
 		submitThenAssertIpAddressFieldStyle(false, selenium, driver);
 		assertCommentsTable(driver, 2);
-		uncheckAllTable(selenium);
+		uncheckAllTable(selenium, driver);
 		selenium.type(ID_IPADRS_CONFIG, "2"); //$NON-NLS-1$
 		submitThenAssertIpAddressFieldStyle(false, selenium, driver);
 		assertCommentsTable(driver, 0);
-		uncheckAllTable(selenium);
+		uncheckAllTable(selenium, driver);
 		selenium.type(ID_IPADRS_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertIpAddressFieldStyle(false, selenium, driver);
 		assertCommentsTable(driver, 1);
@@ -848,6 +850,105 @@ public class WPCommentContestPluginTest {
 		submitThenAssertFieldStyle(mustHaveError, selenium, driver,
 				"ipAddressFilter", "zwpcc_ipFilter_error_message", //$NON-NLS-1$ //$NON-NLS-2$
 				IPADDRESS_CONFIG);
+	}
+
+	@SuppressWarnings({ STATIC_METHOD,
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
+	/*
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
+	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les
+	// navigateurs
+	// XXX Rajouter timeout
+	@TestFactory
+	public Collection<DynamicTest> testWords() {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> initTestWords(webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
+		}
+		return dynamicTests;
+	}
+
+	private static void initTestWords(final WebDriver driver) {
+		try {
+			if (!(driver instanceof ErrorDriver)) {
+				assertTestWords(driver);
+			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void assertTestWords(final WebDriver driver)
+			throws UtilsException {
+		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+				driver);
+		expandFilters(driver, selenium);
+		submitThenAssertCommentTextOneWord(selenium, driver, "", 0); //$NON-NLS-1$
+		submitThenAssertCommentTextOneWord(selenium, driver, "zhykos", //$NON-NLS-1$
+				Utils.FAKE_COMMENTS_NB + 1);
+		submitThenAssertCommentTextOneWord(selenium, driver, "coucou", 4); //$NON-NLS-1$
+		submitThenAssertCommentTextOneWord(selenium, driver, "commentaire", 3); //$NON-NLS-1$
+		submitThenAssertCommentTextOneWord(selenium, driver, "commentaire4", 5); //$NON-NLS-1$
+		submitThenAssertCommentTextOneWord(selenium, driver, " commentaire4 ", //$NON-NLS-1$
+				5);
+		submitThenAssertCommentTextOneWord(selenium, driver, "commentaire5", 5); //$NON-NLS-1$
+		submitThenAssertCommentTextOneWord(selenium, driver, "commen", 3); //$NON-NLS-1$
+		submitThenAssertCommentTextAllWords(selenium, driver, "coucou, texte", //$NON-NLS-1$
+				4);
+		submitThenAssertCommentTextAllWords(selenium, driver, "coucou,texte", //$NON-NLS-1$
+				4);
+		submitThenAssertCommentTextAllWords(selenium, driver, "coucou , texte", //$NON-NLS-1$
+				4);
+		submitThenAssertCommentTextAllWords(selenium, driver, "coucou ,texte", //$NON-NLS-1$
+				4);
+		submitThenAssertCommentTextAllWords(selenium, driver, "coucou ,texte,", //$NON-NLS-1$
+				4);
+		submitThenAssertCommentTextAllWords(selenium, driver, ",coucou ,texte", //$NON-NLS-1$
+				4);
+		submitThenAssertCommentTextAllWords(selenium, driver, ",coucou,texte,", //$NON-NLS-1$
+				4);
+		submitThenAssertCommentTextOneWord(selenium, driver, "coucou, texte", //$NON-NLS-1$
+				4);
+		submitThenAssertCommentTextOneWord(selenium, driver,
+				"commentaire4, commentaire5", 4); //$NON-NLS-1$
+		submitThenAssertCommentTextOneWord(selenium, driver, "zhykos, salut", //$NON-NLS-1$
+				5);
+	}
+
+	private static void submitThenAssertCommentTextOneWord(
+			final Selenium selenium, final WebDriver driver, final String words,
+			final int nbResult) throws UtilsException {
+		submitThenAssertCommentText(selenium, driver, "wordsFilter", words, //$NON-NLS-1$
+				nbResult);
+	}
+
+	private static void submitThenAssertCommentTextAllWords(
+			final Selenium selenium, final WebDriver driver, final String words,
+			final int nbResult) throws UtilsException {
+		submitThenAssertCommentText(selenium, driver, "allWordsFilter", words, //$NON-NLS-1$
+				nbResult);
+	}
+
+	private static void submitThenAssertCommentText(final Selenium selenium,
+			final WebDriver driver, final String buttonId, final String words,
+			final int nbResult) throws UtilsException {
+		scrollToY(driver, 400);
+		selenium.type(ID_PREFIX + "words", words); //$NON-NLS-1$
+		selenium.click(ID_PREFIX + buttonId);
+		assertCommentsTable(driver, nbResult);
+		uncheckAllTable(selenium, driver);
 	}
 
 	/*
