@@ -305,8 +305,8 @@ public final class Utils {
 			selenium.type("id=user_login", wpLogin); //$NON-NLS-1$
 			selenium.type("id=admin_email", "zhykos@gmail.com"); //$NON-NLS-1$
 			selenium.check("id=blog_public"); //$NON-NLS-1$
+			// TODO Proposer un "-D" pour spécifier le mot de passe
 			final String wpPassword = selenium.getValue("id=pass1-text"); //$NON-NLS-1$
-//			System.out.println("Utils.configureWordpress(" + wpPassword + ")"); // XXX Mettre uniquement en debug //$NON-NLS-1$ //$NON-NLS-2$
 			selenium.click("id=submit"); //$NON-NLS-1$
 			selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 			final List<WebElement> installMessages = driver
