@@ -1035,6 +1035,7 @@ public class WPCommentContestPluginTest {
 				"timeBetweenFilterName"); //$NON-NLS-1$
 		selenium.type(ID_TMEBTW_CONFIG, "1441"); //$NON-NLS-1$
 		selenium.check("id=timeBetweenFilterName"); //$NON-NLS-1$
+		selenium.check("id=timeBetweenFilterName"); //$NON-NLS-1$ A second check for fu***** Edge
 		submitThenAssertTimeBetweenFieldStyle(false, selenium, driver);
 		assertCommentsTable(driver, 1);
 		Assertions.assertTrue(selenium.isChecked("id=cb-select-2")); //$NON-NLS-1$
