@@ -81,6 +81,8 @@ final class Utils {
 		fakeDate.add(Calendar.DATE, -1);
 		modifyCommentDate(driver, selenium, homeURL, FAKE_COMMENTS_NB + 1,
 				fakeDate);
+		fakeDate.add(Calendar.DATE, 2);
+		modifyCommentDate(driver, selenium, homeURL, 1, fakeDate);
 		modifyCommentAuthor(driver, selenium, homeURL, 1);
 		modifyCommentAuthor(driver, selenium, homeURL, 2);
 		modifyCommentEmail(driver, selenium, homeURL, 2);
