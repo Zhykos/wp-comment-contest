@@ -49,6 +49,8 @@ public class WPCommentContestPluginTest {
 	private static final String ID_IPADRS_CONFIG = ID_PREFIX + IPADDRESS_CONFIG;
 	private static final String TIMEBTWN_CONFIG = "timeBetween"; //$NON-NLS-1$
 	private static final String ID_TMEBTW_CONFIG = ID_PREFIX + TIMEBTWN_CONFIG;
+	private static final String TMEBTW_FLNAME = "timeBetweenFilterName"; //$NON-NLS-1$
+	private static final String ID_TMEBTW_FLNAME = ID_PREFIX + TMEBTW_FLNAME;
 	private static final String TEST_ON_BROWSER = "test on browser '%s'"; //$NON-NLS-1$
 	private static final String CLASS_ATTRIBUTE = "class"; //$NON-NLS-1$
 	private static final String CONTEST_LK_XPATH = "//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"; //$NON-NLS-1$
@@ -967,11 +969,11 @@ public class WPCommentContestPluginTest {
 	// navigateurs
 	// XXX Rajouter timeout
 	@TestFactory
-	public Collection<DynamicTest> testZZZ() {
+	public Collection<DynamicTest> testTimeBetween() {
 		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
 		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
 		for (final WebDriver webDriver : allDrivers) {
-			final Executable exec = () -> initTestZZZ(webDriver);
+			final Executable exec = () -> initTestTimeBetween(webDriver);
 			final String testName = String.format(TEST_ON_BROWSER, webDriver);
 			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
 			dynamicTests.add(test);
@@ -979,10 +981,10 @@ public class WPCommentContestPluginTest {
 		return dynamicTests;
 	}
 
-	private static void initTestZZZ(final WebDriver driver) {
+	private static void initTestTimeBetween(final WebDriver driver) {
 		try {
 			if (!(driver instanceof ErrorDriver)) {
-				assertTestZZZ(driver);
+				assertTestTimeBetween(driver);
 			}
 		} catch (final UtilsException e) {
 			Assertions.fail(e);
@@ -991,7 +993,7 @@ public class WPCommentContestPluginTest {
 		}
 	}
 
-	private static void assertTestZZZ(final WebDriver driver)
+	private static void assertTestTimeBetween(final WebDriver driver)
 			throws UtilsException {
 		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
 				driver);
@@ -1009,7 +1011,7 @@ public class WPCommentContestPluginTest {
 		submitThenAssertTimeBetweenFieldStyle(true, selenium, driver);
 		selenium.type(ID_TMEBTW_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertTimeBetweenFieldStyle(false, selenium, driver);
-		selenium.uncheck("id=timeBetweenFilterName"); //$NON-NLS-1$
+		selenium.uncheck(ID_TMEBTW_FLNAME);
 		selenium.uncheck("id=timeBetweenFilterEmail"); //$NON-NLS-1$
 		selenium.uncheck("id=timeBetweenFilterIP"); //$NON-NLS-1$
 		selenium.click(ID_PREFIX + "timeBetweenFilter"); //$NON-NLS-1$
@@ -1017,13 +1019,12 @@ public class WPCommentContestPluginTest {
 				"zwpcc_timeBetweenFilter_error_message", selenium, driver); //$NON-NLS-1$
 		Assertions.assertTrue(visible);
 		uncheckAllTable(selenium, driver);
-		submitThenAssertTimeBetweenField(selenium, driver, 0,
-				"timeBetweenFilterName"); //$NON-NLS-1$
+		submitThenAssertTimeBetweenField(selenium, driver, 0, TMEBTW_FLNAME);
 		submitThenAssertTimeBetweenField(selenium, driver, 1,
 				"timeBetweenFilterEmail"); //$NON-NLS-1$
 		submitThenAssertTimeBetweenField(selenium, driver, 1,
 				"timeBetweenFilterIP"); //$NON-NLS-1$
-		selenium.check("id=timeBetweenFilterName"); //$NON-NLS-1$
+		selenium.check(ID_TMEBTW_FLNAME);
 		selenium.check("id=timeBetweenFilterEmail"); //$NON-NLS-1$
 		selenium.check("id=timeBetweenFilterIP"); //$NON-NLS-1$
 		assertCommentsTable(driver, 0);
@@ -1031,11 +1032,10 @@ public class WPCommentContestPluginTest {
 		selenium.uncheck("id=timeBetweenFilterEmail"); //$NON-NLS-1$
 		selenium.uncheck("id=timeBetweenFilterIP"); //$NON-NLS-1$
 		selenium.type(ID_TMEBTW_CONFIG, "1440"); //$NON-NLS-1$
-		submitThenAssertTimeBetweenField(selenium, driver, 0,
-				"timeBetweenFilterName"); //$NON-NLS-1$
+		submitThenAssertTimeBetweenField(selenium, driver, 0, TMEBTW_FLNAME);
 		selenium.type(ID_TMEBTW_CONFIG, "1441"); //$NON-NLS-1$
-		selenium.check("id=timeBetweenFilterName"); //$NON-NLS-1$
-		selenium.check("id=timeBetweenFilterName"); //$NON-NLS-1$ A second check for fu***** Edge
+		selenium.check(ID_TMEBTW_FLNAME);
+		selenium.check(ID_TMEBTW_FLNAME); // A second check for fu***** Edge
 		submitThenAssertTimeBetweenFieldStyle(false, selenium, driver);
 		assertCommentsTable(driver, 1);
 		Assertions.assertTrue(selenium.isChecked("id=cb-select-2")); //$NON-NLS-1$
