@@ -256,12 +256,12 @@ jQuery(document).ready(function() {
             var useIP = jQuery('#timeBetweenFilterIP').is(':checked');
             
             if (useName || useEmail || useIP) {
-                var diffTime = inputValue * 60; // Difference time in seconds
                 checkInputsOfWrongComments(function(line1, line2) {
                     var time1 = line1.find('.zhyweb_comment_contest_timestamp').text();
                     var time2 = line2.find('.zhyweb_comment_contest_timestamp').text();
-                    var testTime = Math.abs(time1 - time2) - diffTime;
-                    return testTime <= 0;
+                    var diff = (new Date(time1 * 1000).getTime() - new Date(time2 * 1000).getTime()) / 1000 / 60;
+                    var testTime = Math.abs(Math.round(diff));
+                    return testTime < inputValue;
                 }, useName, useEmail, useIP, false, 0);
             } else {
                 jQuery('#zwpcc_timeBetweenFilter_error_message').show();
