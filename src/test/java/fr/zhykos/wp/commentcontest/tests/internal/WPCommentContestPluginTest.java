@@ -4,8 +4,10 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -542,7 +544,7 @@ public class WPCommentContestPluginTest {
 
 	public static void expandFilters(final WebDriver driver,
 			final Selenium selenium) {
-		WpHtmlUtils.elementVisibilityBlock(driver, "filters"); //$NON-NLS-1$
+		WpHtmlUtils.setDisplayBlockById(driver, "filters"); //$NON-NLS-1$
 		Assertions.assertTrue(selenium.isVisible("id=filters")); //$NON-NLS-1$
 	}
 
@@ -648,6 +650,11 @@ public class WPCommentContestPluginTest {
 			final WebDriver driver)
 			throws UtilsException {
 		scrollToY(driver, 600);
+		uncheckAllTable(selenium);
+	}
+
+	private static void uncheckAllTable(final Selenium selenium)
+			throws UtilsException {
 		selenium.click("id=cb-select-all-1"); //$NON-NLS-1$
 		try {
 			Thread.sleep(1000);
@@ -1059,6 +1066,84 @@ public class WPCommentContestPluginTest {
 				TIMEBTWN_CONFIG);
 	}
 
+	@SuppressWarnings({ STATIC_METHOD,
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
+	/*
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
+	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les
+	// navigateurs
+	// XXX Rajouter timeout
+	@TestFactory
+	public Collection<DynamicTest> testtUserRoles() {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> initTesttUserRoles(webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
+		}
+		return dynamicTests;
+	}
+
+	private static void initTesttUserRoles(final WebDriver driver) {
+		try {
+			if (!(driver instanceof ErrorDriver)) {
+				assertTestUserRoles(driver);
+			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void assertTestUserRoles(final WebDriver driver)
+			throws UtilsException {
+		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+				driver);
+		final List<WebElement> allAliasesElt = driver.findElements(By.xpath(
+				"//tbody[@id='the-list-contest']//span[@class='zhyweb_comment_contest_alias']")); //$NON-NLS-1$
+		final Set<String> allAliases = new HashSet<>();
+		for (final WebElement webElement : allAliasesElt) {
+			WpHtmlUtils.setDisplay(driver, webElement, "block"); //$NON-NLS-1$
+			final String text = webElement.getText();
+			if (!text.isEmpty()) {
+				allAliases.add(text);
+			}
+		}
+		allAliases.remove(wpInfo.getLogin());
+		final Set<String> allRoles = new HashSet<>();
+		final List<WebElement> allRoleElt = driver
+				.findElements(By.xpath("//div[@id='contestForm']//li")); //$NON-NLS-1$
+		for (final WebElement webElement : allRoleElt) {
+			final String classValue = webElement.getAttribute("class"); //$NON-NLS-1$
+			allRoles.add(classValue);
+		}
+		allRoles.remove("administrator"); //$NON-NLS-1$
+		Utils.changeRole(driver, selenium, wpInfo, allAliases, allRoles);
+		openCommentContestPluginOnArticleNumber1(driver, selenium);
+		final List<WebElement> allRoleElt2 = driver
+				.findElements(By.xpath("//div[@id='contestForm']//li")); //$NON-NLS-1$
+		for (final WebElement webElement : allRoleElt2) {
+			webElement.click();
+			final String classValue = webElement.getAttribute("class"); //$NON-NLS-1$
+			if ("administrator".equals(classValue)) { //$NON-NLS-1$
+				assertCommentsTable(driver, 2);
+			} else {
+				assertCommentsTable(driver, 1);
+			}
+			scrollToY(driver, 200);
+			uncheckAllTable(selenium);
+		}
+	}
+
 	/*
 	 * TODO Tests:
 	 * - vérifier les tooltips
@@ -1074,6 +1159,13 @@ public class WPCommentContestPluginTest {
 		final Selenium selenium = new WebDriverBackedSelenium(driver,
 				wpInfo.getTestServer().getHomeURL());
 		WpHtmlUtils.connect(driver, selenium, wpInfo);
+		openCommentContestPluginOnArticleNumber1(driver, selenium);
+		return selenium;
+	}
+
+	private static void openCommentContestPluginOnArticleNumber1(
+			final WebDriver driver, final Selenium selenium)
+			throws UtilsException {
 		final String homeURL = wpInfo.getTestServer().getHomeURL();
 		selenium.open(homeURL + "/wp-admin/edit.php"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
@@ -1081,13 +1173,13 @@ public class WPCommentContestPluginTest {
 				.findElement(By.xpath(CONTEST_LK_XPATH));
 		selenium.open(contestLink.getAttribute("href")); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-		return selenium;
 	}
 
 	@AfterAll
 	public static void afterAll() {
 		if (wpInfo != null) {
 			try {
+				System.out.println("PASSWORD = (" + wpInfo.getPassword() + ")");
 				wpInfo.getTestServer().stop();
 			} catch (final Exception e) {
 				Assertions.fail(e.getMessage());

@@ -1,9 +1,12 @@
 package fr.zhykos.wp.commentcontest.tests.internal;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.List;
 
+import org.junit.jupiter.api.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -31,6 +34,7 @@ final class Utils {
 	// XXX faire en sorte d'ajouter une API sur le plugin fakerpress
 	public static void addFakeComments(final IWordPressInformation wpInfo)
 			throws UtilsException {
+		// XXX Pourquoi être obligé d'instancier un nouveau driver et un nouveau selenium ? Voir si on peut s'en passer
 		final WebDriver currentDriver = BrowserUtils
 				.createAllCompatibleDriversAndGetTheBetter();
 		try {
@@ -186,6 +190,73 @@ final class Utils {
 				+ commentId);
 		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH1Tag(driver, Translations.editComment);
+	}
+
+	public static void changeRole(final WebDriver driver,
+			final Selenium selenium, final IWordPressInformation wpInfo,
+			final Collection<String> allAliases, final Collection<String> roles)
+			throws UtilsException {
+		Assertions.assertTrue(allAliases.size() >= roles.size());
+		final String homeURL = wpInfo.getTestServer().getHomeURL();
+		selenium.open(homeURL + "/wp-admin/users.php"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH1Tag(driver, Translations.users);
+		final Iterator<String> aliasIterator = allAliases.iterator();
+		final Iterator<String> roleIterator = roles.iterator();
+		while (aliasIterator.hasNext() && roleIterator.hasNext()) {
+			final String userName = aliasIterator.next();
+			final String role = roleIterator.next();
+			changeRole(selenium, driver, wpInfo, userName, role);
+		}
+	}
+
+	private static void changeRole(final Selenium selenium,
+			final WebDriver driver, final IWordPressInformation wpInfo,
+			final String userName, final String role) throws UtilsException {
+		selenium.type("id=user-search-input", userName); //$NON-NLS-1$
+		selenium.click("id=search-submit"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH1Tag(driver, Translations.users);
+		final List<WebElement> noItemsElt = driver.findElements(
+				By.xpath("//tbody[@id='the-list']/tr[@class='no-items']")); //$NON-NLS-1$
+		if (noItemsElt.isEmpty()) {
+			final WebElement editLink = driver.findElement(
+					By.xpath("//tbody[@id='the-list']//span[@class='edit']/a")); //$NON-NLS-1$
+			final String href = editLink.getAttribute("href"); //$NON-NLS-1$
+			selenium.open(href);
+			editUserRole(selenium, driver, userName, role);
+			driver.navigate().back();
+			driver.navigate().back();
+		} else {
+			createUser(selenium, driver, wpInfo, userName, role);
+		}
+	}
+
+	private static void editUserRole(final Selenium selenium,
+			final WebDriver driver, final String userName, final String role) {
+		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		selenium.select("id=role", String.format("value=%s", role)); //$NON-NLS-1$ //$NON-NLS-2$
+		selenium.click("id=submit"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH1Tag(driver, Translations.editUser, userName);
+	}
+
+	private static void createUser(final Selenium selenium,
+			final WebDriver driver, final IWordPressInformation wpInfo,
+			final String userName, final String role) throws UtilsException {
+		final String homeURL = wpInfo.getTestServer().getHomeURL();
+		selenium.open(homeURL + "/wp-admin/user-new.php"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH1Tag(driver, Translations.addUser);
+		selenium.type("id=user_login", userName); //$NON-NLS-1$
+		selenium.type("id=email", //$NON-NLS-1$
+				Math.abs(userName.hashCode()) + "@" //$NON-NLS-1$
+						+ Math.abs(userName.hashCode()) + "zhykos.fr"); //$NON-NLS-1$
+		selenium.select("id=role", String.format("value=%s", role)); //$NON-NLS-1$ //$NON-NLS-2$
+		selenium.uncheck("id=send_user_notification"); //$NON-NLS-1$
+		selenium.click("id=createusersub"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH1Tag(driver, Translations.users);
 	}
 
 }

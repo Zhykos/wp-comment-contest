@@ -28,7 +28,8 @@ public final class WpHtmlUtils {
 
 	// XXX Mettre le système de traduction dans une autre classe
 	public enum Translations {
-		extensions, addExtensions, activatedPluginOk, comments, editComment, commentsOnArticle, articles
+		extensions, addExtensions, activatedPluginOk, comments, editComment,
+		commentsOnArticle, articles, users, addUser, editUser
 	}
 
 	public interface IRunnableCondition {
@@ -46,6 +47,9 @@ public final class WpHtmlUtils {
 		french.put(Translations.editComment, "Modifier le commentaire"); //$NON-NLS-1$
 		french.put(Translations.commentsOnArticle, "Commentaires sur « %s »"); //$NON-NLS-1$
 		french.put(Translations.articles, "Articles"); //$NON-NLS-1$
+		french.put(Translations.users, "Utilisateurs"); //$NON-NLS-1$
+		french.put(Translations.addUser, "Ajouter un utilisateur"); //$NON-NLS-1$
+		french.put(Translations.editUser, "Modifier l’utilisateur %s"); //$NON-NLS-1$
 		TRANSLATIONS.put(Locale.FRENCH, french);
 	}
 
@@ -385,11 +389,31 @@ public final class WpHtmlUtils {
 		}
 	}
 
-	public static void elementVisibilityBlock(final WebDriver driver,
+	public static void setDisplayBlockById(final WebDriver driver,
 			final String elementId) {
-		final WebElement element = driver.findElement(By.id(elementId));
+		final By byElt = By.id(elementId);
+		setDisplayBlock(driver, byElt);
+	}
+
+	public static void setDisplayBlock(final WebDriver driver, final By byElt) {
+		setDisplay(driver, byElt, "block"); //$NON-NLS-1$
+	}
+
+	public static void setDisplayNone(final WebDriver driver, final By byElt) {
+		setDisplay(driver, byElt, "none"); //$NON-NLS-1$
+	}
+
+	private static void setDisplay(final WebDriver driver, final By byElt,
+			final String display) {
+		final WebElement element = driver.findElement(byElt);
+		setDisplay(driver, element, display);
+	}
+
+	public static void setDisplay(final WebDriver driver,
+			final WebElement element, final String display) {
 		((JavascriptExecutor) driver).executeScript(
-				"arguments[0].style.display='block'", element); //$NON-NLS-1$
+				String.format("arguments[0].style.display='%s';", display), //$NON-NLS-1$
+				element);
 	}
 
 	public static boolean isVisible(final String elementId,
