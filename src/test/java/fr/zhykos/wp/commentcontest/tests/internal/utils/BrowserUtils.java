@@ -215,7 +215,7 @@ public final class BrowserUtils {
 			final OperaOptions operaOptions = new OperaOptions();
 			// XXX C'est quoi cette merde d'être obligé d'ajouter le chemin??
 			operaOptions.setBinary(
-					"C:\\Program Files\\Opera\\49.0.2725.64\\opera.exe"); //$NON-NLS-1$
+					"C:\\Program Files\\Opera\\50.0.2762.67\\opera.exe"); //$NON-NLS-1$
 			result = new OperaDriver(operaOptions);
 		} catch (final Exception e) {
 			if (result != null) {
