@@ -78,7 +78,7 @@ final class Utils {
 			}
 		};
 		WpHtmlUtils.waitUntilCondition(condition, 60000);
-		final Calendar fakeDate = getDateSecondJanuary2018Noon();
+		final Calendar fakeDate = getDateSecondDayOfCurrentMonth();
 		for (int i = 1; i <= FAKE_COMMENTS_NB; i++) {
 			modifyCommentDate(driver, selenium, homeURL, i, fakeDate);
 		}
@@ -124,8 +124,10 @@ final class Utils {
 		return "zhykos@gmail.com"; //$NON-NLS-1$
 	}
 
-	public static Calendar getDateSecondJanuary2018Noon() {
-		return new GregorianCalendar(2018, 0, 2, 12, 0);
+	public static Calendar getDateSecondDayOfCurrentMonth() {
+		final Calendar today = Calendar.getInstance();
+		return new GregorianCalendar(today.get(Calendar.YEAR),
+				today.get(Calendar.MONTH), 2, 12, 0);
 	}
 
 	private static void modifyCommentDate(final WebDriver driver,

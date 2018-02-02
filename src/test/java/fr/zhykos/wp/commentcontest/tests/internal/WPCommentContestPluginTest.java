@@ -490,7 +490,7 @@ public class WPCommentContestPluginTest {
 		selenium.click("id=datepicker"); //$NON-NLS-1$
 		WpHtmlUtils.waitUntilVisibleStateByElementId(selenium, driver,
 				"ui-datepicker-div", true, 10000); //$NON-NLS-1$
-		final Calendar fakeDate = Utils.getDateSecondJanuary2018Noon();
+		final Calendar fakeDate = Utils.getDateSecondDayOfCurrentMonth();
 		WebElement dateMonthElt = driver.findElement(By.xpath(
 				"//div[@id='ui-datepicker-div']//span[@class='ui-datepicker-month']")); //$NON-NLS-1$
 		WebElement dateYearElt = driver.findElement(By.xpath(
