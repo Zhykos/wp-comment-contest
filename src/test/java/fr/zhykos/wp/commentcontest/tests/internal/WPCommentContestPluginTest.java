@@ -1144,14 +1144,74 @@ public class WPCommentContestPluginTest {
 		}
 	}
 
+	@SuppressWarnings({ STATIC_METHOD,
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
+	/*
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
+	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les
+	// navigateurs
+	// XXX Rajouter timeout
+	@TestFactory
+	public Collection<DynamicTest> testExpandFilters() {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> initTestExpandFilters(webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
+		}
+		return dynamicTests;
+	}
+
+	private static void initTestExpandFilters(final WebDriver driver) {
+		try {
+			if (!(driver instanceof ErrorDriver)) {
+				assertTestExpandFilters(driver);
+			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void assertTestExpandFilters(final WebDriver driver)
+			throws UtilsException {
+		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+				driver);
+		// Just some random ids (all are not mandatory)
+		final String[] idsToCheck = new String[] { "datepicker", "aliasConfig", //$NON-NLS-1$ //$NON-NLS-2$
+				"timeBetween", "emailAddressFilter" }; //$NON-NLS-1$ //$NON-NLS-2$
+		for (final String idToCheck : idsToCheck) {
+			Assertions.assertFalse(selenium.isVisible("id=" + idToCheck)); //$NON-NLS-1$
+		}
+		expandFilters(driver, selenium);
+		for (final String idToCheck : idsToCheck) {
+			Assertions.assertTrue(selenium.isVisible("id=" + idToCheck)); //$NON-NLS-1$
+		}
+		WpHtmlUtils.setDisplayNone(driver, By.id("filters")); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=filters")); //$NON-NLS-1$
+		for (final String idToCheck : idsToCheck) {
+			Assertions.assertFalse(selenium.isVisible("id=" + idToCheck)); //$NON-NLS-1$
+		}
+		selenium.click("id=filtersImg"); //$NON-NLS-1$
+		WpHtmlUtils.waitUntilVisibleStateByElementId(selenium, driver,
+				"filters", true, 10000); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=filters")); //$NON-NLS-1$
+	}
+
 	/*
 	 * TODO Tests:
 	 * - vérifier les tooltips
 	 * - créer un deuxième article avec des commentaires et bien vérifier si on a les bons commentaires
 	 * - lancer un concours de base plusieurs fois et voir si on a bien un commentaire de l'article et que le random fonctionne
-	 * - tests en changeant les valeurs par défaut des configurations
-	 * - test qui (dé)plie les filtres et vérifie qu'ils sont affichés
-	 * - test pour vérifier que seuls les commentaires cochés sont bien mis en dans les résultats
 	 */
 
 	private static Selenium openCommentContestPluginOnArticleNumber1(
