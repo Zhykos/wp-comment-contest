@@ -58,6 +58,10 @@ public class WPCommentContestPluginTest {
 	private static final String CONTEST_LK_XPATH = "//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"; //$NON-NLS-1$
 	private static final String STATIC_METHOD = "static-method"; //$NON-NLS-1$
 	private static final String BORDER_ERROR = "border: 2px solid red;"; //$NON-NLS-1$
+	private static final String ID_CHEAT_LINK_1 = ID_PREFIX + "cheatLink-1"; //$NON-NLS-1$
+	private static final String ID_DELETE_LINK_1 = ID_PREFIX + "deleteLink-1"; //$NON-NLS-1$
+	private static final String ID_RESTORE_LINK_1 = ID_PREFIX + "restoreLink-1"; //$NON-NLS-1$
+	private static final String ID_STOP_CHEAT_1 = ID_PREFIX + "stopCheatLink-1"; //$NON-NLS-1$
 	private static IWordPressPlugin wpRssPlg;
 	private static IWordPressPlugin fakerPlg;
 	private static IWordPressPluginToTest myPlugin;
@@ -1056,11 +1060,11 @@ public class WPCommentContestPluginTest {
 	private static void submitThenAssertTimeBetweenField(
 			final Selenium selenium, final WebDriver driver, final int nbResult,
 			final String checkId) throws UtilsException {
-		selenium.check("id=" + checkId); //$NON-NLS-1$
+		selenium.check(ID_PREFIX + checkId);
 		submitThenAssertTimeBetweenFieldStyle(false, selenium, driver);
 		assertCommentsTable(driver, nbResult);
 		uncheckAllTable(selenium, driver);
-		selenium.uncheck("id=" + checkId); //$NON-NLS-1$
+		selenium.uncheck(ID_PREFIX + checkId);
 	}
 
 	private static void submitThenAssertTimeBetweenFieldStyle(
@@ -1128,7 +1132,7 @@ public class WPCommentContestPluginTest {
 		final List<WebElement> allRoleElt = driver
 				.findElements(By.xpath("//div[@id='contestForm']//li")); //$NON-NLS-1$
 		for (final WebElement webElement : allRoleElt) {
-			final String classValue = webElement.getAttribute("class"); //$NON-NLS-1$
+			final String classValue = webElement.getAttribute(CLASS_ATTRIBUTE);
 			allRoles.add(classValue);
 		}
 		allRoles.remove("administrator"); //$NON-NLS-1$
@@ -1138,7 +1142,7 @@ public class WPCommentContestPluginTest {
 				.findElements(By.xpath("//div[@id='contestForm']//li")); //$NON-NLS-1$
 		for (final WebElement webElement : allRoleElt2) {
 			webElement.click();
-			final String classValue = webElement.getAttribute("class"); //$NON-NLS-1$
+			final String classValue = webElement.getAttribute(CLASS_ATTRIBUTE);
 			if ("administrator".equals(classValue)) { //$NON-NLS-1$
 				assertCommentsTable(driver, 2);
 			} else {
@@ -1195,16 +1199,16 @@ public class WPCommentContestPluginTest {
 		final String[] idsToCheck = new String[] { "datepicker", "aliasConfig", //$NON-NLS-1$ //$NON-NLS-2$
 				"timeBetween", "emailAddressFilter" }; //$NON-NLS-1$ //$NON-NLS-2$
 		for (final String idToCheck : idsToCheck) {
-			Assertions.assertFalse(selenium.isVisible("id=" + idToCheck)); //$NON-NLS-1$
+			Assertions.assertFalse(selenium.isVisible(ID_PREFIX + idToCheck));
 		}
 		expandFilters(driver, selenium);
 		for (final String idToCheck : idsToCheck) {
-			Assertions.assertTrue(selenium.isVisible("id=" + idToCheck)); //$NON-NLS-1$
+			Assertions.assertTrue(selenium.isVisible(ID_PREFIX + idToCheck));
 		}
 		WpHtmlUtils.setDisplayNone(driver, By.id("filters")); //$NON-NLS-1$
 		Assertions.assertFalse(selenium.isVisible("id=filters")); //$NON-NLS-1$
 		for (final String idToCheck : idsToCheck) {
-			Assertions.assertFalse(selenium.isVisible("id=" + idToCheck)); //$NON-NLS-1$
+			Assertions.assertFalse(selenium.isVisible(ID_PREFIX + idToCheck));
 		}
 		selenium.click("id=filtersImg"); //$NON-NLS-1$
 		WpHtmlUtils.waitUntilVisibleStateByElementId(selenium, driver,
@@ -1330,8 +1334,8 @@ public class WPCommentContestPluginTest {
 				.xpath("//tr[@id='comment-contest-1']//span[@class='cheat']")); //$NON-NLS-1$
 		Assertions.assertTrue(WpHtmlUtils.isVisible(cheat1));
 		displayAllRowActions(driver);
-		selenium.click("id=cheatLink-1"); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
+		selenium.click(ID_CHEAT_LINK_1);
+		Assertions.assertFalse(selenium.isVisible(ID_CHEAT_LINK_1));
 		for (int i = 0; i < 10; i++) {
 			final List<WebElement> winners = launchContestThenAssertNbWinners(
 					selenium, driver, 1);
@@ -1340,7 +1344,7 @@ public class WPCommentContestPluginTest {
 			Assertions.assertEquals(wpInfo.getLogin(), alias.getText());
 			closeResultDialog(driver);
 		}
-		selenium.click("id=stopCheatLink-1"); //$NON-NLS-1$
+		selenium.click(ID_STOP_CHEAT_1);
 		for (int lineId = 2; lineId <= Utils.FAKE_COMMENTS_NB + 1; lineId++) {
 			selenium.click("id=deleteLink-" + lineId); //$NON-NLS-1$
 		}
@@ -1352,56 +1356,56 @@ public class WPCommentContestPluginTest {
 			Assertions.assertEquals(wpInfo.getLogin(), alias.getText());
 			closeResultDialog(driver);
 		}
-		Assertions.assertTrue(selenium.isVisible("id=deleteLink-1")); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=restoreLink-1")); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=stopCheatLink-1")); //$NON-NLS-1$
-		selenium.click("id=cheatLink-1"); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=deleteLink-1")); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=restoreLink-1")); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=stopCheatLink-1")); //$NON-NLS-1$
-		selenium.click("id=stopCheatLink-1"); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=deleteLink-1")); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=restoreLink-1")); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=stopCheatLink-1")); //$NON-NLS-1$
-		selenium.click("id=deleteLink-1"); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=deleteLink-1")); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=restoreLink-1")); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=stopCheatLink-1")); //$NON-NLS-1$
-		selenium.click("id=restoreLink-1"); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=deleteLink-1")); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=restoreLink-1")); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=stopCheatLink-1")); //$NON-NLS-1$
-		selenium.click("id=deleteLink-1"); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=deleteLink-1")); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=restoreLink-1")); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=stopCheatLink-1")); //$NON-NLS-1$
-		selenium.click("id=cheatLink-1"); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=deleteLink-1")); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=restoreLink-1")); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=stopCheatLink-1")); //$NON-NLS-1$
-		selenium.click("id=deleteLink-1"); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=deleteLink-1")); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=restoreLink-1")); //$NON-NLS-1$
-		Assertions.assertTrue(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
-		Assertions.assertFalse(selenium.isVisible("id=stopCheatLink-1")); //$NON-NLS-1$
-		selenium.click("id=restoreLink-1"); //$NON-NLS-1$
-		selenium.click("id=cheatLink-1"); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible(ID_DELETE_LINK_1));
+		Assertions.assertFalse(selenium.isVisible(ID_RESTORE_LINK_1));
+		Assertions.assertTrue(selenium.isVisible(ID_CHEAT_LINK_1));
+		Assertions.assertFalse(selenium.isVisible(ID_STOP_CHEAT_1));
+		selenium.click(ID_CHEAT_LINK_1);
+		Assertions.assertTrue(selenium.isVisible(ID_DELETE_LINK_1));
+		Assertions.assertFalse(selenium.isVisible(ID_RESTORE_LINK_1));
+		Assertions.assertFalse(selenium.isVisible(ID_CHEAT_LINK_1));
+		Assertions.assertTrue(selenium.isVisible(ID_STOP_CHEAT_1));
+		selenium.click(ID_STOP_CHEAT_1);
+		Assertions.assertTrue(selenium.isVisible(ID_DELETE_LINK_1));
+		Assertions.assertFalse(selenium.isVisible(ID_RESTORE_LINK_1));
+		Assertions.assertTrue(selenium.isVisible(ID_CHEAT_LINK_1));
+		Assertions.assertFalse(selenium.isVisible(ID_STOP_CHEAT_1));
+		selenium.click(ID_DELETE_LINK_1);
+		Assertions.assertFalse(selenium.isVisible(ID_DELETE_LINK_1));
+		Assertions.assertTrue(selenium.isVisible(ID_RESTORE_LINK_1));
+		Assertions.assertTrue(selenium.isVisible(ID_CHEAT_LINK_1));
+		Assertions.assertFalse(selenium.isVisible(ID_STOP_CHEAT_1));
+		selenium.click(ID_RESTORE_LINK_1);
+		Assertions.assertTrue(selenium.isVisible(ID_DELETE_LINK_1));
+		Assertions.assertFalse(selenium.isVisible(ID_RESTORE_LINK_1));
+		Assertions.assertTrue(selenium.isVisible(ID_CHEAT_LINK_1));
+		Assertions.assertFalse(selenium.isVisible(ID_STOP_CHEAT_1));
+		selenium.click(ID_DELETE_LINK_1);
+		Assertions.assertFalse(selenium.isVisible(ID_DELETE_LINK_1));
+		Assertions.assertTrue(selenium.isVisible(ID_RESTORE_LINK_1));
+		Assertions.assertTrue(selenium.isVisible(ID_CHEAT_LINK_1));
+		Assertions.assertFalse(selenium.isVisible(ID_STOP_CHEAT_1));
+		selenium.click(ID_CHEAT_LINK_1);
+		Assertions.assertTrue(selenium.isVisible(ID_DELETE_LINK_1));
+		Assertions.assertFalse(selenium.isVisible(ID_RESTORE_LINK_1));
+		Assertions.assertFalse(selenium.isVisible(ID_CHEAT_LINK_1));
+		Assertions.assertTrue(selenium.isVisible(ID_STOP_CHEAT_1));
+		selenium.click(ID_DELETE_LINK_1);
+		Assertions.assertFalse(selenium.isVisible(ID_DELETE_LINK_1));
+		Assertions.assertTrue(selenium.isVisible(ID_RESTORE_LINK_1));
+		Assertions.assertTrue(selenium.isVisible(ID_CHEAT_LINK_1));
+		Assertions.assertFalse(selenium.isVisible(ID_STOP_CHEAT_1));
+		selenium.click(ID_RESTORE_LINK_1);
+		selenium.click(ID_CHEAT_LINK_1);
 		final WebElement cc1Elt = driver
 				.findElement(By.id("comment-contest-1")); //$NON-NLS-1$
-		final String classCC1 = cc1Elt.getAttribute("class"); //$NON-NLS-1$
+		final String classCC1 = cc1Elt.getAttribute(CLASS_ATTRIBUTE);
 		Assertions.assertTrue(classCC1.contains("cheatComment")); //$NON-NLS-1$
 		final String bkgCC1 = cc1Elt.getCssValue("background-color"); //$NON-NLS-1$
 		selenium.click("id=cheatLink-2"); //$NON-NLS-1$
 		final WebElement cc2Elt = driver
 				.findElement(By.id("comment-contest-2")); //$NON-NLS-1$
-		final String classCC2 = cc2Elt.getAttribute("class"); //$NON-NLS-1$
+		final String classCC2 = cc2Elt.getAttribute(CLASS_ATTRIBUTE);
 		Assertions.assertTrue(classCC2.contains("cheatComment")); //$NON-NLS-1$
 		final String bkgCC2 = cc2Elt.getCssValue("background-color"); //$NON-NLS-1$
 		// Assertions.assertEquals(bkgCC1, bkgCC2); FIXME
