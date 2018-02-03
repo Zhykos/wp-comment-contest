@@ -357,27 +357,32 @@ public class WPCommentContestPluginTest {
 		Assertions.assertFalse(selenium.isVisible("id=dialog-modal-winners")); //$NON-NLS-1$
 		launchContestThenAssertNbWinners(selenium, driver,
 				Integer.parseInt(nbWinners));
-		driver.findElement(By.xpath(
-				"//div[@class='ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix ui-draggable-handle']/button")) //$NON-NLS-1$
-				.click();
+		closeResultDialog(driver);
 		Assertions.assertFalse(selenium.isVisible("id=dialog-modal-winners")); //$NON-NLS-1$
 	}
 
-	private static void launchContestThenAssertNbWinners(
+	private static void closeResultDialog(final WebDriver driver) {
+		driver.findElement(By.xpath(
+				"//div[@class='ui-dialog-titlebar ui-widget-header ui-corner-all ui-helper-clearfix ui-draggable-handle']/button")) //$NON-NLS-1$
+				.click();
+	}
+
+	private static List<WebElement> launchContestThenAssertNbWinners(
 			final Selenium selenium, final WebDriver driver,
 			final int nbWinners) {
+		final List<WebElement> winnerLines = new ArrayList<>();
 		scrollToY(driver, 0);
 		driver.findElement(By.id("zwpcc_form_submit")).click(); //$NON-NLS-1$
 		Assertions.assertTrue(selenium.isVisible("id=dialog-modal-winners")); //$NON-NLS-1$
-		final List<WebElement> winnerLines = driver.findElements(By.xpath(
+		final List<WebElement> resultLines = driver.findElements(By.xpath(
 				"//div[@id='dialog-modal-winners']/table/tbody[@id='the-list-contest']/tr")); //$NON-NLS-1$
-		int nbLinesVisible = 0;
-		for (final WebElement line : winnerLines) {
+		for (final WebElement line : resultLines) {
 			if (WpHtmlUtils.isVisible(line)) {
-				nbLinesVisible++;
+				winnerLines.add(line);
 			}
 		}
-		Assertions.assertEquals(nbWinners, nbLinesVisible);
+		Assertions.assertEquals(nbWinners, winnerLines.size());
+		return winnerLines;
 	}
 
 	private static void scrollToY(final WebDriver driver, final int yPosition) {
@@ -1080,11 +1085,11 @@ public class WPCommentContestPluginTest {
 	// navigateurs
 	// XXX Rajouter timeout
 	@TestFactory
-	public Collection<DynamicTest> testtUserRoles() {
+	public Collection<DynamicTest> testUserRoles() {
 		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
 		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
 		for (final WebDriver webDriver : allDrivers) {
-			final Executable exec = () -> initTesttUserRoles(webDriver);
+			final Executable exec = () -> initTestUserRoles(webDriver);
 			final String testName = String.format(TEST_ON_BROWSER, webDriver);
 			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
 			dynamicTests.add(test);
@@ -1092,7 +1097,7 @@ public class WPCommentContestPluginTest {
 		return dynamicTests;
 	}
 
-	private static void initTesttUserRoles(final WebDriver driver) {
+	private static void initTestUserRoles(final WebDriver driver) {
 		try {
 			if (!(driver instanceof ErrorDriver)) {
 				assertTestUserRoles(driver);
@@ -1278,10 +1283,146 @@ public class WPCommentContestPluginTest {
 		Assertions.assertEquals(displayedElt.size(), margins.size());
 	}
 
+	@SuppressWarnings({ STATIC_METHOD,
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
 	/*
-	 * TODO Tests:
-	 * - créer un deuxième article avec des commentaires et bien vérifier si on a les bons commentaires
-	 * - lancer un concours de base plusieurs fois et voir si on a bien un commentaire de l'article et que le random fonctionne
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
+	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les
+	// navigateurs
+	// XXX Rajouter timeout
+	@TestFactory
+	public Collection<DynamicTest> testCheatOrDelete() {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> initTestCheatOrDelete(webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
+		}
+		return dynamicTests;
+	}
+
+	private static void initTestCheatOrDelete(final WebDriver driver) {
+		try {
+			if (!(driver instanceof ErrorDriver)) {
+				assertTestCheatOrDelete(driver);
+			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void assertTestCheatOrDelete(final WebDriver driver)
+			throws UtilsException {
+		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+				driver);
+		scrollToY(driver, 400);
+		final WebElement cheat1 = driver.findElement(By
+				.xpath("//tr[@id='comment-contest-1']//span[@class='cheat']")); //$NON-NLS-1$
+		Assertions.assertTrue(WpHtmlUtils.isVisible(cheat1));
+		displayAllRowActions(driver);
+		selenium.click("id=cheatLink-1"); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
+		for (int i = 0; i < 10; i++) {
+			final List<WebElement> winners = launchContestThenAssertNbWinners(
+					selenium, driver, 1);
+			final WebElement alias = winners.get(0)
+					.findElement(By.xpath("td/strong")); //$NON-NLS-1$
+			Assertions.assertEquals(wpInfo.getLogin(), alias.getText());
+			closeResultDialog(driver);
+		}
+		selenium.click("id=stopCheatLink-1"); //$NON-NLS-1$
+		for (int lineId = 2; lineId <= Utils.FAKE_COMMENTS_NB + 1; lineId++) {
+			selenium.click("id=deleteLink-" + lineId); //$NON-NLS-1$
+		}
+		for (int i = 0; i < 10; i++) {
+			final List<WebElement> winners = launchContestThenAssertNbWinners(
+					selenium, driver, 1);
+			final WebElement alias = winners.get(0)
+					.findElement(By.xpath("td/strong")); //$NON-NLS-1$
+			Assertions.assertEquals(wpInfo.getLogin(), alias.getText());
+			closeResultDialog(driver);
+		}
+		Assertions.assertTrue(selenium.isVisible("id=deleteLink-1")); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=restoreLink-1")); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=stopCheatLink-1")); //$NON-NLS-1$
+		selenium.click("id=cheatLink-1"); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=deleteLink-1")); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=restoreLink-1")); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=stopCheatLink-1")); //$NON-NLS-1$
+		selenium.click("id=stopCheatLink-1"); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=deleteLink-1")); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=restoreLink-1")); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=stopCheatLink-1")); //$NON-NLS-1$
+		selenium.click("id=deleteLink-1"); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=deleteLink-1")); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=restoreLink-1")); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=stopCheatLink-1")); //$NON-NLS-1$
+		selenium.click("id=restoreLink-1"); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=deleteLink-1")); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=restoreLink-1")); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=stopCheatLink-1")); //$NON-NLS-1$
+		selenium.click("id=deleteLink-1"); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=deleteLink-1")); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=restoreLink-1")); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=stopCheatLink-1")); //$NON-NLS-1$
+		selenium.click("id=cheatLink-1"); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=deleteLink-1")); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=restoreLink-1")); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=stopCheatLink-1")); //$NON-NLS-1$
+		selenium.click("id=deleteLink-1"); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=deleteLink-1")); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=restoreLink-1")); //$NON-NLS-1$
+		Assertions.assertTrue(selenium.isVisible("id=cheatLink-1")); //$NON-NLS-1$
+		Assertions.assertFalse(selenium.isVisible("id=stopCheatLink-1")); //$NON-NLS-1$
+		selenium.click("id=restoreLink-1"); //$NON-NLS-1$
+		selenium.click("id=cheatLink-1"); //$NON-NLS-1$
+		final WebElement cc1Elt = driver
+				.findElement(By.id("comment-contest-1")); //$NON-NLS-1$
+		final String classCC1 = cc1Elt.getAttribute("class"); //$NON-NLS-1$
+		Assertions.assertTrue(classCC1.contains("cheatComment")); //$NON-NLS-1$
+		final String bkgCC1 = cc1Elt.getCssValue("background-color"); //$NON-NLS-1$
+		selenium.click("id=cheatLink-2"); //$NON-NLS-1$
+		final WebElement cc2Elt = driver
+				.findElement(By.id("comment-contest-2")); //$NON-NLS-1$
+		final String classCC2 = cc2Elt.getAttribute("class"); //$NON-NLS-1$
+		Assertions.assertTrue(classCC2.contains("cheatComment")); //$NON-NLS-1$
+		final String bkgCC2 = cc2Elt.getCssValue("background-color"); //$NON-NLS-1$
+		// Assertions.assertEquals(bkgCC1, bkgCC2); FIXME
+	}
+
+	private static void displayAllRowActions(final WebDriver driver) {
+		for (int lineId = 1; lineId <= Utils.FAKE_COMMENTS_NB + 1; lineId++) {
+			final WebElement rowActions = driver.findElement(By.xpath(String
+					.format("//tr[@id='comment-contest-%d']//div[@class='row-actions']", //$NON-NLS-1$
+							Integer.valueOf(lineId))));
+			((JavascriptExecutor) driver)
+					.executeScript("arguments[0].style.left='0';", rowActions); //$NON-NLS-1$
+		}
+	}
+
+	/*
+	 * TODO Tests: - créer un deuxième article avec des commentaires et bien
+	 * vérifier si on a les bons commentaires - lancer un concours de base
+	 * plusieurs fois et voir si on a bien un commentaire de l'article et que le
+	 * random fonctionne - problèmes de couleurs dans les colonnes de choix
+	 * (alternate + ni vert ni rouge)
 	 */
 
 	private static Selenium openCommentContestPluginOnArticleNumber1(
