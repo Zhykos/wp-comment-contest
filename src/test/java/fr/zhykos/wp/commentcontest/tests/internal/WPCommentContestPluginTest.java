@@ -1421,10 +1421,67 @@ public class WPCommentContestPluginTest {
 		}
 	}
 
+	@SuppressWarnings({ STATIC_METHOD,
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
+	/*
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
+	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les
+	// navigateurs
+	// XXX Rajouter timeout
+	@TestFactory
+	public Collection<DynamicTest> testContestRandom() {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> initTestContestRandom(webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
+		}
+		return dynamicTests;
+	}
+
+	private static void initTestContestRandom(final WebDriver driver) {
+		try {
+			if (!(driver instanceof ErrorDriver)) {
+				assertTestContestRandom(driver);
+			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void assertTestContestRandom(final WebDriver driver)
+			throws UtilsException {
+		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+				driver);
+		final Set<String> allWinners = new HashSet<>();
+		int attempts = 0;
+		final int maxAttempts = (Utils.FAKE_COMMENTS_NB + 1) * 10;
+		while (attempts < maxAttempts
+				&& allWinners.size() != Utils.FAKE_COMMENTS_NB + 1) {
+			final List<WebElement> winners = launchContestThenAssertNbWinners(
+					selenium, driver, 1);
+			final String lineId = winners.get(0).getAttribute("id"); //$NON-NLS-1$
+			allWinners.add(lineId);
+			closeResultDialog(driver);
+			attempts++;
+		}
+		Assertions.assertTrue(allWinners.size() == Utils.FAKE_COMMENTS_NB + 1,
+				"All winners could not be drawn, is there any but in the random system?"); //$NON-NLS-1$
+	}
+
 	/*
 	 * TODO Tests:
 	 * - créer un deuxième article avec des commentaires et bien vérifier si on a les bons commentaires
-	 * - lancer un concours de base plusieurs fois et voir si on a bien un commentaire de l'article et que le random fonctionne
 	 * - problèmes de couleurs dans les colonnes de choix (alternate + ni vert ni rouge)
 	 */
 
