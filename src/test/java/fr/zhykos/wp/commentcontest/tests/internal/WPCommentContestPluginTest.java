@@ -1422,11 +1422,10 @@ public class WPCommentContestPluginTest {
 	}
 
 	/*
-	 * TODO Tests: - créer un deuxième article avec des commentaires et bien
-	 * vérifier si on a les bons commentaires - lancer un concours de base
-	 * plusieurs fois et voir si on a bien un commentaire de l'article et que le
-	 * random fonctionne - problèmes de couleurs dans les colonnes de choix
-	 * (alternate + ni vert ni rouge)
+	 * TODO Tests:
+	 * - créer un deuxième article avec des commentaires et bien vérifier si on a les bons commentaires
+	 * - lancer un concours de base plusieurs fois et voir si on a bien un commentaire de l'article et que le random fonctionne
+	 * - problèmes de couleurs dans les colonnes de choix (alternate + ni vert ni rouge)
 	 */
 
 	private static Selenium openCommentContestPluginOnArticleNumber1(
