@@ -1207,9 +1207,79 @@ public class WPCommentContestPluginTest {
 		Assertions.assertTrue(selenium.isVisible("id=filters")); //$NON-NLS-1$
 	}
 
+	@SuppressWarnings({ STATIC_METHOD,
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
+	/*
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
+	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les
+	// navigateurs
+	// XXX Rajouter timeout
+	@TestFactory
+	public Collection<DynamicTest> testTooltip() {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> initTestTooltip(webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
+		}
+		return dynamicTests;
+	}
+
+	private static void initTestTooltip(final WebDriver driver) {
+		try {
+			if (!(driver instanceof ErrorDriver)) {
+				assertTestTooltip(driver);
+			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void assertTestTooltip(final WebDriver driver)
+			throws UtilsException {
+		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+				driver);
+		Assertions.assertFalse(selenium.isVisible("id=tiptip_holder")); //$NON-NLS-1$
+		final List<WebElement> allHelpsElt = driver
+				.findElements(By.xpath("//img[@class='help']")); //$NON-NLS-1$
+		final Set<String> margins = new HashSet<>();
+		final List<WebElement> displayedElt = new ArrayList<>();
+		for (final WebElement webElement : allHelpsElt) {
+			if (!webElement.isDisplayed()) {
+				continue;
+			}
+			displayedElt.add(webElement);
+			@SuppressWarnings("PMD.AvoidInstantiatingObjectsInLoops")
+			final Actions action = new Actions(driver);
+			action.moveToElement(webElement).build().perform();
+			final WebElement tiptip = driver
+					.findElement(By.id("tiptip_holder")); //$NON-NLS-1$
+			WpHtmlUtils.waitUntilVisibleStateByElement(tiptip, true, 10000);
+			final String marginTop = tiptip.getCssValue("margin-top"); //$NON-NLS-1$
+			final String marginBottom = tiptip.getCssValue("margin-bottom"); //$NON-NLS-1$
+			final String marginLeft = tiptip.getCssValue("margin-left"); //$NON-NLS-1$
+			final String marginRight = tiptip.getCssValue("margin-right"); //$NON-NLS-1$
+			margins.add(marginTop + '/' + marginBottom + '/' + marginLeft + '/'
+					+ marginRight);
+			final String helpText = driver.findElement(By.id("tiptip_content")) //$NON-NLS-1$
+					.getText();
+			Assertions.assertFalse(helpText.isEmpty());
+		}
+		Assertions.assertEquals(displayedElt.size(), margins.size());
+	}
+
 	/*
 	 * TODO Tests:
-	 * - vérifier les tooltips
 	 * - créer un deuxième article avec des commentaires et bien vérifier si on a les bons commentaires
 	 * - lancer un concours de base plusieurs fois et voir si on a bien un commentaire de l'article et que le random fonctionne
 	 */
