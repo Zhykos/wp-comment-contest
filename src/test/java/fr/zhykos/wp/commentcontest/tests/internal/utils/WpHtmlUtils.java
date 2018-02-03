@@ -21,6 +21,7 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlug
 
 public final class WpHtmlUtils {
 
+	private static final int INST_PLG_ATTEMPTS = 10;
 	/** Number of plug-in to find with a specific search **/
 	private static final int INST_PLG_SEARCH = 1;
 	// XXX Mutualiser cette variable pour le chargement d'une page
@@ -195,12 +196,31 @@ public final class WpHtmlUtils {
 	public static void installExternalPlugins(final IWordPressPlugin[] plugins,
 			final Selenium selenium, final WebDriver driver,
 			final String homeURL) throws UtilsException {
+		installExternalPlugins(plugins, selenium, driver, homeURL, 1);
+	}
+
+	private static void installExternalPlugins(final IWordPressPlugin[] plugins,
+			final Selenium selenium, final WebDriver driver,
+			final String homeURL, final int attempt) throws UtilsException {
+		if (attempt >= INST_PLG_ATTEMPTS) {
+			throw new UtilsException(
+					"Too much attempts to install external plugins"); //$NON-NLS-1$
+		}
 		if (plugins.length > 0) {
 			selenium.open(homeURL + "/wp-admin/plugin-install.php"); //$NON-NLS-1$
 			selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
-			assertH1Tag(driver, Translations.addExtensions);
-			for (final IWordPressPlugin plugin : plugins) {
-				installExternalPlugin(selenium, driver, plugin);
+			final String h1text = driver.findElement(By.xpath("//h1")) //$NON-NLS-1$
+					.getText();
+			if ("Briefly unavailable for scheduled maintenance. Check back in a minute." //$NON-NLS-1$
+					.equals(h1text)) {
+				waitMilli(1000);
+				installExternalPlugins(plugins, selenium, driver, homeURL,
+						attempt + 1);
+			} else {
+				assertH1Tag(driver, Translations.addExtensions);
+				for (final IWordPressPlugin plugin : plugins) {
+					installExternalPlugin(selenium, driver, plugin);
+				}
 			}
 		}
 	}
