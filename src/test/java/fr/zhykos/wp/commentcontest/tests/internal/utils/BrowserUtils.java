@@ -33,6 +33,7 @@ public final class BrowserUtils {
 
 	private static final List<Class<? extends WebDriver>> TCI_DRIVER_SORT = new ArrayList<>();
 	static {
+		// TODO Si le driver n'est pas dans la liste, ne pas le lancer + une liste par OS + virer le terme TCI
 		TCI_DRIVER_SORT.add(ChromeDriver.class);
 		TCI_DRIVER_SORT.add(FirefoxDriver.class);
 		TCI_DRIVER_SORT.add(OperaDriver.class);
