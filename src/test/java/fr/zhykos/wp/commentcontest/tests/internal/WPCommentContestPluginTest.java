@@ -4,6 +4,7 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -30,6 +31,7 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.BrowserUtils.ErrorDriver
 import fr.zhykos.wp.commentcontest.tests.internal.utils.IWordPressInformation;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils.IRunnableCondition;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils.Translations;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlugin;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginCatalog;
@@ -41,6 +43,7 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlug
  */
 public class WPCommentContestPluginTest {
 
+	private static final String EDIT_PAGE = "/wp-admin/edit.php"; //$NON-NLS-1$
 	private static final String ID_DOACTION = "id=doaction"; //$NON-NLS-1$
 	private static final String ID_SELECTALL1 = "id=cb-select-all-1"; //$NON-NLS-1$
 	private static final String CHEAT_COMMENT = "cheatComment"; //$NON-NLS-1$
@@ -58,7 +61,9 @@ public class WPCommentContestPluginTest {
 	private static final String ID_TMEBTW_FLNAME = ID_PREFIX + TMEBTW_FLNAME;
 	private static final String TEST_ON_BROWSER = "test on browser '%s'"; //$NON-NLS-1$
 	private static final String CLASS_ATTRIBUTE = "class"; //$NON-NLS-1$
-	private static final String CONTEST_LK_XPATH = "//tr[@id='post-1']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"; //$NON-NLS-1$
+	private static final String CONTEST_LK_XPATH = "//tr[@id='post-%s']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"; //$NON-NLS-1$
+	private static final String CONTEST_LK1_XPATH = String
+			.format(CONTEST_LK_XPATH, "1"); //$NON-NLS-1$
 	private static final String STATIC_METHOD = "static-method"; //$NON-NLS-1$
 	private static final String BORDER_ERROR = "border: 2px solid red;"; //$NON-NLS-1$
 	private static final String ID_CHEAT_LINK_1 = ID_PREFIX + "cheatLink-1"; //$NON-NLS-1$
@@ -165,7 +170,7 @@ public class WPCommentContestPluginTest {
 	private static void internalTestPluginArticlePage(final WebDriver driver,
 			final Selenium selenium) throws UtilsException {
 		final String homeURL = wpInfo.getTestServer().getHomeURL();
-		selenium.open(homeURL + "/wp-admin/edit.php"); //$NON-NLS-1$
+		selenium.open(homeURL + EDIT_PAGE);
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH1Tag(driver, Translations.articles);
 		final String commentsNb = driver.findElement(By.xpath(
@@ -174,19 +179,19 @@ public class WPCommentContestPluginTest {
 		Assertions.assertEquals(Utils.FAKE_COMMENTS_NB + 1,
 				Integer.parseInt(commentsNb));
 		final String contestLinkTxt = driver
-				.findElement(By.xpath(CONTEST_LK_XPATH)).getText();
+				.findElement(By.xpath(CONTEST_LK1_XPATH)).getText();
 		Assertions.assertEquals("Lancer le concours", contestLinkTxt);
 		WpHtmlUtils.expandSettingsScreenMenu(driver, selenium);
 		selenium.uncheck("id=orgZhyweb-wpCommentContest-hide"); //$NON-NLS-1$
 		selenium.click("id=screen-options-apply"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		final List<WebElement> contestColumnElts = driver
-				.findElements(By.xpath(CONTEST_LK_XPATH));
+				.findElements(By.xpath(CONTEST_LK1_XPATH));
 		Assertions.assertTrue(contestColumnElts.isEmpty());
 		WpHtmlUtils.expandSettingsScreenMenu(driver, selenium);
 		selenium.check("id=orgZhyweb-wpCommentContest-hide"); //$NON-NLS-1$
 		final WebElement contestLink = driver
-				.findElement(By.xpath(CONTEST_LK_XPATH));
+				.findElement(By.xpath(CONTEST_LK1_XPATH));
 		Assertions.assertEquals("Lancer le concours", contestLink.getText());
 		final String articleName = driver.findElement(By.xpath(
 				"//tr[@id='post-1']/td[@class='title column-title has-row-actions column-primary page-title']/strong/a")) //$NON-NLS-1$
@@ -194,7 +199,7 @@ public class WPCommentContestPluginTest {
 		selenium.click("id=screen-options-apply"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		final WebElement contestLink2 = driver
-				.findElement(By.xpath(CONTEST_LK_XPATH));
+				.findElement(By.xpath(CONTEST_LK1_XPATH));
 		selenium.open(contestLink2.getAttribute("href")); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH2Tag(driver, "Comment Contest");
@@ -267,7 +272,7 @@ public class WPCommentContestPluginTest {
 
 	private static void assertTestCommentsInTable(final WebDriver driver)
 			throws UtilsException {
-		openCommentContestPluginOnArticleNumber1(driver);
+		connectThenOpenCommentContestPluginOnArticleNumber1(driver);
 		driver.findElement(By.xpath("//div[@id='contestForm']/table")); //$NON-NLS-1$
 		final List<WebElement> linesElt = driver.findElements(
 				By.xpath("//div[@id='contestForm']/table/tbody/tr")); //$NON-NLS-1$
@@ -358,7 +363,7 @@ public class WPCommentContestPluginTest {
 
 	private static void assertTestJustDraw(final WebDriver driver)
 			throws UtilsException {
-		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
 				driver);
 		final String nbWinners = selenium.getValue("id=zwpcc_nb_winners"); //$NON-NLS-1$
 		Assertions.assertEquals(1, Integer.parseInt(nbWinners));
@@ -438,7 +443,7 @@ public class WPCommentContestPluginTest {
 
 	private static void assertTestDrawTwoComments(final WebDriver driver)
 			throws UtilsException {
-		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
 				driver);
 		selenium.type("id=zwpcc_nb_winners", "2"); //$NON-NLS-1$ //$NON-NLS-2$
 		launchContestThenAssertNbWinners(selenium, driver, 2);
@@ -494,7 +499,7 @@ public class WPCommentContestPluginTest {
 
 	private static void assertTestDateSelection(final WebDriver driver)
 			throws UtilsException {
-		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
 				driver);
 		expandFilters(driver, selenium);
 		Assertions.assertFalse(
@@ -623,7 +628,7 @@ public class WPCommentContestPluginTest {
 
 	private static void assertTestAliasLimitation(final WebDriver driver)
 			throws UtilsException {
-		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
 				driver);
 		expandFilters(driver, selenium);
 		Assertions.assertFalse(
@@ -759,7 +764,7 @@ public class WPCommentContestPluginTest {
 
 	private static void assertTestEmailLimitation(final WebDriver driver)
 			throws UtilsException {
-		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
 				driver);
 		expandFilters(driver, selenium);
 		Assertions.assertFalse(
@@ -844,7 +849,7 @@ public class WPCommentContestPluginTest {
 
 	private static void assertTestIPAddressLimitation(final WebDriver driver)
 			throws UtilsException {
-		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
 				driver);
 		expandFilters(driver, selenium);
 		Assertions.assertFalse(
@@ -928,7 +933,7 @@ public class WPCommentContestPluginTest {
 
 	private static void assertTestWords(final WebDriver driver)
 			throws UtilsException {
-		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
 				driver);
 		expandFilters(driver, selenium);
 		submitThenAssertCommentTextOneWord(selenium, driver, "", 0); //$NON-NLS-1$
@@ -1027,7 +1032,7 @@ public class WPCommentContestPluginTest {
 
 	private static void assertTestTimeBetween(final WebDriver driver)
 			throws UtilsException {
-		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
 				driver);
 		expandFilters(driver, selenium);
 		Assertions.assertFalse(
@@ -1131,7 +1136,7 @@ public class WPCommentContestPluginTest {
 
 	private static void assertTestUserRoles(final WebDriver driver)
 			throws UtilsException {
-		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
 				driver);
 		final List<WebElement> allAliasesElt = driver.findElements(By.xpath(
 				"//tbody[@id='the-list-contest']//span[@class='zhyweb_comment_contest_alias']")); //$NON-NLS-1$
@@ -1209,7 +1214,7 @@ public class WPCommentContestPluginTest {
 
 	private static void assertTestExpandFilters(final WebDriver driver)
 			throws UtilsException {
-		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
 				driver);
 		// Just some random ids (all are not mandatory)
 		final String[] idsToCheck = new String[] { "datepicker", "aliasConfig", //$NON-NLS-1$ //$NON-NLS-2$
@@ -1272,7 +1277,7 @@ public class WPCommentContestPluginTest {
 
 	private static void assertTestTooltip(final WebDriver driver)
 			throws UtilsException {
-		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
 				driver);
 		Assertions.assertFalse(selenium.isVisible("id=tiptip_holder")); //$NON-NLS-1$
 		final List<WebElement> allHelpsElt = driver
@@ -1343,7 +1348,7 @@ public class WPCommentContestPluginTest {
 
 	private static void assertTestCheatOrDelete(final WebDriver driver)
 			throws UtilsException {
-		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
 				driver);
 		scrollToY(driver, 400);
 		final WebElement cheat1 = driver.findElement(By
@@ -1477,7 +1482,7 @@ public class WPCommentContestPluginTest {
 
 	private static void assertTestContestRandom(final WebDriver driver)
 			throws UtilsException {
-		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
 				driver);
 		final Set<String> allWinners = new HashSet<>();
 		int attempts = 0;
@@ -1535,7 +1540,7 @@ public class WPCommentContestPluginTest {
 
 	private static void assertTestComboActions(final WebDriver driver)
 			throws UtilsException {
-		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
 				driver);
 		selenium.click(ID_DOACTION);
 		assertCommentsCheckInTable(driver, 0);
@@ -1584,13 +1589,121 @@ public class WPCommentContestPluginTest {
 		}
 	}
 
+	@SuppressWarnings({ STATIC_METHOD,
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
+	/*
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
+	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les
+	// navigateurs
+	// XXX Rajouter timeout
+	@TestFactory
+	public Collection<DynamicTest> testOtherArticle() {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> initTestOtherArticle(webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
+		}
+		return dynamicTests;
+	}
+
+	private static void initTestOtherArticle(final WebDriver driver) {
+		try {
+			if (!(driver instanceof ErrorDriver)) {
+				assertTestOtherArticle(driver);
+			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void assertTestOtherArticle(final WebDriver driver)
+			throws UtilsException {
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
+				driver);
+		final String newArticleId = generateOtherArticle(selenium, driver);
+		final String homeURL = wpInfo.getTestServer().getHomeURL();
+		selenium.open(homeURL + EDIT_PAGE);
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		final List<WebElement> newPostContest = driver.findElements(
+				By.xpath(String.format(CONTEST_LK_XPATH, newArticleId)));
+		Assertions.assertTrue(newPostContest.isEmpty());
+		Utils.generateFakeComments(driver, selenium, homeURL);
+		selenium.open(homeURL + EDIT_PAGE);
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		final List<WebElement> newPostContest2 = driver.findElements(
+				By.xpath(String.format(CONTEST_LK_XPATH, newArticleId)));
+		Assertions.assertTrue(newPostContest2.size() == 1);
+		openCommentContestPluginOnArticleNumber1(driver, selenium);
+		final List<String> commentsRef = new ArrayList<>();
+		final List<WebElement> commentColumns = driver.findElements(By.xpath(
+				"//tbody[@id='the-list-contest']//td[@class='comment column-comment']")); //$NON-NLS-1$
+		for (final WebElement webElement : commentColumns) {
+			final String text = webElement.getText();
+			if (!text.isEmpty()) {
+				commentsRef.add(text);
+			}
+		}
+		openCommentContestPluginOnArticleNumber(driver, selenium,
+				Integer.parseInt(newArticleId));
+		final List<String> commentsRef2 = new ArrayList<>();
+		final List<WebElement> commentColumns2 = driver.findElements(By.xpath(
+				"//tbody[@id='the-list-contest']//td[@class='comment column-comment']")); //$NON-NLS-1$
+		for (final WebElement webElement : commentColumns2) {
+			final String text = webElement.getText();
+			if (!text.isEmpty()) {
+				commentsRef2.add(text);
+			}
+		}
+		Assertions.assertTrue(Collections.disjoint(commentsRef, commentsRef2));
+	}
+
+	private static String generateOtherArticle(final Selenium selenium,
+			final WebDriver driver) throws UtilsException {
+		final String homeURL = wpInfo.getTestServer().getHomeURL();
+		selenium.open(
+				homeURL + "/wp-admin/admin.php?page=fakerpress&view=posts"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		selenium.type("id=fakerpress-field-qty-min", "1"); //$NON-NLS-1$ //$NON-NLS-2$
+		driver.findElement(By.xpath(
+				"//body//form[@class='fp-module-generator']/div[@class='fp-submit']/input")) //$NON-NLS-1$
+				.click();
+		final IRunnableCondition condition = new IRunnableCondition() {
+			@Override
+			public boolean run() {
+				final List<WebElement> foundElements = driver.findElements(By
+						.xpath("//div[@class='fp-response']//div[@class='notice is-dismissible notice-success']")); //$NON-NLS-1$
+				return (!foundElements.isEmpty());
+			}
+
+			// XXX toString c'est nul
+			@Override
+			public String toString() {
+				return "generate comments"; //$NON-NLS-1$
+			}
+		};
+		WpHtmlUtils.waitUntilCondition(condition, 60000);
+		return driver.findElement(By.xpath(
+				"//div[@class='fp-response']//div[@class='notice is-dismissible notice-success']/p/a")) //$NON-NLS-1$
+				.getText();
+	}
+
 	/*
 	 * TODO Tests:
-	 * - créer un deuxième article avec des commentaires et bien vérifier si on a les bons commentaires
 	 * - problèmes de couleurs dans les colonnes de choix (alternate + ni vert ni rouge)
 	 */
 
-	private static Selenium openCommentContestPluginOnArticleNumber1(
+	private static Selenium connectThenOpenCommentContestPluginOnArticleNumber1(
 			final WebDriver driver) throws UtilsException {
 		final Selenium selenium = new WebDriverBackedSelenium(driver,
 				wpInfo.getTestServer().getHomeURL());
@@ -1602,11 +1715,17 @@ public class WPCommentContestPluginTest {
 	private static void openCommentContestPluginOnArticleNumber1(
 			final WebDriver driver, final Selenium selenium)
 			throws UtilsException {
+		openCommentContestPluginOnArticleNumber(driver, selenium, 1);
+	}
+
+	private static void openCommentContestPluginOnArticleNumber(
+			final WebDriver driver, final Selenium selenium, final int number)
+			throws UtilsException {
 		final String homeURL = wpInfo.getTestServer().getHomeURL();
-		selenium.open(homeURL + "/wp-admin/edit.php"); //$NON-NLS-1$
+		selenium.open(homeURL + EDIT_PAGE);
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-		final WebElement contestLink = driver
-				.findElement(By.xpath(CONTEST_LK_XPATH));
+		final WebElement contestLink = driver.findElement(By.xpath(
+				String.format(CONTEST_LK_XPATH, Integer.toString(number))));
 		selenium.open(contestLink.getAttribute("href")); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 	}

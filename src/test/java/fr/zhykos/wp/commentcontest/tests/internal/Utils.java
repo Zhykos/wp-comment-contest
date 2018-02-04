@@ -54,6 +54,31 @@ final class Utils {
 		WpHtmlUtils.assertH1Tag(driver, wpInfo.getWebsiteName());
 		WpHtmlUtils.connect(driver, selenium, wpInfo);
 		// Generate fakes
+		generateFakeComments(driver, selenium, homeURL);
+		final Calendar fakeDate = getDateSecondDayOfCurrentMonth();
+		for (int i = 1; i <= FAKE_COMMENTS_NB; i++) {
+			modifyCommentDate(driver, selenium, homeURL, i, fakeDate);
+		}
+		fakeDate.add(Calendar.DATE, -1);
+		modifyCommentDate(driver, selenium, homeURL, FAKE_COMMENTS_NB + 1,
+				fakeDate);
+		fakeDate.add(Calendar.DATE, 2);
+		modifyCommentDate(driver, selenium, homeURL, 1, fakeDate);
+		modifyCommentAuthor(driver, selenium, homeURL, 1);
+		modifyCommentAuthor(driver, selenium, homeURL, 2);
+		modifyCommentEmail(driver, selenium, homeURL, 2);
+		modifyCommentEmail(driver, selenium, homeURL, 3);
+		modifyCommentIPAddress(3);
+		modifyCommentIPAddress(4);
+		modifyCommentText(driver, selenium, homeURL, 4,
+				"coucou texte commentaire4"); //$NON-NLS-1$
+		modifyCommentText(driver, selenium, homeURL, 5,
+				"coucou commentaire5 texte salut"); //$NON-NLS-1$
+	}
+
+	public static void generateFakeComments(final WebDriver driver,
+			final Selenium selenium, final String homeURL)
+			throws UtilsException {
 		selenium.open(
 				homeURL + "/wp-admin/admin.php?page=fakerpress&view=comments"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
@@ -78,25 +103,6 @@ final class Utils {
 			}
 		};
 		WpHtmlUtils.waitUntilCondition(condition, 60000);
-		final Calendar fakeDate = getDateSecondDayOfCurrentMonth();
-		for (int i = 1; i <= FAKE_COMMENTS_NB; i++) {
-			modifyCommentDate(driver, selenium, homeURL, i, fakeDate);
-		}
-		fakeDate.add(Calendar.DATE, -1);
-		modifyCommentDate(driver, selenium, homeURL, FAKE_COMMENTS_NB + 1,
-				fakeDate);
-		fakeDate.add(Calendar.DATE, 2);
-		modifyCommentDate(driver, selenium, homeURL, 1, fakeDate);
-		modifyCommentAuthor(driver, selenium, homeURL, 1);
-		modifyCommentAuthor(driver, selenium, homeURL, 2);
-		modifyCommentEmail(driver, selenium, homeURL, 2);
-		modifyCommentEmail(driver, selenium, homeURL, 3);
-		modifyCommentIPAddress(3);
-		modifyCommentIPAddress(4);
-		modifyCommentText(driver, selenium, homeURL, 4,
-				"coucou texte commentaire4"); //$NON-NLS-1$
-		modifyCommentText(driver, selenium, homeURL, 5,
-				"coucou commentaire5 texte salut"); //$NON-NLS-1$
 	}
 
 	private static void modifyCommentIPAddress(final int commentId)
