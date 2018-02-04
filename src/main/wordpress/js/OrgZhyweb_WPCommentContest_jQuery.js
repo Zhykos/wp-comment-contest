@@ -20,8 +20,8 @@
  * @param commentID Comment ID
  */
 function commentContestDelete(commentID) {
-    jQuery("#comment-contest-" + commentID).removeClass("cheatComment");
-    jQuery("#comment-contest-" + commentID).addClass("removedComment");
+	removeTrTdClass(commentID, "cheatComment");
+	addTrTdClass(commentID, "removedComment");
     jQuery("#restoreLink-" + commentID).show();
     jQuery("#deleteLink-" + commentID).hide();
     
@@ -34,7 +34,7 @@ function commentContestDelete(commentID) {
  * @param commentID Comment ID
  */
 function commentContestRestore(commentID) {
-    jQuery("#comment-contest-" + commentID).removeClass("removedComment");
+	removeTrTdClass(commentID, "removedComment");
     jQuery("#deleteLink-" + commentID).show();
     jQuery("#restoreLink-" + commentID).hide();
 }
@@ -44,8 +44,8 @@ function commentContestRestore(commentID) {
  * @param commentID Comment ID
  */
 function commentContestCheat(commentID) {
-    jQuery("#comment-contest-" + commentID).removeClass("removedComment");
-    jQuery("#comment-contest-" + commentID).addClass("cheatComment");
+	removeTrTdClass(commentID, "removedComment");
+	addTrTdClass(commentID, "cheatComment");
     jQuery("#stopCheatLink-" + commentID).show();
     jQuery("#cheatLink-" + commentID).hide();
 
@@ -53,12 +53,34 @@ function commentContestCheat(commentID) {
     jQuery("#restoreLink-" + commentID).hide();
 }
 
+function removeTrTdClass(commentID, classToRemove) {
+	var tr = jQuery("#comment-contest-" + commentID);
+	tr.removeClass(classToRemove);
+	tr.find('td').each (function() {
+		jQuery(this).removeClass(classToRemove);
+	});
+	tr.find('th').each (function() {
+		jQuery(this).removeClass(classToRemove);
+	}); 
+}
+
+function addTrTdClass(commentID, classToAdd) {
+	var tr = jQuery("#comment-contest-" + commentID);
+	tr.addClass(classToAdd);
+	tr.find('td').each (function() {
+		jQuery(this).addClass(classToAdd);
+	});
+	tr.find('th').each (function() {
+		jQuery(this).addClass(classToAdd);
+	}); 
+}
+
 /**
  * Selected comment won't win anymore (except if it will be randomly choosen during the contest last step)
  * @param commentID Comment ID
  */
 function commentContestStopCheat(commentID) {
-    jQuery("#comment-contest-" + commentID).removeClass("cheatComment");
+	removeTrTdClass(commentID, "cheatComment");
     jQuery("#stopCheatLink-" + commentID).hide();
     jQuery("#cheatLink-" + commentID).show();
 }

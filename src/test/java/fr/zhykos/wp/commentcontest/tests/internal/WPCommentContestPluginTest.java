@@ -1419,17 +1419,17 @@ public class WPCommentContestPluginTest {
 		selenium.click(ID_RESTORE_LINK_1);
 		selenium.click(ID_CHEAT_LINK_1);
 		final WebElement cc1Elt = driver
-				.findElement(By.id("comment-contest-1")); //$NON-NLS-1$
+				.findElement(By.xpath("//tr[@id='comment-contest-1']/th")); //$NON-NLS-1$
 		final String classCC1 = cc1Elt.getAttribute(CLASS_ATTRIBUTE);
 		Assertions.assertTrue(classCC1.contains(CHEAT_COMMENT));
 		final String bkgCC1 = cc1Elt.getCssValue("background-color"); //$NON-NLS-1$
 		selenium.click("id=cheatLink-2"); //$NON-NLS-1$
 		final WebElement cc2Elt = driver
-				.findElement(By.id("comment-contest-2")); //$NON-NLS-1$
+				.findElement(By.xpath("//tr[@id='comment-contest-2']/th")); //$NON-NLS-1$
 		final String classCC2 = cc2Elt.getAttribute(CLASS_ATTRIBUTE);
 		Assertions.assertTrue(classCC2.contains(CHEAT_COMMENT));
 		final String bkgCC2 = cc2Elt.getCssValue("background-color"); //$NON-NLS-1$
-		// Assertions.assertEquals(bkgCC1, bkgCC2); FIXME
+		Assertions.assertEquals(bkgCC1, bkgCC2);
 	}
 
 	private static void displayAllRowActions(final WebDriver driver) {
@@ -1700,7 +1700,7 @@ public class WPCommentContestPluginTest {
 
 	/*
 	 * TODO Tests:
-	 * - problèmes de couleurs dans les colonnes de choix (alternate + ni vert ni rouge)
+	 * - Tests sur la page "page"
 	 */
 
 	private static Selenium connectThenOpenCommentContestPluginOnArticleNumber1(
