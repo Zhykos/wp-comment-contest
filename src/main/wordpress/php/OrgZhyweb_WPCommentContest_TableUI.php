@@ -31,9 +31,9 @@ class OrgZhyweb_WPCommentContest_TableUI extends OrgZhyweb_WPCommentContest_Abst
         echo '<tbody id="the-list-contest">
             <tr class="no-items" style="display: none" id="comment-contest-not-found-tr"><td class="colspanchange" colspan="' . $this->get_column_count() . '">';
     }
-    
-    protected function displayTrTable($commentID, $rowClass) {
-        echo "<tr id='comment-contest-$commentID'$rowClass>";
+
+    protected function displayTrTable($commentID) {
+        echo "<tr id='comment-contest-$commentID'>";
     }
 
     protected function getActions($commentID) {

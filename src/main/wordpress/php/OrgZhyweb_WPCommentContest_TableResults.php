@@ -38,9 +38,9 @@ class OrgZhyweb_WPCommentContest_TableResults extends OrgZhyweb_WPCommentContest
         echo '<tbody id="the-list-contest">
             <tr class="no-items" style="display: none"><td class="colspanchange" colspan="' . $this->get_column_count() . '">';
     }
-    
-    protected function displayTrTable($commentID, $rowClass) {
-        echo "<tr id='result-comment-contest-$commentID' style='display:none'$rowClass>";
+
+    protected function displayTrTable($commentID) {
+        echo "<tr id='result-comment-contest-$commentID' style='display:none'>";
     }
 
     protected function getActions($commentID) {

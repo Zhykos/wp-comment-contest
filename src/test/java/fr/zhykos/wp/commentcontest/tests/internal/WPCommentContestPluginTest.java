@@ -302,7 +302,7 @@ public class WPCommentContestPluginTest {
 				}
 			}
 		}
-		// Assert.assertNotEquals(bckColorAlt2, bckColorAlt1); // FIXME
+		Assertions.assertNotEquals(bckColorAlt2, bckColorAlt1);
 		// Special links in table
 		final List<WebElement> actionSpans = driver.findElements(By.xpath(
 				"//tr[@id='comment-contest-1']/td[@class='comment column-comment']/div[@class='row-actions']/span")); //$NON-NLS-1$

@@ -30,15 +30,14 @@ abstract class OrgZhyweb_WPCommentContest_AbstractTableUI extends WP_List_Table 
      * Used to declare different tables with unique IDs.
      */
     abstract protected function displayTBodyStart();
-    
+
     /**
      * Display a table line start tag (&lt;tr ...&gt;).
      * Used to declare different lines with unique IDs.
      * @param int $commentID Comment ID
-     * @param string $rowClass Line class (CSS)
      */
-    abstract protected function displayTrTable($commentID, $rowClass);
-    
+    abstract protected function displayTrTable($commentID);
+
     /**
      * Get specific dynamic actions for each line
      * @param int $commentID Comment ID
@@ -77,19 +76,15 @@ abstract class OrgZhyweb_WPCommentContest_AbstractTableUI extends WP_List_Table 
         
         $this->items = $_comments;
     }
-    
+
     public function single_row($item) {
         global $comment;
-        static $row_class = '';
-        
         $comment = $item;
-        $row_class = ( $row_class == '' ? ' class="alternate"' : '' );
-
-        $this->displayTrTable($item->comment_ID, $row_class);
+        $this->displayTrTable($item->comment_ID);
         echo $this->single_row_columns($item);
         echo '</tr>';
     }
-    
+
     // Display user roles
     public function get_views() {
         global $wp_roles;
