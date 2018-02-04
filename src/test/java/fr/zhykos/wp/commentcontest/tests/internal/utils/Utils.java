@@ -85,6 +85,7 @@ public final class Utils {
 	private static final String WEBAPP = "webapp"; //$NON-NLS-1$
 	// XXX Mutualiser cette variable pour le chargement d'une page
 	private static final String PAGE_LOAD_TIMEOUT = "30000"; //$NON-NLS-1$
+	private static final int DELETE_MAXATPT = 10;
 
 	private Utils() {
 		// Do nothing and must not be called
@@ -189,21 +190,30 @@ public final class Utils {
 
 	public static void checkDeleteDirectory(final File directory)
 			throws UtilsException {
+		checkDeleteDirectory(directory, 1);
+	}
+
+	private static void checkDeleteDirectory(final File directory,
+			final int attempts) throws UtilsException {
+		if (attempts >= DELETE_MAXATPT) {
+			final String message = String.format(
+					"Cannot delete temp directory: '%s'", //$NON-NLS-1$
+					directory.getAbsolutePath());
+			throw new UtilsException(message);
+		}
 		try {
 			LOGGER.info(String.format("Deleting directory '%s'...", //$NON-NLS-1$
 					directory.getAbsolutePath()));
 			if (directory.exists()) {
 				FileUtils.deleteDirectory(directory);
+				directory.delete();
 			}
 			LOGGER.info(DONE_STR);
 		} catch (final IOException e) {
 			throw new UtilsException(e);
 		}
 		if (directory.exists()) {
-			final String message = String.format(
-					"Cannot delete temp directory: '%s'", //$NON-NLS-1$
-					directory.getAbsolutePath());
-			throw new UtilsException(message);
+			checkDeleteDirectory(directory, attempts + 1);
 		}
 	}
 
