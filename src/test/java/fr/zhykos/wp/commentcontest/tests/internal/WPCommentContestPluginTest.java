@@ -41,6 +41,9 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlug
  */
 public class WPCommentContestPluginTest {
 
+	private static final String ID_DOACTION = "id=doaction"; //$NON-NLS-1$
+	private static final String ID_SELECTALL1 = "id=cb-select-all-1"; //$NON-NLS-1$
+	private static final String CHEAT_COMMENT = "cheatComment"; //$NON-NLS-1$
 	private static final String STYLE_ATTRIBUTE = "style"; //$NON-NLS-1$
 	private static final String ID_PREFIX = "id="; //$NON-NLS-1$
 	private static final String ALIAS_CONFIG = "aliasConfig"; //$NON-NLS-1$
@@ -62,6 +65,7 @@ public class WPCommentContestPluginTest {
 	private static final String ID_DELETE_LINK_1 = ID_PREFIX + "deleteLink-1"; //$NON-NLS-1$
 	private static final String ID_RESTORE_LINK_1 = ID_PREFIX + "restoreLink-1"; //$NON-NLS-1$
 	private static final String ID_STOP_CHEAT_1 = ID_PREFIX + "stopCheatLink-1"; //$NON-NLS-1$
+
 	private static IWordPressPlugin wpRssPlg;
 	private static IWordPressPlugin fakerPlg;
 	private static IWordPressPluginToTest myPlugin;
@@ -532,12 +536,12 @@ public class WPCommentContestPluginTest {
 		selenium.type("id=dateMinutes", //$NON-NLS-1$
 				Integer.toString(fakeDate.get(Calendar.MINUTE) + 1));
 		submitThenAssertDateFieldsStyle(false, false, selenium, driver);
-		assertCommentsTable(driver, Utils.FAKE_COMMENTS_NB);
+		assertCommentsCheckInTable(driver, Utils.FAKE_COMMENTS_NB);
 		launchContestThenAssertNbWinners(selenium, driver, 1);
 		// XXX Je n'ai pas ajouté de tests en mettant des valeurs fausses...
 	}
 
-	private static void assertCommentsTable(final WebDriver driver,
+	private static void assertCommentsCheckInTable(final WebDriver driver,
 			final int expectedChecked) {
 		final List<WebElement> checkCols = driver.findElements(
 				By.xpath("//div[@id='contestForm']/table/tbody/tr/th/input")); //$NON-NLS-1$
@@ -635,18 +639,18 @@ public class WPCommentContestPluginTest {
 		submitThenAssertAliasFieldStyle(true, selenium, driver);
 		selenium.type(ID_ALIAS_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertAliasFieldStyle(false, selenium, driver);
-		uncheckAllTable(selenium, driver);
+		uncheckAllTableWhenFiltersAreExpanded(selenium, driver);
 		selenium.type(ID_ALIAS_CONFIG, "0"); //$NON-NLS-1$
 		submitThenAssertAliasFieldStyle(false, selenium, driver);
-		assertCommentsTable(driver, 2);
-		uncheckAllTable(selenium, driver);
+		assertCommentsCheckInTable(driver, 2);
+		uncheckAllTableWhenFiltersAreExpanded(selenium, driver);
 		selenium.type(ID_ALIAS_CONFIG, "2"); //$NON-NLS-1$
 		submitThenAssertAliasFieldStyle(false, selenium, driver);
-		assertCommentsTable(driver, 0);
-		uncheckAllTable(selenium, driver);
+		assertCommentsCheckInTable(driver, 0);
+		uncheckAllTableWhenFiltersAreExpanded(selenium, driver);
 		selenium.type(ID_ALIAS_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertAliasFieldStyle(false, selenium, driver);
-		assertCommentsTable(driver, 1);
+		assertCommentsCheckInTable(driver, 1);
 		Assertions.assertTrue(
 				driver.findElement(By.id("cb-select-2")).isSelected()); //$NON-NLS-1$
 		Assertions.assertEquals(Utils.getZhykosName(), driver.findElement(By
@@ -655,8 +659,8 @@ public class WPCommentContestPluginTest {
 		launchContestThenAssertNbWinners(selenium, driver, 1);
 	}
 
-	private static void uncheckAllTable(final Selenium selenium,
-			final WebDriver driver)
+	private static void uncheckAllTableWhenFiltersAreExpanded(
+			final Selenium selenium, final WebDriver driver)
 			throws UtilsException {
 		scrollToY(driver, 600);
 		uncheckAllTable(selenium);
@@ -664,14 +668,26 @@ public class WPCommentContestPluginTest {
 
 	private static void uncheckAllTable(final Selenium selenium)
 			throws UtilsException {
-		selenium.click("id=cb-select-all-1"); //$NON-NLS-1$
+		selenium.click(ID_SELECTALL1);
 		try {
 			Thread.sleep(1000);
 		} catch (final InterruptedException e) {
 			throw new UtilsException(e);
 		}
-		if (selenium.isChecked("id=cb-select-all-1")) { //$NON-NLS-1$
-			selenium.click("id=cb-select-all-1"); //$NON-NLS-1$
+		if (selenium.isChecked(ID_SELECTALL1)) {
+			selenium.click(ID_SELECTALL1);
+		}
+		try {
+			Thread.sleep(1000);
+		} catch (final InterruptedException e) {
+			throw new UtilsException(e);
+		}
+	}
+
+	private static void checkAllTable(final Selenium selenium)
+			throws UtilsException {
+		if (!selenium.isChecked(ID_SELECTALL1)) {
+			selenium.click(ID_SELECTALL1);
 		}
 		try {
 			Thread.sleep(1000);
@@ -759,18 +775,18 @@ public class WPCommentContestPluginTest {
 		submitThenAssertEmailFieldStyle(true, selenium, driver);
 		selenium.type(ID_EMAIL_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertEmailFieldStyle(false, selenium, driver);
-		uncheckAllTable(selenium, driver);
+		uncheckAllTableWhenFiltersAreExpanded(selenium, driver);
 		selenium.type(ID_EMAIL_CONFIG, "0"); //$NON-NLS-1$
 		submitThenAssertEmailFieldStyle(false, selenium, driver);
-		assertCommentsTable(driver, 2);
-		uncheckAllTable(selenium, driver);
+		assertCommentsCheckInTable(driver, 2);
+		uncheckAllTableWhenFiltersAreExpanded(selenium, driver);
 		selenium.type(ID_EMAIL_CONFIG, "2"); //$NON-NLS-1$
 		submitThenAssertEmailFieldStyle(false, selenium, driver);
-		assertCommentsTable(driver, 0);
-		uncheckAllTable(selenium, driver);
+		assertCommentsCheckInTable(driver, 0);
+		uncheckAllTableWhenFiltersAreExpanded(selenium, driver);
 		selenium.type(ID_EMAIL_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertEmailFieldStyle(false, selenium, driver);
-		assertCommentsTable(driver, 1);
+		assertCommentsCheckInTable(driver, 1);
 		Assertions.assertTrue(
 				driver.findElement(By.id("cb-select-3")).isSelected()); //$NON-NLS-1$
 		Assertions.assertTrue(driver.findElement(By.xpath(
@@ -844,18 +860,18 @@ public class WPCommentContestPluginTest {
 		submitThenAssertIpAddressFieldStyle(true, selenium, driver);
 		selenium.type(ID_IPADRS_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertIpAddressFieldStyle(false, selenium, driver);
-		uncheckAllTable(selenium, driver);
+		uncheckAllTableWhenFiltersAreExpanded(selenium, driver);
 		selenium.type(ID_IPADRS_CONFIG, "0"); //$NON-NLS-1$
 		submitThenAssertIpAddressFieldStyle(false, selenium, driver);
-		assertCommentsTable(driver, 2);
-		uncheckAllTable(selenium, driver);
+		assertCommentsCheckInTable(driver, 2);
+		uncheckAllTableWhenFiltersAreExpanded(selenium, driver);
 		selenium.type(ID_IPADRS_CONFIG, "2"); //$NON-NLS-1$
 		submitThenAssertIpAddressFieldStyle(false, selenium, driver);
-		assertCommentsTable(driver, 0);
-		uncheckAllTable(selenium, driver);
+		assertCommentsCheckInTable(driver, 0);
+		uncheckAllTableWhenFiltersAreExpanded(selenium, driver);
 		selenium.type(ID_IPADRS_CONFIG, "1"); //$NON-NLS-1$
 		submitThenAssertIpAddressFieldStyle(false, selenium, driver);
-		assertCommentsTable(driver, 1);
+		assertCommentsCheckInTable(driver, 1);
 		Assertions.assertTrue(
 				driver.findElement(By.id("cb-select-4")).isSelected()); //$NON-NLS-1$
 		Assertions.assertTrue(driver.findElement(By.xpath(
@@ -967,8 +983,8 @@ public class WPCommentContestPluginTest {
 		scrollToY(driver, 400);
 		selenium.type(ID_PREFIX + "words", words); //$NON-NLS-1$
 		selenium.click(ID_PREFIX + buttonId);
-		assertCommentsTable(driver, nbResult);
-		uncheckAllTable(selenium, driver);
+		assertCommentsCheckInTable(driver, nbResult);
+		uncheckAllTableWhenFiltersAreExpanded(selenium, driver);
 	}
 
 	@SuppressWarnings({ STATIC_METHOD,
@@ -1034,7 +1050,7 @@ public class WPCommentContestPluginTest {
 		final boolean visible = WpHtmlUtils.isVisible(
 				"zwpcc_timeBetweenFilter_error_message", selenium, driver); //$NON-NLS-1$
 		Assertions.assertTrue(visible);
-		uncheckAllTable(selenium, driver);
+		uncheckAllTableWhenFiltersAreExpanded(selenium, driver);
 		submitThenAssertTimeBetweenField(selenium, driver, 0, TMEBTW_FLNAME);
 		submitThenAssertTimeBetweenField(selenium, driver, 1,
 				"timeBetweenFilterEmail"); //$NON-NLS-1$
@@ -1043,8 +1059,8 @@ public class WPCommentContestPluginTest {
 		selenium.check(ID_TMEBTW_FLNAME);
 		selenium.check("id=timeBetweenFilterEmail"); //$NON-NLS-1$
 		selenium.check("id=timeBetweenFilterIP"); //$NON-NLS-1$
-		assertCommentsTable(driver, 0);
-		uncheckAllTable(selenium, driver);
+		assertCommentsCheckInTable(driver, 0);
+		uncheckAllTableWhenFiltersAreExpanded(selenium, driver);
 		selenium.uncheck("id=timeBetweenFilterEmail"); //$NON-NLS-1$
 		selenium.uncheck("id=timeBetweenFilterIP"); //$NON-NLS-1$
 		selenium.type(ID_TMEBTW_CONFIG, "1440"); //$NON-NLS-1$
@@ -1053,7 +1069,7 @@ public class WPCommentContestPluginTest {
 		selenium.check(ID_TMEBTW_FLNAME);
 		selenium.check(ID_TMEBTW_FLNAME); // A second check for fu***** Edge
 		submitThenAssertTimeBetweenFieldStyle(false, selenium, driver);
-		assertCommentsTable(driver, 1);
+		assertCommentsCheckInTable(driver, 1);
 		Assertions.assertTrue(selenium.isChecked("id=cb-select-2")); //$NON-NLS-1$
 	}
 
@@ -1062,8 +1078,8 @@ public class WPCommentContestPluginTest {
 			final String checkId) throws UtilsException {
 		selenium.check(ID_PREFIX + checkId);
 		submitThenAssertTimeBetweenFieldStyle(false, selenium, driver);
-		assertCommentsTable(driver, nbResult);
-		uncheckAllTable(selenium, driver);
+		assertCommentsCheckInTable(driver, nbResult);
+		uncheckAllTableWhenFiltersAreExpanded(selenium, driver);
 		selenium.uncheck(ID_PREFIX + checkId);
 	}
 
@@ -1144,9 +1160,9 @@ public class WPCommentContestPluginTest {
 			webElement.click();
 			final String classValue = webElement.getAttribute(CLASS_ATTRIBUTE);
 			if ("administrator".equals(classValue)) { //$NON-NLS-1$
-				assertCommentsTable(driver, 2);
+				assertCommentsCheckInTable(driver, 2);
 			} else {
-				assertCommentsTable(driver, 1);
+				assertCommentsCheckInTable(driver, 1);
 			}
 			scrollToY(driver, 200);
 			uncheckAllTable(selenium);
@@ -1400,13 +1416,13 @@ public class WPCommentContestPluginTest {
 		final WebElement cc1Elt = driver
 				.findElement(By.id("comment-contest-1")); //$NON-NLS-1$
 		final String classCC1 = cc1Elt.getAttribute(CLASS_ATTRIBUTE);
-		Assertions.assertTrue(classCC1.contains("cheatComment")); //$NON-NLS-1$
+		Assertions.assertTrue(classCC1.contains(CHEAT_COMMENT));
 		final String bkgCC1 = cc1Elt.getCssValue("background-color"); //$NON-NLS-1$
 		selenium.click("id=cheatLink-2"); //$NON-NLS-1$
 		final WebElement cc2Elt = driver
 				.findElement(By.id("comment-contest-2")); //$NON-NLS-1$
 		final String classCC2 = cc2Elt.getAttribute(CLASS_ATTRIBUTE);
-		Assertions.assertTrue(classCC2.contains("cheatComment")); //$NON-NLS-1$
+		Assertions.assertTrue(classCC2.contains(CHEAT_COMMENT));
 		final String bkgCC2 = cc2Elt.getCssValue("background-color"); //$NON-NLS-1$
 		// Assertions.assertEquals(bkgCC1, bkgCC2); FIXME
 	}
@@ -1477,6 +1493,95 @@ public class WPCommentContestPluginTest {
 		}
 		Assertions.assertTrue(allWinners.size() == Utils.FAKE_COMMENTS_NB + 1,
 				"All winners could not be drawn, is there any but in the random system?"); //$NON-NLS-1$
+	}
+
+	@SuppressWarnings({ STATIC_METHOD,
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
+	/*
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
+	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les
+	// navigateurs
+	// XXX Rajouter timeout
+	@TestFactory
+	public Collection<DynamicTest> testComboActions() {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> initTestComboActions(webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
+		}
+		return dynamicTests;
+	}
+
+	private static void initTestComboActions(final WebDriver driver) {
+		try {
+			if (!(driver instanceof ErrorDriver)) {
+				assertTestComboActions(driver);
+			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void assertTestComboActions(final WebDriver driver)
+			throws UtilsException {
+		final Selenium selenium = openCommentContestPluginOnArticleNumber1(
+				driver);
+		selenium.click(ID_DOACTION);
+		assertCommentsCheckInTable(driver, 0);
+		checkAllTable(selenium);
+		final int nbComments = Utils.FAKE_COMMENTS_NB + 1;
+		assertCommentsCheckInTable(driver, nbComments);
+		selenium.click(ID_DOACTION);
+		for (int i = 1; i <= nbComments; i++) {
+			final WebElement lineElt = driver
+					.findElement(By.id("comment-contest-" + i)); //$NON-NLS-1$
+			final String classLine = lineElt.getAttribute(CLASS_ATTRIBUTE);
+			Assertions.assertFalse(classLine.contains("removedComment"), //$NON-NLS-1$
+					String.format(
+							"Line %d must not have 'removedComment' class", //$NON-NLS-1$
+							Integer.valueOf(i)));
+			Assertions.assertFalse(classLine.contains(CHEAT_COMMENT),
+					String.format("Line %d must not have 'cheatComment' class", //$NON-NLS-1$
+							Integer.valueOf(i)));
+		}
+		selenium.select("id=bulk-action-selector-top", "value=delete"); //$NON-NLS-1$ //$NON-NLS-2$
+		selenium.click(ID_DOACTION);
+		for (int i = 1; i <= nbComments; i++) {
+			final WebElement lineElt = driver
+					.findElement(By.id("comment-contest-" + i)); //$NON-NLS-1$
+			final String classLine = lineElt.getAttribute(CLASS_ATTRIBUTE);
+			Assertions.assertTrue(classLine.contains("removedComment"), //$NON-NLS-1$
+					String.format("Line %d must have 'removedComment' class", //$NON-NLS-1$
+							Integer.valueOf(i)));
+			Assertions.assertFalse(classLine.contains(CHEAT_COMMENT),
+					String.format("Line %d must not have 'cheatComment' class", //$NON-NLS-1$
+							Integer.valueOf(i)));
+		}
+		selenium.select("id=bulk-action-selector-top", "value=restore"); //$NON-NLS-1$ //$NON-NLS-2$
+		selenium.click(ID_DOACTION);
+		for (int i = 1; i <= nbComments; i++) {
+			final WebElement lineElt = driver
+					.findElement(By.id("comment-contest-" + i)); //$NON-NLS-1$
+			final String classLine = lineElt.getAttribute(CLASS_ATTRIBUTE);
+			Assertions.assertFalse(classLine.contains("removedComment"), //$NON-NLS-1$
+					String.format(
+							"Line %d must not have 'removedComment' class", //$NON-NLS-1$
+							Integer.valueOf(i)));
+			Assertions.assertFalse(classLine.contains(CHEAT_COMMENT),
+					String.format("Line %d must not have 'cheatComment' class", //$NON-NLS-1$
+							Integer.valueOf(i)));
+		}
 	}
 
 	/*
