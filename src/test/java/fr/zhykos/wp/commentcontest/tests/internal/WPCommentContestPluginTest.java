@@ -31,6 +31,7 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.BrowserUtils.ErrorDriver
 import fr.zhykos.wp.commentcontest.tests.internal.utils.IWordPressInformation;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils.IRunnableCondition;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils.Translations;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlugin;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginCatalog;
@@ -1667,44 +1668,101 @@ public class WPCommentContestPluginTest {
 				Collections.disjoint(commentsArticle, commentsPage));
 	}
 
-	// private static String generateOtherArticle(final Selenium selenium,
-	// final WebDriver driver) throws UtilsException {
-	// final String homeURL = wpInfo.getTestServer().getHomeURL();
-	// selenium.open(
-	// homeURL + "/wp-admin/admin.php?page=fakerpress&view=posts");
-	// //$NON-NLS-1$
-	// selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-	// selenium.type("id=fakerpress-field-qty-min", "1"); //$NON-NLS-1$
-	// //$NON-NLS-2$
-	// driver.findElement(By.xpath(
-	// "//body//form[@class='fp-module-generator']/div[@class='fp-submit']/input"))
-	// //$NON-NLS-1$
-	// .click();
-	// final IRunnableCondition condition = new IRunnableCondition() {
-	// @Override
-	// public boolean run() {
-	// final List<WebElement> foundElements = driver.findElements(By
-	// .xpath("//div[@class='fp-response']//div[@class='notice is-dismissible
-	// notice-success']")); //$NON-NLS-1$
-	// return (!foundElements.isEmpty());
-	// }
-	//
-	// // XXX toString c'est nul
-	// @Override
-	// public String toString() {
-	// return "generate comments"; //$NON-NLS-1$
-	// }
-	// };
-	// WpHtmlUtils.waitUntilCondition(condition, 60000);
-	// return driver.findElement(By.xpath(
-	// "//div[@class='fp-response']//div[@class='notice is-dismissible
-	// notice-success']/p/a")) //$NON-NLS-1$
-	// .getText();
-	// }
-
+	@SuppressWarnings({ STATIC_METHOD,
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
 	/*
-	 * TODO : générer un article sans commentaire et vérifier qu'on ne puisse pas lancer de concours dessus
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
 	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les
+	// navigateurs
+	// XXX Rajouter timeout
+	@TestFactory
+	public Collection<DynamicTest> testNoCommentArticle() {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> initTestNoCommentArticle(webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
+		}
+		return dynamicTests;
+	}
+
+	private static void initTestNoCommentArticle(final WebDriver driver) {
+		try {
+			if (!(driver instanceof ErrorDriver)) {
+				assertTestNoCommentArticle(driver);
+			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void assertTestNoCommentArticle(final WebDriver driver)
+			throws UtilsException {
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
+				driver);
+		final String newArticleId = generateOtherArticle(selenium, driver);
+		final String homeURL = wpInfo.getTestServer().getHomeURL();
+		selenium.open(homeURL + EDIT_PAGE);
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		driver.findElement(By.xpath(String.format(CONTEST_LK_XPATH, "1"))); //$NON-NLS-1$
+		final List<WebElement> contestLinks = driver.findElements(
+				By.xpath(String.format(CONTEST_LK_XPATH, newArticleId)));
+		Assertions.assertTrue(contestLinks.isEmpty());
+		selenium.open(homeURL
+				+ "/wp-admin/edit-comments.php?page=orgZhyweb-wpCommentContest&postID=" //$NON-NLS-1$
+				+ newArticleId);
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		WpHtmlUtils.assertH2Tag(driver, "Comment Contest");
+		final String pageContents = selenium.getText("id=zwpcc_form"); //$NON-NLS-1$
+		Assertions.assertTrue(pageContents.contains(
+				"Debug : Le paramètre 'post' dans l'URL n'est pas valide"));
+		selenium.open(homeURL
+				+ "/wp-admin/edit-comments.php?page=orgZhyweb-wpCommentContest&postID=" //$NON-NLS-1$
+				+ "aaa"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		Assertions.assertTrue(pageContents.contains(
+				"Debug : Le paramètre 'post' dans l'URL n'est pas valide"));
+	}
+
+	private static String generateOtherArticle(final Selenium selenium,
+			final WebDriver driver) throws UtilsException {
+		final String homeURL = wpInfo.getTestServer().getHomeURL();
+		selenium.open(
+				homeURL + "/wp-admin/admin.php?page=fakerpress&view=posts"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		selenium.type("id=fakerpress-field-qty-min", "1"); //$NON-NLS-1$ //$NON-NLS-2$
+		driver.findElement(By.xpath(
+				"//body//form[@class='fp-module-generator']/div[@class='fp-submit']/input")) //$NON-NLS-1$
+				.click();
+		final IRunnableCondition condition = new IRunnableCondition() {
+			@Override
+			public boolean run() {
+				final List<WebElement> foundElements = driver.findElements(By
+						.xpath("//div[@class='fp-response']//div[@class='notice is-dismissible notice-success']")); //$NON-NLS-1$
+				return (!foundElements.isEmpty());
+			}
+
+			// XXX toString c'est nul
+			@Override
+			public String toString() {
+				return "generate comments"; //$NON-NLS-1$
+			}
+		};
+		WpHtmlUtils.waitUntilCondition(condition, 60000);
+		return driver.findElement(By.xpath(
+				"//div[@class='fp-response']//div[@class='notice is-dismissible notice-success']/p/a")) //$NON-NLS-1$
+				.getText();
+	}
 
 	private static Selenium connectThenOpenCommentContestPluginOnArticleNumber1(
 			final WebDriver driver) throws UtilsException {
