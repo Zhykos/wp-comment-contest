@@ -79,9 +79,33 @@ final class Utils {
 	public static void generateFakeComments(final WebDriver driver,
 			final Selenium selenium, final String homeURL)
 			throws UtilsException {
+		generateFakeComments(driver, selenium, homeURL, "articles");
+	}
+
+	public static void generateFakeCommentsOnPages(final WebDriver driver,
+			final Selenium selenium, final String homeURL)
+			throws UtilsException {
+		generateFakeComments(driver, selenium, homeURL, "pages");
+	}
+
+	private static void generateFakeComments(final WebDriver driver,
+			final Selenium selenium, final String homeURL,
+			final String postType) throws UtilsException {
 		selenium.open(
 				homeURL + "/wp-admin/admin.php?page=fakerpress&view=comments"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(PAGE_LOAD_TIMEOUT);
+		if ("pages".equals(postType)) { // XXX Utiliser un enum !
+			selenium.click("id=s2id_fakerpress-field-post_types"); //$NON-NLS-1$
+			selenium.type("id=s2id_autogen2", "Pages"); //$NON-NLS-1$ //$NON-NLS-2$
+			selenium.keyPress("id=s2id_autogen2", "\\13"); //$NON-NLS-1$ //$NON-NLS-2$
+			final List<WebElement> postTypes = driver.findElements(By.xpath(
+					"//div[@id='s2id_fakerpress-field-post_types']/ul[@class='select2-choices']/li[@class='select2-search-choice']/a")); //$NON-NLS-1$
+			Assertions.assertEquals(2, postTypes.size());
+			postTypes.get(0).click();
+			final List<WebElement> postTypes2 = driver.findElements(By.xpath(
+					"//div[@id='s2id_fakerpress-field-post_types']/ul[@class='select2-choices']/li[@class='select2-search-choice']/a")); //$NON-NLS-1$
+			Assertions.assertEquals(1, postTypes2.size());
+		}
 		selenium.type("id=fakerpress-field-qty-min", //$NON-NLS-1$
 				String.valueOf(FAKE_COMMENTS_NB));
 		selenium.uncheck("id=fakerpress-field-use_html-1"); //$NON-NLS-1$

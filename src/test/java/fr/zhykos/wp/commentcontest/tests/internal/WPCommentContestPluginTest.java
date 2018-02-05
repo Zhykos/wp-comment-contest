@@ -31,7 +31,6 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.BrowserUtils.ErrorDriver
 import fr.zhykos.wp.commentcontest.tests.internal.utils.IWordPressInformation;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils;
-import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils.IRunnableCondition;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils.Translations;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlugin;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginCatalog;
@@ -1603,11 +1602,11 @@ public class WPCommentContestPluginTest {
 	// navigateurs
 	// XXX Rajouter timeout
 	@TestFactory
-	public Collection<DynamicTest> testOtherArticle() {
+	public Collection<DynamicTest> testOnPage() {
 		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
 		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
 		for (final WebDriver webDriver : allDrivers) {
-			final Executable exec = () -> initTestOtherArticle(webDriver);
+			final Executable exec = () -> initTestOnPage(webDriver);
 			final String testName = String.format(TEST_ON_BROWSER, webDriver);
 			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
 			dynamicTests.add(test);
@@ -1615,10 +1614,10 @@ public class WPCommentContestPluginTest {
 		return dynamicTests;
 	}
 
-	private static void initTestOtherArticle(final WebDriver driver) {
+	private static void initTestOnPage(final WebDriver driver) {
 		try {
 			if (!(driver instanceof ErrorDriver)) {
-				assertTestOtherArticle(driver);
+				assertTestOnPage(driver);
 			}
 		} catch (final UtilsException e) {
 			Assertions.fail(e);
@@ -1627,80 +1626,84 @@ public class WPCommentContestPluginTest {
 		}
 	}
 
-	private static void assertTestOtherArticle(final WebDriver driver)
+	private static void assertTestOnPage(final WebDriver driver)
 			throws UtilsException {
 		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
 				driver);
-		final String newArticleId = generateOtherArticle(selenium, driver);
-		final String homeURL = wpInfo.getTestServer().getHomeURL();
-		selenium.open(homeURL + EDIT_PAGE);
-		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-		final List<WebElement> newPostContest = driver.findElements(
-				By.xpath(String.format(CONTEST_LK_XPATH, newArticleId)));
-		Assertions.assertTrue(newPostContest.isEmpty());
-		Utils.generateFakeComments(driver, selenium, homeURL);
-		selenium.open(homeURL + EDIT_PAGE);
-		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-		final List<WebElement> newPostContest2 = driver.findElements(
-				By.xpath(String.format(CONTEST_LK_XPATH, newArticleId)));
-		Assertions.assertTrue(newPostContest2.size() == 1);
-		openCommentContestPluginOnArticleNumber1(driver, selenium);
-		final List<String> commentsRef = new ArrayList<>();
+		final List<String> commentsArticle = new ArrayList<>();
 		final List<WebElement> commentColumns = driver.findElements(By.xpath(
 				"//tbody[@id='the-list-contest']//td[@class='comment column-comment']")); //$NON-NLS-1$
 		for (final WebElement webElement : commentColumns) {
 			final String text = webElement.getText();
 			if (!text.isEmpty()) {
-				commentsRef.add(text);
+				commentsArticle.add(text);
 			}
 		}
-		openCommentContestPluginOnArticleNumber(driver, selenium,
-				Integer.parseInt(newArticleId));
-		final List<String> commentsRef2 = new ArrayList<>();
+		final String homeURL = wpInfo.getTestServer().getHomeURL();
+		selenium.open(homeURL + EDIT_PAGE + "?post_type=page"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		final List<WebElement> pageContest = driver
+				.findElements(By.xpath(String.format(CONTEST_LK_XPATH, "2"))); //$NON-NLS-1$
+		if (pageContest.isEmpty()) {
+			Utils.generateFakeCommentsOnPages(driver, selenium, homeURL);
+		}
+		selenium.open(homeURL + EDIT_PAGE + "?post_type=page"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		final List<WebElement> pageContest2 = driver
+				.findElements(By.xpath(String.format(CONTEST_LK_XPATH, "2"))); //$NON-NLS-1$
+		Assertions.assertTrue(pageContest2.size() == 1);
+		openCommentContestPluginOnPostNumber(driver, selenium, 2,
+				EDIT_PAGE + "?post_type=page"); //$NON-NLS-1$
+		final List<String> commentsPage = new ArrayList<>();
 		final List<WebElement> commentColumns2 = driver.findElements(By.xpath(
 				"//tbody[@id='the-list-contest']//td[@class='comment column-comment']")); //$NON-NLS-1$
 		for (final WebElement webElement : commentColumns2) {
 			final String text = webElement.getText();
 			if (!text.isEmpty()) {
-				commentsRef2.add(text);
+				commentsPage.add(text);
 			}
 		}
-		Assertions.assertTrue(Collections.disjoint(commentsRef, commentsRef2));
+		Assertions.assertTrue(
+				Collections.disjoint(commentsArticle, commentsPage));
 	}
 
-	private static String generateOtherArticle(final Selenium selenium,
-			final WebDriver driver) throws UtilsException {
-		final String homeURL = wpInfo.getTestServer().getHomeURL();
-		selenium.open(
-				homeURL + "/wp-admin/admin.php?page=fakerpress&view=posts"); //$NON-NLS-1$
-		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-		selenium.type("id=fakerpress-field-qty-min", "1"); //$NON-NLS-1$ //$NON-NLS-2$
-		driver.findElement(By.xpath(
-				"//body//form[@class='fp-module-generator']/div[@class='fp-submit']/input")) //$NON-NLS-1$
-				.click();
-		final IRunnableCondition condition = new IRunnableCondition() {
-			@Override
-			public boolean run() {
-				final List<WebElement> foundElements = driver.findElements(By
-						.xpath("//div[@class='fp-response']//div[@class='notice is-dismissible notice-success']")); //$NON-NLS-1$
-				return (!foundElements.isEmpty());
-			}
-
-			// XXX toString c'est nul
-			@Override
-			public String toString() {
-				return "generate comments"; //$NON-NLS-1$
-			}
-		};
-		WpHtmlUtils.waitUntilCondition(condition, 60000);
-		return driver.findElement(By.xpath(
-				"//div[@class='fp-response']//div[@class='notice is-dismissible notice-success']/p/a")) //$NON-NLS-1$
-				.getText();
-	}
+	// private static String generateOtherArticle(final Selenium selenium,
+	// final WebDriver driver) throws UtilsException {
+	// final String homeURL = wpInfo.getTestServer().getHomeURL();
+	// selenium.open(
+	// homeURL + "/wp-admin/admin.php?page=fakerpress&view=posts");
+	// //$NON-NLS-1$
+	// selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+	// selenium.type("id=fakerpress-field-qty-min", "1"); //$NON-NLS-1$
+	// //$NON-NLS-2$
+	// driver.findElement(By.xpath(
+	// "//body//form[@class='fp-module-generator']/div[@class='fp-submit']/input"))
+	// //$NON-NLS-1$
+	// .click();
+	// final IRunnableCondition condition = new IRunnableCondition() {
+	// @Override
+	// public boolean run() {
+	// final List<WebElement> foundElements = driver.findElements(By
+	// .xpath("//div[@class='fp-response']//div[@class='notice is-dismissible
+	// notice-success']")); //$NON-NLS-1$
+	// return (!foundElements.isEmpty());
+	// }
+	//
+	// // XXX toString c'est nul
+	// @Override
+	// public String toString() {
+	// return "generate comments"; //$NON-NLS-1$
+	// }
+	// };
+	// WpHtmlUtils.waitUntilCondition(condition, 60000);
+	// return driver.findElement(By.xpath(
+	// "//div[@class='fp-response']//div[@class='notice is-dismissible
+	// notice-success']/p/a")) //$NON-NLS-1$
+	// .getText();
+	// }
 
 	/*
-	 * TODO Tests:
-	 * - Tests sur la page "page"
+	 * TODO : générer un article sans commentaire et vérifier qu'on ne puisse pas lancer de concours dessus
 	 */
 
 	private static Selenium connectThenOpenCommentContestPluginOnArticleNumber1(
@@ -1721,8 +1724,15 @@ public class WPCommentContestPluginTest {
 	private static void openCommentContestPluginOnArticleNumber(
 			final WebDriver driver, final Selenium selenium, final int number)
 			throws UtilsException {
+		openCommentContestPluginOnPostNumber(driver, selenium, number,
+				EDIT_PAGE);
+	}
+
+	private static void openCommentContestPluginOnPostNumber(
+			final WebDriver driver, final Selenium selenium, final int number,
+			final String pageURL) throws UtilsException {
 		final String homeURL = wpInfo.getTestServer().getHomeURL();
-		selenium.open(homeURL + EDIT_PAGE);
+		selenium.open(homeURL + pageURL);
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		final WebElement contestLink = driver.findElement(By.xpath(
 				String.format(CONTEST_LK_XPATH, Integer.toString(number))));
