@@ -56,7 +56,7 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlug
  */
 public final class Utils {
 
-	private interface IDatabase {
+	public interface IDatabase {
 		String getAddress();
 
 		String getLogin();
@@ -229,7 +229,7 @@ public final class Utils {
 		deployPluginToTest(wpRunDir, pluginToTest);
 		server.start();
 		final IWordPressInformation wpInfo = configureWordpress(server,
-				pluginToTest, otherPlugins);
+				pluginToTest, otherPlugins, wpRunDir);
 		LOGGER.info(DONE_STR);
 		return wpInfo;
 	}
@@ -268,7 +268,8 @@ public final class Utils {
 
 	private static IWordPressInformation configureWordpress(
 			final ITestServer server, final IWordPressPluginToTest pluginToTest,
-			final IWordPressPlugin[] otherPlugins) throws UtilsException {
+			final IWordPressPlugin[] otherPlugins, final File wpRunDir)
+			throws UtilsException {
 		final WebDriver driver = BrowserUtils
 				.createAllCompatibleDriversAndGetTheBetter();
 		try {
@@ -359,6 +360,11 @@ public final class Utils {
 				public String getWebsiteName() {
 					return websiteName;
 				}
+
+				@Override
+				public File getInstallDir() {
+					return wpRunDir;
+				}
 			};
 		} finally {
 			driver.quit();
@@ -405,7 +411,7 @@ public final class Utils {
 		}
 	}
 
-	private static IDatabase getDatabaseInfo() {
+	public static IDatabase getDatabaseInfo() {
 		return new IDatabase() {
 			@Override
 			public String getPassword() {

@@ -1,5 +1,12 @@
 package fr.zhykos.wp.commentcontest.tests.internal;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -10,18 +17,22 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.function.Executable;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.opera.OperaDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 
 import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
@@ -29,6 +40,7 @@ import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.BrowserUtils;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.BrowserUtils.ErrorDriver;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.IWordPressInformation;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.Utils.IDatabase;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.WpHtmlUtils.IRunnableCondition;
@@ -1798,11 +1810,17 @@ public class WPCommentContestPluginTest {
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 	}
 
+	@Test
+	public void toto() {
+		System.out.println();
+	}
+
 	@AfterAll
-	public static void afterAll() {
+	public static void afterAll() throws IOException, UtilsException {
 		if (wpInfo != null) {
+			reportTests();
 			try {
-				System.out.println("PASSWORD = (" + wpInfo.getPassword() + ")");
+//				System.out.println("PASSWORD = (" + wpInfo.getPassword() + ")");
 				wpInfo.getTestServer().stop();
 			} catch (final Exception e) {
 				Assertions.fail(e.getMessage());
@@ -1814,6 +1832,71 @@ public class WPCommentContestPluginTest {
 		// fail();
 		// TODO Lister les navigateurs testés avec des détails genre le numéro de version
 		// TODO Afficher le mot de passe en debug (avec un "-D")
+	}
+
+	@SuppressWarnings("PMD.SystemPrintln")
+	/*
+	 * @SuppressWarnings("PMD.SystemPrintln") tcicognani: report method in console
+	 */
+	private static void reportTests() throws IOException, UtilsException {
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		System.out.println("-------------------------------------------------"); //$NON-NLS-1$
+		System.out.println("Tests launched by Zhykos WordPress automatic tests 0.1.0"); //$NON-NLS-1$
+		System.out.println("WordPress version " + getWordPressVersion()); //$NON-NLS-1$
+		System.out.println("DBMS: " + getDBVersion()); //$NON-NLS-1$
+		System.out.println(String.format("OS: %s version %s %s", //$NON-NLS-1$
+				System.getProperty("os.name"), System.getProperty("os.version"), //$NON-NLS-1$ //$NON-NLS-2$
+				System.getProperty("os.arch"))); //$NON-NLS-1$
+		System.out.println("Browsers:"); //$NON-NLS-1$
+		for (final WebDriver webDriver : allDrivers) {
+			if (!(webDriver instanceof ErrorDriver)) {
+				final Capabilities cap = ((RemoteWebDriver) webDriver)
+						.getCapabilities();
+				System.out.println(
+						String.format(" - Driver %s based on %s version %s", //$NON-NLS-1$
+								webDriver.getClass().getSimpleName(),
+								cap.getBrowserName(), cap.getVersion()));
+				webDriver.quit();
+			}
+		}
+		System.out.println("-------------------------------------------------"); //$NON-NLS-1$
+	}
+
+	private static String getWordPressVersion() throws IOException {
+		final File dir = wpInfo.getInstallDir();
+		final File versionFile = new File(dir, "wp-includes/version.php"); //$NON-NLS-1$
+		final List<String> lines = FileUtils.readLines(versionFile,
+				Charset.defaultCharset());
+		String version = "UNKNOWN"; //$NON-NLS-1$
+		for (final String line : lines) {
+			if (line.startsWith("$wp_version")) { //$NON-NLS-1$
+				version = line.replaceAll(
+						"\\$wp_version = '(\\d+\\.\\d+\\.\\d+)';", "$1"); //$NON-NLS-1$ //$NON-NLS-2$
+				break;
+			}
+		}
+		return version;
+	}
+
+	private static String getDBVersion() throws UtilsException {
+		String result = null;
+		final IDatabase databaseInfo = fr.zhykos.wp.commentcontest.tests.internal.utils.Utils
+				.getDatabaseInfo();
+		final String url = String.format(
+				"jdbc:mysql://%s:%d/%s?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", //$NON-NLS-1$
+				databaseInfo.getAddress(),
+				Integer.valueOf(databaseInfo.getPort()),
+				databaseInfo.getBaseName());
+		try (final Connection connection = DriverManager.getConnection(url,
+				databaseInfo.getLogin(), databaseInfo.getPassword());) {
+			final DatabaseMetaData meta = connection.getMetaData();
+			result = String.format("%s version %s with JDBC %s", //$NON-NLS-1$
+					meta.getDatabaseProductName(),
+					meta.getDatabaseProductVersion(), meta.getDriverVersion());
+		} catch (final SQLException e) {
+			throw new UtilsException(e);
+		}
+		return result;
 	}
 
 }
