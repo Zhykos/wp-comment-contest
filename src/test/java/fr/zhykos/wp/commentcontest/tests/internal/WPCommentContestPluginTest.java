@@ -22,7 +22,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.junit.jupiter.api.function.Executable;
 import org.openqa.selenium.By;
@@ -1808,11 +1807,6 @@ public class WPCommentContestPluginTest {
 				String.format(CONTEST_LK_XPATH, Integer.toString(number))));
 		selenium.open(contestLink.getAttribute("href")); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-	}
-
-	@Test
-	public void toto() {
-		System.out.println();
 	}
 
 	@AfterAll
