@@ -1,13 +1,16 @@
 package fr.zhykos.wp.commentcontest.tests.internal.utils.server;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.Assertions;
 
 import fr.zhykos.wp.commentcontest.tests.internal.utils.Utils;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
+import fr.zhykos.wp.commentcontest.tests.internal.utils.os.ICommandExecResult;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.os.IOSUtils;
 
 /*
@@ -79,6 +82,26 @@ class WAMPServer extends AbstractServer {
 				getClass().getName() + ".testurlbase", //$NON-NLS-1$
 				getWordpressEmbeddedDir().getName());
 		return String.format("%s%s", super.getHomeURL(), testUrlBase); //$NON-NLS-1$
+	}
+
+	@Override
+	public String getVersion(final File installDir) throws UtilsException {
+		final File apacheDir = new File(
+				installDir.getParentFile().getParentFile(), "bin/apache"); //$NON-NLS-1$
+		final File[] apacheVersionDir = apacheDir
+				.listFiles(new FilenameFilter() {
+					@Override
+					public boolean accept(final File arg0, final String arg1) {
+						return arg1.matches("apache\\d+\\.\\d+\\.\\d+"); //$NON-NLS-1$
+					}
+				});
+		Assertions.assertEquals(1, apacheVersionDir.length);
+		final File httpdFile = new File(apacheVersionDir[0], "bin/httpd.exe"); //$NON-NLS-1$
+		final ICommandExecResult commandRes = IOSUtils.DEFAULT
+				.executeCommand(httpdFile.getAbsolutePath() + " -v"); //$NON-NLS-1$
+		final String output = commandRes.getOuput();
+		return "WAMP Server with: " //$NON-NLS-1$
+				+ output.replaceAll("Server version: (.*?)\r\n.*", "$1").trim(); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 }

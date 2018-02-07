@@ -53,4 +53,9 @@ class EmbeddedTomcatServer extends AbstractServer {
 		return wordpressDir;
 	}
 
+	@Override
+	public String getVersion(final File installDir) throws UtilsException {
+		return null;
+	}
+
 }

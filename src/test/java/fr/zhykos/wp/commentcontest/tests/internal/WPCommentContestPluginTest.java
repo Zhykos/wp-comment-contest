@@ -1840,10 +1840,13 @@ public class WPCommentContestPluginTest {
 	 */
 	private static void reportTests() throws IOException, UtilsException {
 		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		final String serverVersion = wpInfo.getTestServer()
+				.getVersion(wpInfo.getInstallDir());
 		System.out.println("-------------------------------------------------"); //$NON-NLS-1$
 		System.out.println("Tests launched by Zhykos WordPress automatic tests 0.1.0"); //$NON-NLS-1$
 		System.out.println("WordPress version " + getWordPressVersion()); //$NON-NLS-1$
 		System.out.println("DBMS: " + getDBVersion()); //$NON-NLS-1$
+		System.out.println("Server: " + serverVersion); //$NON-NLS-1$
 		System.out.println(String.format("OS: %s version %s %s", //$NON-NLS-1$
 				System.getProperty("os.name"), System.getProperty("os.version"), //$NON-NLS-1$ //$NON-NLS-2$
 				System.getProperty("os.arch"))); //$NON-NLS-1$
@@ -1856,10 +1859,14 @@ public class WPCommentContestPluginTest {
 						String.format(" - Driver %s based on %s version %s", //$NON-NLS-1$
 								webDriver.getClass().getSimpleName(),
 								cap.getBrowserName(), cap.getVersion()));
-				webDriver.quit();
 			}
 		}
 		System.out.println("-------------------------------------------------"); //$NON-NLS-1$
+		for (final WebDriver webDriver : allDrivers) {
+			if (!(webDriver instanceof ErrorDriver)) {
+				webDriver.quit();
+			}
+		}
 	}
 
 	private static String getWordPressVersion() throws IOException {

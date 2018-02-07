@@ -14,4 +14,6 @@ public interface ITestServer {
 
 	String getHomeURL() throws UtilsException;
 
+	String getVersion(File installDir) throws UtilsException;
+
 }
