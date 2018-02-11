@@ -260,8 +260,8 @@ public final class BrowserUtils {
 						"."); //$NON-NLS-1$
 				final String propertyKey = String.format("%s.download.%s", //$NON-NLS-1$
 						BrowserUtils.class.getName(), keySuffix);
-				final boolean download = Utils
-						.getBooleanSystemProperty(propertyKey, true);
+				final boolean download = Utils.getBooleanSystemProperty(
+						propertyKey, true) || Utils.hasToCleanWorkspace();
 				if (download) {
 					if (downloadURL.endsWith(".zip")) { //$NON-NLS-1$
 						final File driverZip = File.createTempFile("temp", //$NON-NLS-1$

@@ -43,6 +43,7 @@ import org.openqa.selenium.WebElement;
 import com.thoughtworks.selenium.Selenium;
 import com.thoughtworks.selenium.webdriven.WebDriverBackedSelenium;
 
+import fr.zhykos.wp.commentcontest.tests.internal.WPCommentContestPluginTest;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.min.IMin;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.min.IMinFactory;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.server.ITestServer;
@@ -264,6 +265,13 @@ public final class Utils {
 		final String systemProperty = System.getProperty(propertyKey,
 				Integer.toString(defaultInt));
 		return Integer.parseInt(systemProperty);
+	}
+
+	public static boolean hasToCleanWorkspace() {
+		// XXX On fait une référence à WPCommentContestPluginTest ici alors que c'est dégueux !!!!!!!!!
+		return getBooleanSystemProperty(
+				WPCommentContestPluginTest.class.getName() + ".cleanworkspace", //$NON-NLS-1$
+				true);
 	}
 
 	private static IWordPressInformation configureWordpress(

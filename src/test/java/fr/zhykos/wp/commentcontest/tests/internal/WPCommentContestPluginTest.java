@@ -87,6 +87,7 @@ public class WPCommentContestPluginTest {
 	private static IWordPressPluginToTest myPlugin;
 	private static IWordPressInformation wpInfo;
 
+	// TODO faire une méthode utilitaire pour l'initialisation globale afin de créer un framework générique de tests pour wordpress
 	@BeforeAll
 	public static void beforeAll() throws UtilsException {
 		wpRssPlg = IWordPressPluginCatalog.DEFAULT
@@ -97,14 +98,10 @@ public class WPCommentContestPluginTest {
 				new String[] { "js/OrgZhyweb_WPCommentContest_jQuery.js" }, //$NON-NLS-1$
 				new String[] {});
 
-		// TODO faire une méthode utilitaire pour l'initialisation globale afin
-		// de créer un framework générique de tests pour wordpress
 		final boolean cleanWorkspace = fr.zhykos.wp.commentcontest.tests.internal.utils.Utils
-				.getBooleanSystemProperty(
-						WPCommentContestPluginTest.class.getName()
-								+ ".cleanworkspace", //$NON-NLS-1$
-						true);
+				.hasToCleanWorkspace();
 		if (cleanWorkspace) {
+			// XXX Mettre le if dans cleanWorkspace() ????
 			fr.zhykos.wp.commentcontest.tests.internal.utils.Utils
 					.cleanWorkspace();
 		}
@@ -114,6 +111,7 @@ public class WPCommentContestPluginTest {
 								+ ".installwordpress", //$NON-NLS-1$
 						true);
 		if (installWordPress) {
+			// XXX Mettre le if dans installWordPress() ???
 			fr.zhykos.wp.commentcontest.tests.internal.utils.Utils
 					.installWordPress();
 		}
