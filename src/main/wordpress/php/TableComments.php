@@ -44,7 +44,7 @@ class TableComments extends AbstractTable {
             'stopcheat' => "<a href='javascript:;' onclick='commentContestStopCheat($commentID)' id='stopCheatLink-$commentID' class='stopCheatLink'>" . __('Stop cheating', "fr.zhykos.wordpress.commentcontest") . '</a>');
          return $actions;
     }
-    
+
     public function get_bulk_actions() {
 	$actions = array(
             'delete' => __('Delete', "fr.zhykos.wordpress.commentcontest"),

@@ -24,7 +24,7 @@ function commentContestDelete(commentID) {
 	addTrTdClass(commentID, "removedComment");
     jQuery("#restoreLink-" + commentID).show();
     jQuery("#deleteLink-" + commentID).hide();
-    
+
     jQuery("#stopCheatLink-" + commentID).hide();
     jQuery("#cheatLink-" + commentID).show();
 }
@@ -61,7 +61,7 @@ function removeTrTdClass(commentID, classToRemove) {
 	});
 	tr.find('th').each (function() {
 		jQuery(this).removeClass(classToRemove);
-	}); 
+	});
 }
 
 function addTrTdClass(commentID, classToAdd) {
@@ -72,7 +72,7 @@ function addTrTdClass(commentID, classToAdd) {
 	});
 	tr.find('th').each (function() {
 		jQuery(this).addClass(classToAdd);
-	}); 
+	});
 }
 
 /**
@@ -92,7 +92,7 @@ function selectRole(roleID) {
     // Browse all table lines
     jQuery('#contestForm tr').each(function() {
         var line = jQuery(this);
-        
+
         // Search for span tag with class "zwpcc_role" which is equal to "roleID"
         // A user can have several roles, separated by a pipe (|)
         var rolesStr = line.find('.zwpcc_role').text();
@@ -130,7 +130,7 @@ function fisherYates(myArray) {
  */
 function toggleFilters(pluginURL) {
     var filtersDIV = jQuery('#filters');
-    
+
     filtersDIV.fadeToggle("slow", "linear", function() {
         if (filtersDIV.is(':visible')) {
             jQuery('#filtersImg').attr('src', pluginURL + '/img/minus.png');
@@ -144,7 +144,7 @@ function toggleFilters(pluginURL) {
 // jQuery ready document
 
 jQuery(document).ready(function() {
-    
+
     function checkInputsOfWrongComments(testFunction, useName, useEmail, useIP, selectDuplicates, nbAuthEntries) {
         var duplicates = [];
         var line1nb = 0;
@@ -156,12 +156,12 @@ jQuery(document).ready(function() {
             if (useName) {
                 line1Name = line1.find('.zwpcc_alias').text();
             }
-            
+
             var line1Email = null;
             if (useEmail) {
                 line1Email = line1.find('.zwpcc_email').text();
             }
-            
+
             var line1IP = null;
             if (useIP) {
                 line1IP = line1.find('.zwpcc_ip').text();
@@ -201,7 +201,7 @@ jQuery(document).ready(function() {
                                         }
                                     });
                                 }
-                                
+
                                 line2.find('input[id^="cb-select"]').each(function() {
                                     var input = jQuery(this).val();
                                     if (jQuery.inArray(input, duplicates) === -1) {
@@ -216,12 +216,12 @@ jQuery(document).ready(function() {
             }
             line1nb++;
         });
-        
+
         // Sort numbers in case of they are not
         duplicates.sort(function(a, b) {
             return a - b;
         });
-    
+
         for (var i = 0; i < duplicates.length; i++) {
             var inputID = duplicates[i];
             if (i >= nbAuthEntries) {
@@ -229,14 +229,14 @@ jQuery(document).ready(function() {
             }
         }
     }
-    
+
     // ------------------------ Filter action ----------------------------------
-    
+
     function addFilterAction(actionID) {
         var useName = ('alias' === actionID);
         var useEmail = ('email' === actionID);
         var useIP = ('ip' === actionID);
-        
+
         jQuery('#' + actionID + 'AddressFilter').click(function() {
             // Clean
             jQuery('#zwpcc_' + actionID + 'Filter_error_message').hide();
@@ -256,15 +256,15 @@ jQuery(document).ready(function() {
             }
         });
     }
-    
+
     addFilterAction("ip");
     addFilterAction("email");
     addFilterAction("alias");
-    
+
     // ------------------------ end Filter action ------------------------------
-    
+
     // ------------------------ Time Between Two Comments action ---------------
-    
+
     jQuery('#timeBetweenFilter').click(function() {
         // Clean
         jQuery('#zwpcc_timeBetweenFilter_error_message').hide();
@@ -276,7 +276,7 @@ jQuery(document).ready(function() {
             var useName = jQuery('#timeBetweenFilterName').is(':checked');
             var useEmail = jQuery('#timeBetweenFilterEmail').is(':checked');
             var useIP = jQuery('#timeBetweenFilterIP').is(':checked');
-            
+
             if (useName || useEmail || useIP) {
                 checkInputsOfWrongComments(function(line1, line2) {
                     var time1 = line1.find('.zwpcc_timestamp').text();
@@ -293,21 +293,21 @@ jQuery(document).ready(function() {
             addCSSErrorElementID('timeBetween');
         }
     });
-    
+
     // ------------------------ end Time Between Two Comments action -----------
-    
+
     // ------------------------ Date filter ------------------------------------
-    
+
     jQuery('#datepicker').datepicker();
     jQuery('#datepicker').datepicker("option", "dateFormat", "mm/dd/yy");
-    
+
     jQuery('#dateSubmit').click(function() {
         // Clear error messages
         jQuery('#zwpcc_dateFilter_error_message').hide();
         removeCSSErrorElementID("datepicker");
         removeCSSErrorElementID("dateHours");
         removeCSSErrorElementID("dateMinutes");
-        
+
         // Check date format
         var dateFormatOk = false;
         var dateRegex = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
@@ -324,7 +324,7 @@ jQuery(document).ready(function() {
                 dateFormatOk = true;
             }
         }
-        
+
         if (dateFormatOk) {
             // Check hours format
             var dateHours = jQuery('#dateHours').val();
@@ -357,15 +357,15 @@ jQuery(document).ready(function() {
             addCSSErrorElementID("datepicker");
         }
     });
-    
+
     // ------------------------ END Date filter --------------------------------
-    
+
     // ------------------------ Words filter -----------------------------------
-    
+
     function selectLinesWithoutWords(all) {
         var wordsStr = jQuery('#words').val();
         var wordsArray = wordsStr.split(',');
-        
+
         if (wordsArray.length > 0) { // Optimization test
             for (var i = 0; i < wordsArray.length; i++) {
                 wordsArray[i] = wordsArray[i].trim().toLowerCase();
@@ -396,22 +396,22 @@ jQuery(document).ready(function() {
             });
         }
     }
-    
+
     jQuery('#wordsFilter').click(function() {
         selectLinesWithoutWords(false);
     });
-    
+
     jQuery('#allWordsFilter').click(function() {
         selectLinesWithoutWords(true);
     });
 
     // ------------------------ end Words filter -------------------------------
-    
+
     // ------------------------ Tooltips (Help) --------------------------------
 
     // Code from BackWPup - WordPress Backup Plugin
     // http://marketpress.com/product/backwpup-pro/
-    
+
     jQuery('.help').tipTip({
             'attribute': 'title',
             'fadeIn': 50,
@@ -422,7 +422,7 @@ jQuery(document).ready(function() {
     });
 
     jQuery(".help").tipTip();
-    
+
     // ------------------------ END Tooltips (Help) ----------------------------
 
 
@@ -439,21 +439,21 @@ jQuery(document).ready(function() {
             }
         });
     }
-    
+
     jQuery("#contestForm #doaction").click(function() {
         if (jQuery('#contestForm select[name="action"]').val() === 'delete') {
             deleteSelectedComments();
         }
     });
-    
+
     jQuery("#contestForm #doaction2").click(function() {
         if (jQuery('#contestForm select[name="action2"]').val() === 'delete') {
             deleteSelectedComments();
         }
     });
     // ------------------------ end DELETE COMMENTS FROM CONTEST ---------------
-    
-    
+
+
     // ------------------------ RESTORE COMMENTS FOR CONTEST -------------------
     /**
      * Restore all checked comments
@@ -467,21 +467,21 @@ jQuery(document).ready(function() {
             }
         });
     }
-    
+
     jQuery("#contestForm #doaction").click(function() {
         if (jQuery('#contestForm select[name="action"]').val() === 'restore') {
             restoreSelectedComments();
         }
     });
-    
+
     jQuery("#contestForm #doaction2").click(function() {
         if (jQuery('#contestForm select[name="action2"]').val() === 'restore') {
             restoreSelectedComments();
         }
     });
     // ------------------------ end RESTORE COMMENTS FOR CONTEST ---------------
-    
-    
+
+
     // ------------------------ RESULT TABLE -----------------------------------
     jQuery("#dialog-modal-winners").dialog({
         height: 500,
@@ -494,17 +494,17 @@ jQuery(document).ready(function() {
             var nbWinners = jQuery('#zwpcc_nb_winners').val();
             var commentsNormal = new Array();
             var commentsCheat = new Array();
-            
+
             // Get all comments ID which are used for the contest
             jQuery('#contestForm tr').each(function() {
                 var line = jQuery(this);
-                
+
                 // Get only normal and cheating lines
                 if (!line.hasClass("removedComment")) {
                     var commentID = line.find('.zwpcc_id').html();
 
                     // Don't get table header and footer
-                    if (commentID != null && commentID !== "") {                        
+                    if (commentID != null && commentID !== "") {
                         if (line.hasClass("cheatComment")) {
                             commentsCheat.push(commentID);
                         } else {
@@ -513,19 +513,19 @@ jQuery(document).ready(function() {
                     }
                 }
             });
-            
+
             // Before displaying results, reset table
             jQuery('#dialog-modal-winners tr[id^="result-comment-contest"]').each(function() {
                 jQuery(this).hide();
             });
-            
+
             // Randomize arrays
             fisherYates(commentsCheat);
             if (commentsCheat.length < nbWinners) {
                 // Optimisation : randomize array only if necessary
                 fisherYates(commentsNormal);
             }
-            
+
             // Show winners
             var comments = jQuery.merge(commentsCheat, commentsNormal);
             for (var i = 0; i < nbWinners && i < comments.length; i++) {
@@ -537,11 +537,11 @@ jQuery(document).ready(function() {
             }
         }
     });
-    
+
     // Launch contest Button
     jQuery("#zwpcc_form").submit(function() {
         launch = true;
-        
+
         // Clean all inputs
         jQuery("#zwpcc_nbWinners_error_message").hide();
         jQuery(this).find('input').each(function() {
@@ -549,7 +549,7 @@ jQuery(document).ready(function() {
         });
         jQuery("#winners-message-ok").hide();
         jQuery("#winners-message-error").hide();
-        
+
         // Check all values
         // "Number of winners" must be numeric
         var nbWinners = jQuery("#zwpcc_nb_winners").val();
@@ -558,7 +558,7 @@ jQuery(document).ready(function() {
             addCSSErrorElementID("zwpcc_nb_winners");
             jQuery("#zwpcc_nbWinners_error_message").show();
         }
-        
+
         // Launch contest?
         if (launch) {
             jQuery("#dialog-modal-winners").dialog("open");
@@ -567,21 +567,21 @@ jQuery(document).ready(function() {
         return false;
     });
     // ------------------------ end RESULT TABLE -------------------------------
-    
+
     // ------------------------ CSS Functions ----------------------------------
-    
+
     function addCSSErrorElementID(elementID) {
         jQuery("#" + elementID).css('border', '2px solid red');
     }
-    
+
     function removeCSSErrorElement(element) {
         element.css('border', '1px solid rgb(223,223,223)');
     }
-    
+
     function removeCSSErrorElementID(elementID) {
         removeCSSErrorElement(jQuery("#" + elementID));
     }
-    
+
     // ------------------------ end CSS Functions ------------------------------
 
     // ------------------------ Save Winners Action ----------------------------
@@ -609,5 +609,5 @@ jQuery(document).ready(function() {
     });
 
     // ------------------------ end Save Winners Action ------------------------
-    
+
 });

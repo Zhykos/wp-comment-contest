@@ -26,7 +26,7 @@ class TableResults extends AbstractTable {
     public function __construct($postID) {
         parent::__construct($postID);
     }
-    
+
     public function get_columns() {
         // Don't display checkboxes
         return array(
@@ -47,7 +47,7 @@ class TableResults extends AbstractTable {
         // No action
         return array();
     }
-    
+
     public function get_bulk_actions() {
         // No action
         return array();

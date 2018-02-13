@@ -24,7 +24,7 @@ require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 abstract class AbstractTable extends WP_List_Table {
     /** Post ID which contains comments to display */
     private $postID;
-    
+
     /**
      * Display the beginning of the table (table which contains comments).
      * Used to declare different tables with unique IDs.
@@ -44,7 +44,7 @@ abstract class AbstractTable extends WP_List_Table {
      * @return array(string=&gt;string) A dictionary with the action IDs and the HTML code to display for each action
      */
     abstract protected function getActions($commentID);
-    
+
     /**
      * Get the Javascript function call which allows to select comments with the same author's role
      * @param int $roleID Role ID
@@ -57,23 +57,23 @@ abstract class AbstractTable extends WP_List_Table {
         add_filter( 'comment_author', 'floated_admin_avatar' );
         $this->postID = $postID;
     }
-    
+
     public function get_columns() {
         return array(
             'cb' => '<input type="checkbox" />',
             'author' => __('Author', "fr.zhykos.wordpress.commentcontest"),
             'comment' => __('Comment', "fr.zhykos.wordpress.commentcontest"));
     }
-    
+
     public function prepare_items() {
         $_comments = get_comments(array('post_id' => $this->postID,
                                         'status' => 'approve'));
-        
+
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = array();
         $this->_column_headers = array($columns, $hidden, $sortable);
-        
+
         $this->items = $_comments;
     }
 
@@ -98,7 +98,7 @@ abstract class AbstractTable extends WP_List_Table {
         }
         return $roles;
     }
-   
+
     public function display() {
         extract($this->_args);
         $this->display_tablenav('top');
@@ -120,7 +120,7 @@ abstract class AbstractTable extends WP_List_Table {
         echo "</tbody></table>";
         $this->display_tablenav('bottom');
     }
-    
+
     /**
      * Display the column with the checkbox
      * @param Object $comment Current comment
@@ -131,7 +131,7 @@ abstract class AbstractTable extends WP_List_Table {
         <input id="cb-select-<?php echo $comment->comment_ID; ?>" type="checkbox" name="delete_comments[]" value="<?php echo $comment->comment_ID; ?>" />
         <?php
     }
-    
+
     /**
      * Get user roles by user ID.
      * @param  int $id User ID
@@ -155,7 +155,7 @@ abstract class AbstractTable extends WP_List_Table {
         }
         return $out;
     }
-    
+
     /**
      * Display the column with the author information
      * @param Object $comment Current comment
@@ -167,7 +167,7 @@ abstract class AbstractTable extends WP_List_Table {
         if ('http://' == $author_url) {
             $author_url = '';
         }
-        
+
         $author_url_display = preg_replace('|http://(www\.)?|i', '', $author_url);
         if (strlen($author_url_display) > 50) {
             $author_url_display = substr($author_url_display, 0, 49) . '...';
@@ -176,7 +176,7 @@ abstract class AbstractTable extends WP_List_Table {
         echo "<strong>";
         comment_author($comment->comment_ID);
         echo '</strong><br />';
-        
+
         if (!empty($author_url)) {
             echo "<a title='$author_url' href='$author_url'>$author_url_display</a><br />";
         }
@@ -184,7 +184,7 @@ abstract class AbstractTable extends WP_List_Table {
         if (!empty($comment->comment_author_email)) {
             echo "<a href='mailto:$comment->comment_author_email'>$comment->comment_author_email</a><br />";
         }
-        
+
         echo '<a href="edit-comments.php?s=';
         comment_author_IP($comment->comment_ID);
         echo '&amp;mode=detail';
@@ -194,32 +194,32 @@ abstract class AbstractTable extends WP_List_Table {
         echo '">';
         comment_author_IP($comment->comment_ID);
         echo '</a><br />';
-        
+
         // Add role in UI : used to select all users with the same role
         echo '<span style="display:none" class="zwpcc_role">';
         $roles = $this->wpse_58916_user_roles_by_id(get_user_by('login', get_comment_author($comment->comment_ID)));
         echo implode('|', array_keys($roles));
         echo '</span>';
-        
+
         // Add comment ID (used to get winners)
         echo '<span style="display:none" class="zwpcc_id">' . $comment->comment_ID . '</span>';
-        
+
         // Add comment date post
         echo '<span style="display:none" class="zwpcc_date">' . get_comment_date('YmdHi', $comment->comment_ID) . '</span>';
-        
+
         // Add comment timestamp post
         echo '<span style="display:none" class="zwpcc_timestamp">' . get_comment_date('U', $comment->comment_ID) . '</span>';
-        
+
         // Add comment IP address
         echo '<span style="display:none" class="zwpcc_ip">' . get_comment_author_IP($comment->comment_ID) . '</span>';
-        
+
         // Add comment email
         echo '<span style="display:none" class="zwpcc_email">' . $comment->comment_author_email . '</span>';
-        
+
         // Add comment alias
         echo '<span style="display:none" class="zwpcc_alias">' . get_comment_author($comment->comment_ID) . '</span>';
     }
-    
+
     /**
      * Display the column with the user's comment
      * @param Object $comment Current comment
@@ -251,9 +251,9 @@ abstract class AbstractTable extends WP_List_Table {
             <div class="comment_status"><?php echo $comment->comment_approved; ?></div>
             </div>
         <?php
-        
+
         $actions = $this->getActions($comment->comment_ID);
-        
+
         $i = 0;
         echo '<div class="row-actions">';
         foreach ($actions as $action => $link) {
@@ -265,5 +265,5 @@ abstract class AbstractTable extends WP_List_Table {
             echo "<span class='$action'>$sep$link</span>";
         }
         echo '</div>';
-    }    
+    }
 }

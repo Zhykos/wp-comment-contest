@@ -42,8 +42,8 @@
         <div id="zwpcc_emailFilter_error_message" style="color: red; display: none;"><?php _e('Wrong configuration! This number must be equals or greater than zero', "fr.zhykos.wordpress.commentcontest"); ?></div>
         <?php _e('Same email maximum use:', "fr.zhykos.wordpress.commentcontest"); ?> <input type="text" id="emailConfig" maxlength="2" size="3" value="1" />
         <br /><input type="button" class="button action" id="emailAddressFilter" value="<?php _e('Select comments with the same email', "fr.zhykos.wordpress.commentcontest"); ?>" />
-        
-        
+
+
         <br /><br />
         <h4><?php _e('IP address', "fr.zhykos.wordpress.commentcontest"); echo "<img src=\"$this->pluginDir/img/help.png\" alt=\"Help\" class=\"help\" title=\"". __("You can allow people with the same IP address to post several comments for the contest. This filter limits the maximum number of comments for the same IP address.<br />(ex. 0 means a IP address is not allowed to post more than one time; 2 means only two comments from the same IP address will be kept for the contest)", "fr.zhykos.wordpress.commentcontest") . "\" />"; ?></h4>
         <div id="zwpcc_ipFilter_error_message" style="color: red; display: none;"><?php _e('Wrong configuration! This number must be equals or greater than zero', "fr.zhykos.wordpress.commentcontest"); ?></div>
@@ -55,7 +55,7 @@
         <?php _e('Words (comma separated):', "fr.zhykos.wordpress.commentcontest"); ?> <input type="text" id="words" size="30" />
         <br /><input type="button" class="button action" id="wordsFilter" value="<?php _e('Select comments which don\'t contain one of these words', "fr.zhykos.wordpress.commentcontest"); ?>" />
         <br /><input type="button" class="button action" id="allWordsFilter" value="<?php _e('Select comments which don\'t contain all these words', "fr.zhykos.wordpress.commentcontest"); ?>" />
-        
+
         <br /><br />
         <h4><?php _e('Time between two comments', "fr.zhykos.wordpress.commentcontest"); echo "<img src=\"$this->pluginDir/img/help.png\" alt=\"Help\" class=\"help\" title=\"". __("You can allow people to post several comments in your contest. Between two comments the person must wait some times. This filter allow you to get all comments (from a person who has the same name/email/IP address) which don't respect your configuration", "fr.zhykos.wordpress.commentcontest") . "\" />"; ?></h4>
         <div id="zwpcc_timeBetweenFilter_error_message" style="color: red; display: none;"><?php _e('Wrong configuration! This number must be greater than zero and at least one criterion must be checked!', "fr.zhykos.wordpress.commentcontest"); ?></div>
