@@ -1,5 +1,8 @@
 <?php
-/*  Copyright 2009 - 2014 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : zhykos@gmail.com)
+/*  Copyright (c) 2009, 2018 Comment Contest plug-in for WordPress by Thomas Cicognani
+
+ Contributors:
+    Thomas Cicognani - Full renaming with 3.0 + check compatibility with WordPress 4.9.4
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
