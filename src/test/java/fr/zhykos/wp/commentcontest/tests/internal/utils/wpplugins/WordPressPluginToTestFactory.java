@@ -15,6 +15,7 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
  */
 class WordPressPluginToTestFactory implements IWordPressPluginToTestFactory {
 
+	// TODO Ajouter une liste de fichier à importer (comme le readme qui n'est pas dans le packaging actuellement !)
 	@Override
 	public IWordPressPluginToTest getPlugin(final String pluginId,
 			final String[] cssToMini, final String[] jsToMini,

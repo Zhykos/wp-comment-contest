@@ -466,6 +466,7 @@ public final class Utils {
 		checkDeleteDirectory(getPackageDir());
 		try {
 			copyAndModifyCode(pluginToTest);
+			// TODO ajouter une étape qui crée les fichiers binaires de traduction (les .mo)
 		} catch (final IOException e) {
 			throw new UtilsException(e);
 		}
