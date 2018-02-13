@@ -3,8 +3,8 @@ msgstr ""
 "Project-Id-Version: Comment Contest v2.4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2015-03-15 19:10+0100\n"
-"PO-Revision-Date: 2015-03-15 19:10+0100\n"
-"Last-Translator: Thomas \"Zhykos\" Cicognani <tcicognani@zhyweb.org>\n"
+"PO-Revision-Date: 2018-02-11 23:13+0100\n"
+"Last-Translator: Thomas \"Zhykos\" Cicognani <zhykos@gmail.com>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
 "MIME-Version: 1.0\n"
@@ -21,123 +21,123 @@ msgstr ""
 "contest\n"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/comment-contest.php:100
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:67
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/fr.zhykos.wordpress.commentcontest.php:100
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:67
 msgid "Comment Contest"
 msgstr "Comment Contest"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/comment-contest.php:111
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/fr.zhykos.wordpress.commentcontest.php:111
 msgid "Contest"
 msgstr "Concours"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/comment-contest.php:129
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:80
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/fr.zhykos.wordpress.commentcontest.php:129
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:80
 msgid "Launch contest"
 msgstr "Lancer le concours"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/comment-contest.php:131
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/fr.zhykos.wordpress.commentcontest.php:131
 msgid "No comment"
 msgstr "Aucun commentaire"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:65
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_TableResults.php:33
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/AbstractTable.php:65
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/TableResults.php:33
 msgid "Author"
 msgstr "Auteur"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:66
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_TableResults.php:34
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/AbstractTable.php:66
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/TableResults.php:34
 #: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/views/filters.php:54
 msgid "Comment"
 msgstr "Commentaire"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:102
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/AbstractTable.php:102
 #, php-format
 msgid "Select: %s"
 msgstr "Sélectionner : %s"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:135
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/AbstractTable.php:135
 msgid "Select comment"
 msgstr "Sélectionner le commentaire"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:237
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/AbstractTable.php:237
 #, php-format
 msgid "Submitted on <a href=\"%1$s\">%2$s at %3$s</a>"
 msgstr "Soumis le <a href=\"%1$s\">%2$s à %3$s</a>"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:238
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/AbstractTable.php:238
 msgid "Y/m/d"
 msgstr "d / m / Y"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:245
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/AbstractTable.php:245
 #, php-format
 msgid "In reply to <a href=\"%1$s\">%2$s</a>."
 msgstr "En réponse à <a href=\"%1$s\">%2$s</a>."
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:50
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:50
 msgid "URL must have 'post' parameter as integer"
 msgstr "Le paramètre 'post' dans l'URL doit être un nombre entier"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:53
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:53
 msgid "You have to be administrator to access this page"
 msgstr ""
 "Vous devez disposer de droits d'administrateur pour accéder à cette page"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:70
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:70
 #, php-format
 msgid "Contest on post \"%s\""
 msgstr "Concours pour l'article \"%s\""
 
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:73
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:73
 msgid "Winners saved"
 msgstr "Gagnants sauvegardés"
 
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:74
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:74
 msgid "Winners not saved!"
 msgstr "Les gagnants n'ont pas été sauvegardés !"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:77
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:77
 msgid "Number of winners error"
 msgstr "Erreur pour le nombre de gagnants"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:78
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:78
 msgid "Number of winners:"
 msgstr "Nombre de gagnants :"
 
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:79
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:79
 msgid "Number of comments used to determine winners"
 msgstr "Nombre de commentaires utilisés pour déterminer les gagnants"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:84
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:84
 msgid "Winners"
 msgstr "Gagnants"
 
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:85
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:89
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:85
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:89
 msgid "Save winners"
 msgstr "Sauvegarder les gagnants"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:115
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:115
 msgid "Comments used for the contest:"
 msgstr "Commentaires utilisés pour le concours :"
 
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:118
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:118
 msgid ""
 "The table below shows all available comments. You have to choose which ones "
 "you want for the contest.<br /> - You can select users who have the same "
@@ -163,11 +163,11 @@ msgstr ""
 "utilisés que s'il n'a pas assez de commentaire de triche."
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:140
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:140
 msgid "URL 'post' parameter has to be valid"
 msgstr "Le paramètre 'post' dans l'URL n'est pas valide"
 
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:153
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:153
 #, php-format
 msgid ""
 "To use the plug-in, go to the <a href=\"%s\">articles page</a> or <a href="
@@ -177,7 +177,7 @@ msgstr ""
 "la <a href=\"%s\">page des pages</a> puis vous trouverez un lien afin de "
 "lancer les concours."
 
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:155
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:155
 msgid ""
 "A question, a bug, an idea, a contribution? Ask me anything on the support "
 "page:"
@@ -185,7 +185,7 @@ msgstr ""
 "Une question, un bug, une idée, une contribution ? Posez vos questions sur "
 "la page support :"
 
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:156
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:156
 msgid ""
 "In case of a bug, for a quicker answer, please give my all the information "
 "about your website or generate a report file with the following link (no "
@@ -195,41 +195,41 @@ msgstr ""
 "informations à propos de votre site ou générez un fichier de rapport grâce "
 "au lien suivant (aucune information personnelle n'est exportée) :"
 
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:157
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:157
 msgid "My email:"
 msgstr "Mon email :"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:158
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:158
 msgid "Official page:"
 msgstr "Page officielle :"
 
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:159
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:159
 msgid "My French blog:"
 msgstr "Mon blog en Français :"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_MainUI.php:163
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/WPCommentContest.php:163
 msgid "Debug:"
 msgstr "Debug :"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:41
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:50
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/TableComments:41
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/TableComments:50
 msgid "Delete"
 msgstr "Supprimer"
 
 # @ comment-contest
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:42
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:51
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/TableComments:42
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/TableComments:51
 msgid "Restore"
 msgstr "Restaurer"
 
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:43
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/TableComments:43
 msgid "Cheat"
 msgstr "Tricher"
 
-#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/OrgZhyweb_WPCommentContest_TableUI.php:44
+#: C:\Users\Zhykos\PhpstormProjects\wp-comment-contest/php/TableComments:44
 msgid "Stop cheating"
 msgstr "Ne plus tricher"
 

@@ -1,9 +1,8 @@
 === Plugin Name ===
 Contributors: zhykos
-Donate link: http://wp-comment-contest.zhyweb.org/
-Tags: comments, contest, draw, concours, commentaire, zhykos, zhyweb
+Tags: comments, comment, contest, draw, concours, commentaire, zhykos
 Requires at least: 3.3
-Tested up to: 4.3
+Tested up to: 4.9.4
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html

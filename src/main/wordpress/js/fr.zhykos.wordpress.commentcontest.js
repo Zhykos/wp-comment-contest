@@ -1,4 +1,4 @@
-/*  Copyright 2009 - 2015 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : tcicognani@zhyweb.org)
+/*  Copyright 2009 - 2018 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : zhykos@gmail.com)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -93,9 +93,9 @@ function selectRole(roleID) {
     jQuery('#contestForm tr').each(function() {
         var line = jQuery(this);
         
-        // Search for span tag with class "zhyweb_comment_contest_role" which is equal to "roleID"
+        // Search for span tag with class "zwpcc_role" which is equal to "roleID"
         // A user can have several roles, separated by a pipe (|)
-        var rolesStr = line.find('.zhyweb_comment_contest_role').text();
+        var rolesStr = line.find('.zwpcc_role').text();
         var roles = rolesStr.split('|');
 
         if (jQuery.inArray(roleID, roles) >= 0 && rolesStr.length > 0) {
@@ -154,17 +154,17 @@ jQuery(document).ready(function() {
             var line1 = jQuery(this);
             var line1Name = null;
             if (useName) {
-                line1Name = line1.find('.zhyweb_comment_contest_alias').text();
+                line1Name = line1.find('.zwpcc_alias').text();
             }
             
             var line1Email = null;
             if (useEmail) {
-                line1Email = line1.find('.zhyweb_comment_contest_email').text();
+                line1Email = line1.find('.zwpcc_email').text();
             }
             
             var line1IP = null;
             if (useIP) {
-                line1IP = line1.find('.zhyweb_comment_contest_ip').text();
+                line1IP = line1.find('.zwpcc_ip').text();
             }
 
             if (line1Name || line1Email || line1IP) { // With this condition, we are sure we are not on header/footer line of the table
@@ -177,17 +177,17 @@ jQuery(document).ready(function() {
 
                         var line2Name = null;
                         if (useName) {
-                            line2Name = line2.find('.zhyweb_comment_contest_alias').text();
+                            line2Name = line2.find('.zwpcc_alias').text();
                         }
 
                         var line2Email = null;
                         if (useEmail) {
-                            line2Email = line2.find('.zhyweb_comment_contest_email').text();
+                            line2Email = line2.find('.zwpcc_email').text();
                         }
 
                         var line2IP = null;
                         if (useIP) {
-                            line2IP = line2.find('.zhyweb_comment_contest_ip').text();
+                            line2IP = line2.find('.zwpcc_ip').text();
                         }
 
                         if (line1Name === line2Name && line1Email === line2Email && line1IP === line2IP) {
@@ -246,8 +246,8 @@ jQuery(document).ready(function() {
             var inputValue = jQuery('#' + actionID + 'Config').val();
             if (jQuery.isNumeric(inputValue) && inputValue >= 0 && Math.floor(inputValue) == inputValue) {
                 checkInputsOfWrongComments(function(line1, line2) {
-                    var data1 = line1.find('.zhyweb_comment_contest_' + actionID).text();
-                    var data2 = line2.find('.zhyweb_comment_contest_' + actionID).text();
+                    var data1 = line1.find('.zwpcc_' + actionID).text();
+                    var data2 = line2.find('.zwpcc_' + actionID).text();
                     return data1 === data2;
                 }, useName, useEmail, useIP, true, inputValue);
             } else {
@@ -279,8 +279,8 @@ jQuery(document).ready(function() {
             
             if (useName || useEmail || useIP) {
                 checkInputsOfWrongComments(function(line1, line2) {
-                    var time1 = line1.find('.zhyweb_comment_contest_timestamp').text();
-                    var time2 = line2.find('.zhyweb_comment_contest_timestamp').text();
+                    var time1 = line1.find('.zwpcc_timestamp').text();
+                    var time2 = line2.find('.zwpcc_timestamp').text();
                     var diff = (new Date(time1 * 1000).getTime() - new Date(time2 * 1000).getTime()) / 1000 / 60;
                     var testTime = Math.abs(Math.round(diff));
                     return testTime < inputValue;
@@ -336,9 +336,7 @@ jQuery(document).ready(function() {
                 jQuery('#contestForm tr').each(function() {
                     // Browse all table lines
                     var line = jQuery(this);
-
-                    // Search for span tag with class "zhyweb_comment_contest_date"
-                    var timestampComment = line.find('.zhyweb_comment_contest_date').text();
+                    var timestampComment = line.find('.zwpcc_date').text();
                     if (timestampComment !== "") {
                         var wantedTimestamp = year + month + day + dateHours + dateMinutes;
                         if (timestampComment > wantedTimestamp) {
@@ -503,7 +501,7 @@ jQuery(document).ready(function() {
                 
                 // Get only normal and cheating lines
                 if (!line.hasClass("removedComment")) {
-                    var commentID = line.find('.zhyweb_comment_contest_id').html();
+                    var commentID = line.find('.zwpcc_id').html();
 
                     // Don't get table header and footer
                     if (commentID != null && commentID !== "") {                        
@@ -592,12 +590,12 @@ jQuery(document).ready(function() {
         var winners = [];
         jQuery('#dialog-modal-winners table tr').each(function () {
             var line = jQuery(this);
-            var commentID = line.find('.zhyweb_comment_contest_id').text();
+            var commentID = line.find('.zwpcc_id').text();
             if (commentID && line.is(":visible")) {
                 winners.push(commentID);
             }
         });
-        var posting = jQuery.post("../wp-content/plugins/comment-contest/php/OrgZhyweb_WPCommentContest_SaveWinners.php",
+        var posting = jQuery.post("../wp-content/plugins/comment-contest/php/SaveWinners.php",
             { winners: winners.join(","), post: jQuery("#zwpcc_postID").text()});
         posting.fail(function(data) {
             jQuery("#winners-message-ok").hide();

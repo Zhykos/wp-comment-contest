@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Comment Contest v2.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-12-22 13:59+0100\n"
-"PO-Revision-Date: 2013-12-24 13:18+0100\n"
+"PO-Revision-Date: 2018-02-11 23:13+0100\n"
 "Last-Translator: jelena kovacevic <jecajeca260@gmail.com>\n"
 "Language-Team: \n"
 "Language: es_ES\n"
@@ -11,7 +11,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.7.5\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
 "_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
@@ -20,101 +20,99 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 
 # @ comment-contest
-#: comment-contest.php:92 php/OrgZhyweb_WPCommentContest_MainUI.php:64
+#: fr.zhykos.wordpress.commentcontest.php:92 php/WPCommentContest.php:64
 msgid "Comment Contest"
 msgstr "Concurso de Comentario "
 
 # @ comment-contest
-#: comment-contest.php:103
+#: fr.zhykos.wordpress.commentcontest.php:103
 msgid "Contest"
 msgstr "Concurso"
 
 # @ comment-contest
-#: comment-contest.php:121 php/OrgZhyweb_WPCommentContest_MainUI.php:73
+#: fr.zhykos.wordpress.commentcontest.php:121 php/WPCommentContest.php:73
 msgid "Launch contest"
 msgstr "Lanzar concurso"
 
 # @ comment-contest
-#: comment-contest.php:123
+#: fr.zhykos.wordpress.commentcontest.php:123
 msgid "No comment"
 msgstr "Ningún Comentario"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:65
-#: php/OrgZhyweb_WPCommentContest_TableResults.php:33
+#: php/AbstractTable.php:65 php/TableResults.php:33
 msgid "Author"
 msgstr "Autor"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:66
-#: php/OrgZhyweb_WPCommentContest_TableResults.php:34
+#: php/AbstractTable.php:66 php/TableResults.php:34
 msgid "Comment"
 msgstr "Comentario"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:102
+#: php/AbstractTable.php:102
 #, php-format
 msgid "Select: %s"
 msgstr "Seleccionar: %s"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:135
+#: php/AbstractTable.php:135
 msgid "Select comment"
 msgstr "Seleccionar comentario"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:221
+#: php/AbstractTable.php:221
 #, php-format
 msgid "Submitted on <a href=\"%1$s\">%2$s at %3$s</a>"
 msgstr "Subido en <a href=\"%1$s\">%2$s a %3$s</a>"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:222
+#: php/AbstractTable.php:222
 msgid "Y/m/d"
 msgstr "Y/m/d"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_AbstractTableUI.php:229
+#: php/AbstractTable.php:229
 #, php-format
 msgid "In reply to <a href=\"%1$s\">%2$s</a>."
 msgstr "En respuesta a <a href=\"%1$s\">%2$s</a>."
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:47
+#: php/WPCommentContest.php:47
 msgid "URL must have 'post' parameter as integer"
 msgstr "La URL debe tener el parámetro \"post\" como entero"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:50
+#: php/WPCommentContest.php:50
 msgid "You have to be administrator to access this page"
 msgstr "Tiene que ser administrador para acceder a esta página"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:67
+#: php/WPCommentContest.php:67
 #, php-format
 msgid "Contest on post \"%s\""
 msgstr "Concurso en post \"%s\""
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:71
+#: php/WPCommentContest.php:71
 msgid "Number of winners:"
 msgstr "Número de victorias:"
 
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:72
+#: php/WPCommentContest.php:72
 msgid "Number of comments used to determine winners"
 msgstr "Número de comentarios que se utilizan para determinar los ganadores"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:78
+#: php/WPCommentContest.php:78
 msgid "Winners"
 msgstr "Victorias"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:107
+#: php/WPCommentContest.php:107
 msgid "Comments used for the contest:"
 msgstr "Comentarios utilizados para el concurso:"
 
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:108
+#: php/WPCommentContest.php:108
 msgid ""
 "The table below shows all available comments. You have to choose which ones "
 "you want for the contest.<br /> - You can select users who have the same "
@@ -140,12 +138,12 @@ msgstr ""
 "se usan sólo si no hay suficientes comentarios engaño."
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:125
+#: php/WPCommentContest.php:125
 msgid "URL 'post' parameter has to be valid"
 msgstr "El Parámetro \"post\" de la URL tiene que ser válido"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:137
+#: php/WPCommentContest.php:137
 #, php-format
 msgid ""
 "To use the plug-in, go to <a href=\"%s\">articles page</a> then you'll find "
@@ -155,37 +153,34 @@ msgstr ""
 "continuación, usted encontrará un enlace para lanzar concursos"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:139
+#: php/WPCommentContest.php:139
 msgid "Support:"
 msgstr "Soporte:"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:140
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:141
+#: php/WPCommentContest.php:140 php/WPCommentContest.php:141
 msgid "Official page:"
 msgstr "Página Oficial:"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_MainUI.php:145
+#: php/WPCommentContest.php:145
 msgid "Debug:"
 msgstr "Debug:"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_TableUI.php:41
-#: php/OrgZhyweb_WPCommentContest_TableUI.php:50
+#: php/TableComments:41 php/TableComments:50
 msgid "Delete"
 msgstr "Eliminar"
 
 # @ comment-contest
-#: php/OrgZhyweb_WPCommentContest_TableUI.php:42
-#: php/OrgZhyweb_WPCommentContest_TableUI.php:51
+#: php/TableComments:42 php/TableComments:51
 msgid "Restore"
 msgstr "Restaurar:"
 
-#: php/OrgZhyweb_WPCommentContest_TableUI.php:43
+#: php/TableComments:43
 msgid "Cheat"
 msgstr "Hacer trampa"
 
-#: php/OrgZhyweb_WPCommentContest_TableUI.php:44
+#: php/TableComments:44
 msgid "Stop cheating"
 msgstr "Dejar de hacer trampa"

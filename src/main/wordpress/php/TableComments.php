@@ -1,5 +1,5 @@
 <?php
-/*  Copyright 2009 - 2014 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : tcicognani@zhyweb.org)
+/*  Copyright 2009 - 2014 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : zhykos@gmail.com)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -16,12 +16,12 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-require_once("OrgZhyweb_WPCommentContest_AbstractTableUI.php");
+require_once("AbstractTable.php");
 
 /**
  * Table with comments which are used for contest
  */
-class OrgZhyweb_WPCommentContest_TableUI extends OrgZhyweb_WPCommentContest_AbstractTableUI {
+class TableComments extends AbstractTable {
 
     public function __construct($postID) {
         parent::__construct($postID);
@@ -38,17 +38,17 @@ class OrgZhyweb_WPCommentContest_TableUI extends OrgZhyweb_WPCommentContest_Abst
 
     protected function getActions($commentID) {
          $actions = array(
-            'delete' => "<a href='javascript:;' onclick='commentContestDelete($commentID)' id='deleteLink-$commentID' class='delete'>" . __('Delete', "comment-contest") . '</a>',
-            'restore' => "<a href='javascript:;' onclick='commentContestRestore($commentID)' id='restoreLink-$commentID' class='restoreLink'>" . __('Restore', "comment-contest") . '</a>',
-            'cheat' => "<a href='javascript:;' onclick='commentContestCheat($commentID)' id='cheatLink-$commentID' class='cheatLink'>" . __('Cheat', "comment-contest") . '</a>',
-            'stopcheat' => "<a href='javascript:;' onclick='commentContestStopCheat($commentID)' id='stopCheatLink-$commentID' class='stopCheatLink'>" . __('Stop cheating', "comment-contest") . '</a>');
+            'delete' => "<a href='javascript:;' onclick='commentContestDelete($commentID)' id='deleteLink-$commentID' class='delete'>" . __('Delete', "fr.zhykos.wordpress.commentcontest") . '</a>',
+            'restore' => "<a href='javascript:;' onclick='commentContestRestore($commentID)' id='restoreLink-$commentID' class='restoreLink'>" . __('Restore', "fr.zhykos.wordpress.commentcontest") . '</a>',
+            'cheat' => "<a href='javascript:;' onclick='commentContestCheat($commentID)' id='cheatLink-$commentID' class='cheatLink'>" . __('Cheat', "fr.zhykos.wordpress.commentcontest") . '</a>',
+            'stopcheat' => "<a href='javascript:;' onclick='commentContestStopCheat($commentID)' id='stopCheatLink-$commentID' class='stopCheatLink'>" . __('Stop cheating', "fr.zhykos.wordpress.commentcontest") . '</a>');
          return $actions;
     }
     
     public function get_bulk_actions() {
 	$actions = array(
-            'delete' => __('Delete', "comment-contest"),
-            'restore' => __('Restore', "comment-contest"));
+            'delete' => __('Delete', "fr.zhykos.wordpress.commentcontest"),
+            'restore' => __('Restore', "fr.zhykos.wordpress.commentcontest"));
         return $actions;
     }
 

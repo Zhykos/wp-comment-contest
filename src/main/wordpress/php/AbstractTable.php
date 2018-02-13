@@ -1,5 +1,5 @@
 <?php
-/*  Copyright 2009 - 2015 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : tcicognani@zhyweb.org)
+/*  Copyright 2009 - 2018 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : zhykos@gmail.com)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ require_once(ABSPATH . 'wp-admin/includes/class-wp-list-table.php');
 /**
  * Abstract table to display comments
  */
-abstract class OrgZhyweb_WPCommentContest_AbstractTableUI extends WP_List_Table {
+abstract class AbstractTable extends WP_List_Table {
     /** Post ID which contains comments to display */
     private $postID;
     
@@ -61,8 +61,8 @@ abstract class OrgZhyweb_WPCommentContest_AbstractTableUI extends WP_List_Table 
     public function get_columns() {
         return array(
             'cb' => '<input type="checkbox" />',
-            'author' => __('Author', "comment-contest"),
-            'comment' => __('Comment', "comment-contest"));
+            'author' => __('Author', "fr.zhykos.wordpress.commentcontest"),
+            'comment' => __('Comment', "fr.zhykos.wordpress.commentcontest"));
     }
     
     public function prepare_items() {
@@ -94,7 +94,7 @@ abstract class OrgZhyweb_WPCommentContest_AbstractTableUI extends WP_List_Table 
 
         $roles = array();
         foreach ($editable_roles as $roleID => $roleParam) {
-            $roles[$roleID] = "<a href='javascript:;' onclick='" . $this->getViewFunction($roleID) . "'>" . sprintf(__("Select: %s", "comment-contest"), translate_user_role($roleParam["name"])) . "</a>";
+            $roles[$roleID] = "<a href='javascript:;' onclick='" . $this->getViewFunction($roleID) . "'>" . sprintf(__("Select: %s", "fr.zhykos.wordpress.commentcontest"), translate_user_role($roleParam["name"])) . "</a>";
         }
         return $roles;
     }
@@ -196,28 +196,28 @@ abstract class OrgZhyweb_WPCommentContest_AbstractTableUI extends WP_List_Table 
         echo '</a><br />';
         
         // Add role in UI : used to select all users with the same role
-        echo '<span style="display:none" class="zhyweb_comment_contest_role">';
+        echo '<span style="display:none" class="zwpcc_role">';
         $roles = $this->wpse_58916_user_roles_by_id(get_user_by('login', get_comment_author($comment->comment_ID)));
         echo implode('|', array_keys($roles));
         echo '</span>';
         
         // Add comment ID (used to get winners)
-        echo '<span style="display:none" class="zhyweb_comment_contest_id">' . $comment->comment_ID . '</span>';
+        echo '<span style="display:none" class="zwpcc_id">' . $comment->comment_ID . '</span>';
         
         // Add comment date post
-        echo '<span style="display:none" class="zhyweb_comment_contest_date">' . get_comment_date('YmdHi', $comment->comment_ID) . '</span>';
+        echo '<span style="display:none" class="zwpcc_date">' . get_comment_date('YmdHi', $comment->comment_ID) . '</span>';
         
         // Add comment timestamp post
-        echo '<span style="display:none" class="zhyweb_comment_contest_timestamp">' . get_comment_date('U', $comment->comment_ID) . '</span>';
+        echo '<span style="display:none" class="zwpcc_timestamp">' . get_comment_date('U', $comment->comment_ID) . '</span>';
         
         // Add comment IP address
-        echo '<span style="display:none" class="zhyweb_comment_contest_ip">' . get_comment_author_IP($comment->comment_ID) . '</span>';
+        echo '<span style="display:none" class="zwpcc_ip">' . get_comment_author_IP($comment->comment_ID) . '</span>';
         
         // Add comment email
-        echo '<span style="display:none" class="zhyweb_comment_contest_email">' . $comment->comment_author_email . '</span>';
+        echo '<span style="display:none" class="zwpcc_email">' . $comment->comment_author_email . '</span>';
         
         // Add comment alias
-        echo '<span style="display:none" class="zhyweb_comment_contest_alias">' . get_comment_author($comment->comment_ID) . '</span>';
+        echo '<span style="display:none" class="zwpcc_alias">' . get_comment_author($comment->comment_ID) . '</span>';
     }
     
     /**
@@ -229,15 +229,15 @@ abstract class OrgZhyweb_WPCommentContest_AbstractTableUI extends WP_List_Table 
 
         echo '<div class="submitted-on">';
         /* translators: 2: comment date, 3: comment time */
-        printf(__('Submitted on <a href="%1$s">%2$s at %3$s</a>', "comment-contest"), $comment_url,
-                /* translators: comment date format. See http://php.net/date */ get_comment_date(__('Y/m/d', "comment-contest"), $comment->comment_ID),
+        printf(__('Submitted on <a href="%1$s">%2$s at %3$s</a>', "fr.zhykos.wordpress.commentcontest"), $comment_url,
+                /* translators: comment date format. See http://php.net/date */ get_comment_date(__('Y/m/d', "fr.zhykos.wordpress.commentcontest"), $comment->comment_ID),
                 /* translators: comment time format. See http://php.net/date */ get_comment_date(get_option('time_format'), $comment->comment_ID));
 
         if ($comment->comment_parent) {
             $parent = get_comment($comment->comment_parent);
             $parent_link = esc_url(get_comment_link($comment->comment_parent));
             $name = get_comment_author($parent->comment_ID);
-            printf(' | ' . __('In reply to <a href="%1$s">%2$s</a>.', "comment-contest"), $parent_link, $name);
+            printf(' | ' . __('In reply to <a href="%1$s">%2$s</a>.', "fr.zhykos.wordpress.commentcontest"), $parent_link, $name);
         }
 
         echo '</div>';

@@ -49,9 +49,8 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlug
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginToTest;
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginToTestFactory;
 
-/*
- * http://atatorus.developpez.com/tutoriels/java/test-application-web-avec-selenium/
- */
+// TODO Il faudrait pouvoir lancer les tests sur toutes les versions de wordpress à partir de la version minimale requise ! Peut on donc faire un dynamictest parent qui bouclerait sur les vesions wordpress pour ensuite boucler sur les tests eux memes sur les browsers ?
+// TODO Tester toutes les langues disponibles via un test unitaire (pas la peine de tout tester dans toutes les langues !), juste vérifier que les langues se chargent bien
 public class WPCommentContestPluginTest {
 
 	private static final String EDIT_PAGE = "/wp-admin/edit.php"; //$NON-NLS-1$
@@ -72,7 +71,7 @@ public class WPCommentContestPluginTest {
 	private static final String ID_TMEBTW_FLNAME = ID_PREFIX + TMEBTW_FLNAME;
 	private static final String TEST_ON_BROWSER = "test on browser '%s'"; //$NON-NLS-1$
 	private static final String CLASS_ATTRIBUTE = "class"; //$NON-NLS-1$
-	private static final String CONTEST_LK_XPATH = "//tr[@id='post-%s']/td[@class='orgZhyweb-wpCommentContest column-orgZhyweb-wpCommentContest']/a"; //$NON-NLS-1$
+	private static final String CONTEST_LK_XPATH = "//tr[@id='post-%s']/td[@class='fr-zhykos-wordpress-commentcontest column-fr-zhykos-wordpress-commentcontest']/a"; //$NON-NLS-1$
 	private static final String CONTEST_LK1_XPATH = String
 			.format(CONTEST_LK_XPATH, "1"); //$NON-NLS-1$
 	private static final String STATIC_METHOD = "static-method"; //$NON-NLS-1$
@@ -94,8 +93,8 @@ public class WPCommentContestPluginTest {
 				.getPlugin("wp-rss-aggregator"); //$NON-NLS-1$
 		fakerPlg = IWordPressPluginCatalog.DEFAULT.getPlugin("fakerpress"); //$NON-NLS-1$
 		myPlugin = IWordPressPluginToTestFactory.DEFAULT.getPlugin(
-				"comment-contest", new String[] { "css/comment-contest.css" }, //$NON-NLS-1$ //$NON-NLS-2$
-				new String[] { "js/OrgZhyweb_WPCommentContest_jQuery.js" }, //$NON-NLS-1$
+				"comment-contest", new String[] { "css/fr.zhykos.wordpress.commentcontest" }, //$NON-NLS-1$ //$NON-NLS-2$
+				new String[] { "js/fr.zhykos.wordpress.commentcontest.js" }, //$NON-NLS-1$
 				new String[] {});
 
 		final boolean cleanWorkspace = fr.zhykos.wp.commentcontest.tests.internal.utils.Utils
@@ -191,14 +190,14 @@ public class WPCommentContestPluginTest {
 				.findElement(By.xpath(CONTEST_LK1_XPATH)).getText();
 		Assertions.assertEquals("Lancer le concours", contestLinkTxt);
 		WpHtmlUtils.expandSettingsScreenMenu(driver, selenium);
-		selenium.uncheck("id=orgZhyweb-wpCommentContest-hide"); //$NON-NLS-1$
+		selenium.uncheck("id=fr-zhykos-wordpress-commentcontest-hide"); //$NON-NLS-1$
 		selenium.click("id=screen-options-apply"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		final List<WebElement> contestColumnElts = driver
 				.findElements(By.xpath(CONTEST_LK1_XPATH));
 		Assertions.assertTrue(contestColumnElts.isEmpty());
 		WpHtmlUtils.expandSettingsScreenMenu(driver, selenium);
-		selenium.check("id=orgZhyweb-wpCommentContest-hide"); //$NON-NLS-1$
+		selenium.check("id=fr-zhykos-wordpress-commentcontest-hide"); //$NON-NLS-1$
 		final WebElement contestLink = driver
 				.findElement(By.xpath(CONTEST_LK1_XPATH));
 		Assertions.assertEquals("Lancer le concours", contestLink.getText());
@@ -221,7 +220,7 @@ public class WPCommentContestPluginTest {
 		// Test if plugin link is a comment sub menu
 		WpHtmlUtils.expandAdminMenu(driver, selenium);
 		final WebElement plgCommentMenu = driver.findElement(By.xpath(
-				"//li[@id='menu-comments']/ul/li/a[@href='edit-comments.php?page=orgZhyweb-wpCommentContest']")); //$NON-NLS-1$
+				"//li[@id='menu-comments']/ul/li/a[@href='edit-comments.php?page=fr.zhykos.wordpress.commentcontest']")); //$NON-NLS-1$
 		final Actions action = new Actions(driver);
 		final WebElement element = driver.findElement(By.id("menu-comments")); //$NON-NLS-1$
 		action.moveToElement(element).build().perform();
@@ -232,7 +231,7 @@ public class WPCommentContestPluginTest {
 		// Check plugin page
 		final String homeURL = wpInfo.getTestServer().getHomeURL();
 		selenium.open(homeURL
-				+ "/wp-admin/edit-comments.php?page=orgZhyweb-wpCommentContest"); //$NON-NLS-1$
+				+ "/wp-admin/edit-comments.php?page=fr.zhykos.wordpress.commentcontest"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH2Tag(driver, "Comment Contest");
 		internalTestReport();
@@ -1148,7 +1147,7 @@ public class WPCommentContestPluginTest {
 		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
 				driver);
 		final List<WebElement> allAliasesElt = driver.findElements(By.xpath(
-				"//tbody[@id='the-list-contest']//span[@class='zhyweb_comment_contest_alias']")); //$NON-NLS-1$
+				"//tbody[@id='the-list-contest']//span[@class='zwpcc_alias']")); //$NON-NLS-1$
 		final Set<String> allAliases = new HashSet<>();
 		for (final WebElement webElement : allAliasesElt) {
 			WpHtmlUtils.setDisplay(driver, webElement, "block"); //$NON-NLS-1$
@@ -1728,7 +1727,7 @@ public class WPCommentContestPluginTest {
 				By.xpath(String.format(CONTEST_LK_XPATH, newArticleId)));
 		Assertions.assertTrue(contestLinks.isEmpty());
 		selenium.open(homeURL
-				+ "/wp-admin/edit-comments.php?page=orgZhyweb-wpCommentContest&postID=" //$NON-NLS-1$
+				+ "/wp-admin/edit-comments.php?page=fr.zhykos.wordpress.commentcontest&postID=" //$NON-NLS-1$
 				+ newArticleId);
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH2Tag(driver, "Comment Contest");
@@ -1736,7 +1735,7 @@ public class WPCommentContestPluginTest {
 		Assertions.assertTrue(pageContents.contains(
 				"Debug : Le paramètre 'post' dans l'URL n'est pas valide"));
 		selenium.open(homeURL
-				+ "/wp-admin/edit-comments.php?page=orgZhyweb-wpCommentContest&postID=" //$NON-NLS-1$
+				+ "/wp-admin/edit-comments.php?page=fr.zhykos.wordpress.commentcontest&postID=" //$NON-NLS-1$
 				+ "aaa"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		Assertions.assertTrue(pageContents.contains(
@@ -1812,7 +1811,7 @@ public class WPCommentContestPluginTest {
 		if (wpInfo != null) {
 			reportTests();
 			try {
-//				System.out.println("PASSWORD = (" + wpInfo.getPassword() + ")");
+				System.out.println("PASSWORD = (" + wpInfo.getPassword() + ")");
 				wpInfo.getTestServer().stop();
 			} catch (final Exception e) {
 				Assertions.fail(e.getMessage());

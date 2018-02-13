@@ -1,5 +1,5 @@
 <?php
-/*  Copyright 2009 - 2014 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : tcicognani@zhyweb.org)
+/*  Copyright 2009 - 2014 Comment Contest plug-in for Wordpress by Thomas "Zhykos" Cicognani  (email : zhykos@gmail.com)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -16,12 +16,12 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
-require_once("OrgZhyweb_WPCommentContest_AbstractTableUI.php");
+require_once("AbstractTable.php");
 
 /**
  * Table result
  */
-class OrgZhyweb_WPCommentContest_TableResults extends OrgZhyweb_WPCommentContest_AbstractTableUI {
+class TableResults extends AbstractTable {
 
     public function __construct($postID) {
         parent::__construct($postID);
@@ -30,8 +30,8 @@ class OrgZhyweb_WPCommentContest_TableResults extends OrgZhyweb_WPCommentContest
     public function get_columns() {
         // Don't display checkboxes
         return array(
-            'author' => __('Author', "comment-contest"),
-            'comment' => __('Comment', "comment-contest"));
+            'author' => __('Author', "fr.zhykos.wordpress.commentcontest"),
+            'comment' => __('Comment', "fr.zhykos.wordpress.commentcontest"));
     }
 
     protected function displayTBodyStart() {
