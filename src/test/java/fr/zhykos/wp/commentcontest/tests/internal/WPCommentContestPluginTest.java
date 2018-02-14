@@ -1904,8 +1904,9 @@ public class WPCommentContestPluginTest {
 				reportTests();
 				System.out.println("PASSWORD = (" + wpInfo.getPassword() + ")");
 				wpInfo.getTestServer().stop();
-				fr.zhykos.wp.commentcontest.tests.internal.utils.Utils
-						.packagePlugin(myPlugin);
+				// TODO Le packaging doit se faire au début pour que les tests unitaires se fassent sur le produit livré
+				// fr.zhykos.wp.commentcontest.tests.internal.utils.Utils
+				// .packagePlugin(myPlugin);
 			} catch (final Exception e) {
 				Assertions.fail(e);
 			}
