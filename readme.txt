@@ -3,7 +3,8 @@ Contributors: zhykos
 Tags: comments, comment, contest, draw, concours, commentaire, zhykos
 Requires at least: 3.3
 Tested up to: 4.9.4
-Stable tag: trunk
+Requires PHP: 5
+Stable tag: 3.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -49,6 +50,14 @@ You need PHP version 5 like WorPress.
 9. Result table and notification after saving winners
 
 == Changelog ==
+
+= 3.0.0 =
+* Fix: Error while selecting date
+* Fix: Error with comments table background
+* Fix: Error with time between computation
+* Update: All new names for PHP, JS, CSS, PO, MO files, HTML classes and ids!
+* Misc: Check compatibility with WordPress 4.9.4
+* New: Github repo contains automatic plugin tests
 
 = 2.4.1 =
 * Misc: Check compatibility with WordPress 4.3
@@ -180,6 +189,24 @@ You need PHP version 5 like WorPress.
 
 = 2.2 =
 * New features to filter comments
+
+= 3.0 =
+* New internal names
+* Compatibility with WordPress 4.9
+* Automatic tests on Github
+
+== Automatic tests results ==
+
+Tests launched by Zhykos WordPress automatic tests 0.1.0
+WordPress version 4.9.4
+DBMS: MySQL version 5.7.19 with JDBC mysql-connector-java-8.0.8-dmr ( Revision: 73c679a210819d6808a35a11858ab0f279ea267d )
+Server: WAMP Server with: Apache/2.4.27 (Win64)
+OS: Windows 10 version 10.0 amd64
+Browsers:
+ - Driver ChromeDriver based on chrome version 64.0.3282.167
+ - Driver FirefoxDriver based on firefox version 58.0.2
+ - Driver EdgeDriver based on MicrosoftEdge version 41.16299.15.0
+ - Driver OperaDriver based on chrome version 63.0.3239.132
 
 == Credits ==
 
