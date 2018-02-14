@@ -50,6 +50,7 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPlug
 import fr.zhykos.wp.commentcontest.tests.internal.utils.wpplugins.IWordPressPluginToTestFactory;
 
 // TODO Il faudrait pouvoir lancer les tests sur toutes les versions de wordpress à partir de la version minimale requise ! Peut on donc faire un dynamictest parent qui bouclerait sur les vesions wordpress pour ensuite boucler sur les tests eux memes sur les browsers ?
+// TODO Pouvoir tester les versions avec un enum
 // TODO Tester toutes les langues disponibles via un test unitaire (pas la peine de tout tester dans toutes les langues !), juste vérifier que les langues se chargent bien
 public class WPCommentContestPluginTest {
 
@@ -1807,21 +1808,19 @@ public class WPCommentContestPluginTest {
 	}
 
 	@AfterAll
-	public static void afterAll() throws IOException, UtilsException {
+	public static void afterAll() {
 		if (wpInfo != null) {
-			reportTests();
 			try {
+				reportTests();
 				System.out.println("PASSWORD = (" + wpInfo.getPassword() + ")");
 				wpInfo.getTestServer().stop();
+				fr.zhykos.wp.commentcontest.tests.internal.utils.Utils
+						.packagePlugin(myPlugin);
 			} catch (final Exception e) {
-				Assertions.fail(e.getMessage());
+				Assertions.fail(e);
 			}
 		}
-		// TODO Utiliser la classe EMF Facet de vérification d'erreur lors du
-		// test unitaire pour savoir si on peut packager
-		// Utils.packagePlugin(this.myPlugin);
-		// fail();
-		// TODO Lister les navigateurs testés avec des détails genre le numéro de version
+		// TODO Utiliser la classe EMF Facet de vérification d'erreur lors du test unitaire pour savoir si on peut packager
 		// TODO Afficher le mot de passe en debug (avec un "-D")
 	}
 
