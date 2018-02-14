@@ -1807,6 +1807,96 @@ public class WPCommentContestPluginTest {
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 	}
 
+	@SuppressWarnings({ STATIC_METHOD,
+			"PMD.JUnit4TestShouldUseTestAnnotation" })
+	/*
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
+	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les
+	// navigateurs
+	// XXX Rajouter timeout
+	@TestFactory
+	public Collection<DynamicTest> testSaveResults() {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		for (final WebDriver webDriver : allDrivers) {
+			final Executable exec = () -> initTestSaveResults(webDriver);
+			final String testName = String.format(TEST_ON_BROWSER, webDriver);
+			final DynamicTest test = DynamicTest.dynamicTest(testName, exec);
+			dynamicTests.add(test);
+		}
+		return dynamicTests;
+	}
+
+	private static void initTestSaveResults(final WebDriver driver) {
+		try {
+			if (!(driver instanceof ErrorDriver)) {
+				assertTestSaveResults(driver);
+			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void assertTestSaveResults(final WebDriver driver)
+			throws UtilsException {
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
+				driver);
+		assertSaveResults(driver, selenium, 1);
+		openCommentContestPluginOnArticleNumber1(driver, selenium);
+		selenium.type("id=zwpcc_nb_winners", "2"); //$NON-NLS-1$ //$NON-NLS-2$
+		assertSaveResults(driver, selenium, 2);
+	}
+
+	private static void assertSaveResults(final WebDriver driver,
+			final Selenium selenium, final int nbResults)
+			throws UtilsException {
+		Assertions.assertFalse(selenium.isVisible("id=winners-message-ok")); //$NON-NLS-1$
+		final List<WebElement> winners = launchContestThenAssertNbWinners(
+				selenium, driver, nbResults);
+		final List<String> eltIds = new ArrayList<>();
+		for (final WebElement webElement : winners) {
+			final String eltId = webElement.getAttribute("id"); //$NON-NLS-1$
+			eltIds.add(eltId.replaceAll("result-comment-contest-(\\d+)", "$1")); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		driver.findElement(By.xpath(
+				"//div[@id='dialog-modal-winners']/input[@class='button action saveWinnersButton']")) //$NON-NLS-1$
+				.click();
+		closeResultDialog(driver);
+		WpHtmlUtils.waitUntilVisibleStateByElementId(selenium, driver,
+				"winners-message-ok", true, 10000); //$NON-NLS-1$
+		selenium.open(wpInfo.getTestServer().getHomeURL()
+				+ "/wp-admin/post.php?post=1&action=edit"); //$NON-NLS-1$
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		selenium.click("id=show-settings-link"); //$NON-NLS-1$
+		WpHtmlUtils.waitUntilVisibleStateByElementId(selenium, driver,
+				"screen-meta", true, 10000); //$NON-NLS-1$
+		if (!selenium.isChecked("id=postcustom-hide")) { //$NON-NLS-1$
+			selenium.click("id=postcustom-hide"); //$NON-NLS-1$
+		}
+		WpHtmlUtils.waitUntilVisibleStateByElementId(selenium, driver,
+				"postcustom", true, 10000); //$NON-NLS-1$
+		final List<WebElement> keyElt = driver.findElements(
+				By.xpath("//input[@value='wp-comment-contest-winner']")); //$NON-NLS-1$
+		Assertions.assertEquals(nbResults, keyElt.size());
+		final List<String> customIds = new ArrayList<>();
+		for (final WebElement webElement : keyElt) {
+			final String keyId = webElement.getAttribute("id"); //$NON-NLS-1$
+			final String valueId = keyId.replaceAll("(meta-\\d+-)key", "$1") //$NON-NLS-1$ //$NON-NLS-2$
+					+ "value"; //$NON-NLS-1$
+			final String text = selenium.getValue(ID_PREFIX + valueId);
+			customIds.add(text);
+		}
+		Assertions.assertEquals(eltIds, customIds);
+	}
+
 	@AfterAll
 	public static void afterAll() {
 		if (wpInfo != null) {
