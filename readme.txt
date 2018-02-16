@@ -27,7 +27,7 @@ This section describes how to install the plugin and get it working.
 
 = Which PHP version I need? =
 
-You need PHP version 5 like WorPress.
+You need PHP version 5 like WordPress.
 
 = What are the available languages? =
 
