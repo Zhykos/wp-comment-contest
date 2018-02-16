@@ -6,13 +6,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
@@ -129,7 +132,14 @@ public final class BrowserUtils {
 					"webdriver.chrome.driver", //$NON-NLS-1$
 					"https://chromedriver.storage.googleapis.com/2.33/chromedriver_win32.zip", //$NON-NLS-1$
 					"chromedriver.exe"); //$NON-NLS-1$
-			result = new ChromeDriver();
+			final Map<String, Object> prefs = new ConcurrentHashMap<>();
+			prefs.put("profile.default_content_settings.popups", //$NON-NLS-1$
+					Integer.valueOf(0));
+			prefs.put("download.default_directory", //$NON-NLS-1$
+					Utils.getTempDirectory());
+			final ChromeOptions options = new ChromeOptions();
+			options.setExperimentalOption("prefs", prefs); //$NON-NLS-1$
+			result = new ChromeDriver(options);
 		} catch (final Exception e) {
 			if (result != null) {
 				result.quit();

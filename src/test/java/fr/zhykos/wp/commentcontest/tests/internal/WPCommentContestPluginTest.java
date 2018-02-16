@@ -29,6 +29,7 @@ import org.openqa.selenium.Capabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.opera.OperaDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -235,11 +236,128 @@ public class WPCommentContestPluginTest {
 				+ "/wp-admin/edit-comments.php?page=fr.zhykos.wordpress.commentcontest"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
 		WpHtmlUtils.assertH2Tag(driver, "Comment Contest");
-		internalTestReport();
 	}
 
-	private static void internalTestReport() {
-		// TODO Auto-generated method stub
+	@SuppressWarnings({ STATIC_METHOD,
+			"PMD.JUnit4TestShouldUseTestAnnotation" }) // NOPMD tcicognani: cannot create constant for PMD SuppressWarnings
+	/*
+	 * @SuppressWarnings("static-method") tcicognani: TestFactory cannot be
+	 * static
+	 */
+	/*
+	 * @SuppressWarnings("PMD.JUnit4TestShouldUseTestAnnotation") tcicognani:
+	 * It's not a JUnit 4 method, it's JUnit 5...
+	 */
+	// XXX On a toujours le même pattern pour tester les méthodes sur tous les
+	// navigateurs
+	// XXX Rajouter timeout
+	@TestFactory
+	public Collection<DynamicTest> testBugEnvReportFile() {
+		final Collection<DynamicTest> dynamicTests = new ArrayList<>();
+		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
+		// XXX Attention ce test n'est pas comme les autres, ne pas le refactorer comme les autres quand on aura le moteur générique de tests !
+		boolean done = false;
+		for (final WebDriver webDriver : allDrivers) {
+			if (webDriver instanceof ChromeDriver) {
+				final Executable exec = () -> initTestBugEnvReportFile(
+						webDriver);
+				final String testName = String.format(TEST_ON_BROWSER,
+						webDriver);
+				final DynamicTest test = DynamicTest.dynamicTest(testName,
+						exec);
+				dynamicTests.add(test);
+				done = true;
+			} else {
+				webDriver.quit();
+			}
+		}
+		if (!done) {
+			Assertions
+					.fail("No ChromeDriver for test initTestBugEnvReportFile"); //$NON-NLS-1$
+		}
+		return dynamicTests;
+	}
+
+	private static void initTestBugEnvReportFile(final WebDriver driver)
+			throws IOException {
+		try {
+			if (driver instanceof ChromeDriver) {
+				assertTestBugEnvReportFile(driver);
+			} else {
+				Assertions
+						.fail("Only ChromeDriver can currently run this test!"); //$NON-NLS-1$
+			}
+		} catch (final UtilsException e) {
+			Assertions.fail(e);
+		} finally {
+			driver.quit();
+		}
+	}
+
+	private static void assertTestBugEnvReportFile(final WebDriver driver)
+			throws IOException, UtilsException {
+		final Selenium selenium = connectThenOpenCommentContestPluginOnArticleNumber1(
+				driver);
+		final String homeURL = wpInfo.getTestServer().getHomeURL();
+		selenium.open(homeURL
+				+ "/wp-admin/edit-comments.php?page=fr.zhykos.wordpress.commentcontest"); //$NON-NLS-1$
+		final List<WebElement> links = driver
+				.findElements(By.xpath("//form[@id='zwpcc_form']/a")); //$NON-NLS-1$
+		boolean reportLink = false;
+		for (final WebElement webElement : links) {
+			if ("Report generator".equals(webElement.getText())) { //$NON-NLS-1$
+				internalTestReport(selenium, webElement.getAttribute("href")); //$NON-NLS-1$
+				reportLink = true;
+				break;
+			}
+		}
+		Assertions.assertTrue(reportLink);
+	}
+
+	private static void internalTestReport(final Selenium selenium,
+			final String reportURL) throws IOException, UtilsException {
+		selenium.open(reportURL);
+		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
+		final File reportFile = new File(
+				fr.zhykos.wp.commentcontest.tests.internal.utils.Utils
+						.getTempDirectory(),
+				"wp_comment_contest-report.txt"); //$NON-NLS-1$
+		final List<String> lines = FileUtils.readLines(reportFile,
+				Charset.defaultCharset());
+		Assertions.assertTrue(lines.contains("WordPress:")); //$NON-NLS-1$
+		Assertions.assertTrue(lines.contains("")); //$NON-NLS-1$
+		final String wpVersion = getWordPressVersion();
+		Assertions.assertTrue(lines.contains("\t- Version " + wpVersion)); //$NON-NLS-1$
+		Assertions.assertTrue(lines.contains("Server:")); //$NON-NLS-1$
+		// TODO Ajout test de PHP
+		final String dbProductVersion = getDatabaseProductVersion();
+		Assertions.assertTrue(lines.contains("\t- MySQL " + dbProductVersion)); //$NON-NLS-1$
+		Assertions.assertTrue(lines.contains("Plugins:")); //$NON-NLS-1$
+		int pluginActive = 0;
+		for (final String line : lines) {
+			if (assertReportPluginActive(line, fakerPlg.getName())) {
+				pluginActive++;
+			}
+			if (assertReportPluginActive(line, wpRssPlg.getName())) {
+				pluginActive++;
+			}
+			if (assertReportPluginActive(line, myPlugin.getName())) {
+				pluginActive++;
+			}
+		}
+		Assertions.assertEquals(3, pluginActive);
+		Assertions.assertTrue(reportFile.delete());
+	}
+
+	private static boolean assertReportPluginActive(final String line,
+			final String name) {
+		boolean result = false;
+		if (line.contains(name)) {
+			Assertions.assertTrue(line.matches("\t- " + name //$NON-NLS-1$
+					+ "\t/\t\\d+\\.\\d+\\.\\d+\t/\thttp.*\t/\tACTIVE")); //$NON-NLS-1$
+			result = true;
+		}
+		return result;
 	}
 
 	@SuppressWarnings({ STATIC_METHOD,
@@ -1920,6 +2038,9 @@ public class WPCommentContestPluginTest {
 	 * @SuppressWarnings("PMD.SystemPrintln") tcicognani: report method in console
 	 */
 	private static void reportTests() throws IOException, UtilsException {
+		// TODO Ajouter la version de PHP
+		// TODO Le report doit se faire un fichier tout au long des tests, avec les tests qui passent, etc.
+		// TODO Quand on fera le report de bout en bout, on pourra récupérer les infos des navigateurs lors de leur initialisation
 		final List<WebDriver> allDrivers = BrowserUtils.createAllDrivers();
 		final String serverVersion = wpInfo.getTestServer()
 				.getVersion(wpInfo.getInstallDir());
@@ -1975,12 +2096,32 @@ public class WPCommentContestPluginTest {
 				databaseInfo.getAddress(),
 				Integer.valueOf(databaseInfo.getPort()),
 				databaseInfo.getBaseName());
+		final String dbProductVersion = getDatabaseProductVersion();
 		try (final Connection connection = DriverManager.getConnection(url,
 				databaseInfo.getLogin(), databaseInfo.getPassword());) {
 			final DatabaseMetaData meta = connection.getMetaData();
 			result = String.format("%s version %s with JDBC %s", //$NON-NLS-1$
-					meta.getDatabaseProductName(),
-					meta.getDatabaseProductVersion(), meta.getDriverVersion());
+					meta.getDatabaseProductName(), dbProductVersion,
+					meta.getDriverVersion());
+		} catch (final SQLException e) {
+			throw new UtilsException(e);
+		}
+		return result;
+	}
+
+	private static String getDatabaseProductVersion() throws UtilsException {
+		String result = null;
+		final IDatabase databaseInfo = fr.zhykos.wp.commentcontest.tests.internal.utils.Utils
+				.getDatabaseInfo();
+		final String url = String.format(
+				"jdbc:mysql://%s:%d/%s?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", //$NON-NLS-1$
+				databaseInfo.getAddress(),
+				Integer.valueOf(databaseInfo.getPort()),
+				databaseInfo.getBaseName());
+		try (final Connection connection = DriverManager.getConnection(url,
+				databaseInfo.getLogin(), databaseInfo.getPassword());) {
+			final DatabaseMetaData meta = connection.getMetaData();
+			result = meta.getDatabaseProductVersion();
 		} catch (final SQLException e) {
 			throw new UtilsException(e);
 		}
