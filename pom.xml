@@ -8,7 +8,7 @@
   <description>WordPress Comment Contest plugin</description>
   <properties>
 	<version.javax-servlet>3.1.0</version.javax-servlet>
-	<tomcat.version>8.5.2</tomcat.version>
+	<tomcat.version>8.5.34</tomcat.version>
   </properties>
   <dependencies>
 	<dependency>
@@ -88,7 +88,7 @@
     <dependency>
         <groupId>org.apache.tomcat.embed</groupId>
         <artifactId>tomcat-embed-logging-juli</artifactId>
-        <version>${tomcat.version}</version>
+        <version>8.5.2</version>
     </dependency>
     <dependency>
         <groupId>org.apache.tomcat.embed</groupId>
