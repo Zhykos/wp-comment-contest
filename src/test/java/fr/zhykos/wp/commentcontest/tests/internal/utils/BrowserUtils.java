@@ -130,7 +130,7 @@ public final class BrowserUtils {
 		try {
 			chromeInstalled = downloadAndInstallDriver(chromeInstalled,
 					"webdriver.chrome.driver", //$NON-NLS-1$
-					"https://chromedriver.storage.googleapis.com/2.33/chromedriver_win32.zip", //$NON-NLS-1$
+					"https://chromedriver.storage.googleapis.com/2.43/chromedriver_win32.zip", //$NON-NLS-1$
 					"chromedriver.exe"); //$NON-NLS-1$
 			final Map<String, Object> prefs = new ConcurrentHashMap<>();
 			prefs.put("profile.default_content_settings.popups", //$NON-NLS-1$
