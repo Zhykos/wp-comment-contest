@@ -43,7 +43,7 @@ public final class WpHtmlUtils {
 		final Map<Translations, String> french = new ConcurrentHashMap<>();
 		french.put(Translations.extensions, "Extensions"); //$NON-NLS-1$
 		french.put(Translations.addExtensions, "Ajouter des extensions"); //$NON-NLS-1$
-		french.put(Translations.activatedPluginOk, "Extension activée"); //$NON-NLS-1$
+		french.put(Translations.activatedPluginOk, "Extension activée."); //$NON-NLS-1$
 		french.put(Translations.comments, "Commentaires"); //$NON-NLS-1$
 		french.put(Translations.editComment, "Modifier le commentaire"); //$NON-NLS-1$
 		french.put(Translations.commentsOnArticle, "Commentaires sur « %s »"); //$NON-NLS-1$
