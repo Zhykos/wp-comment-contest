@@ -51,6 +51,9 @@ You need PHP version 5 like WordPress.
 
 == Changelog ==
 
+= 3.0.1 =
+* Misc: Check compatibility with WordPress 4.9.8
+
 = 3.0.0 =
 * Fix: Error while selecting date
 * Fix: Error with comments table background
