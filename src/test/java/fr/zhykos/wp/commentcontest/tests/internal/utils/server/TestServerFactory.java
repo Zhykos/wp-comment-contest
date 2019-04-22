@@ -1,7 +1,5 @@
 package fr.zhykos.wp.commentcontest.tests.internal.utils.server;
 
-import java.util.logging.Logger;
-
 import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
 
 @SuppressWarnings("PMD.AtLeastOneConstructor")
@@ -18,15 +16,6 @@ class TestServerFactory implements ITestServerFactory {
 		Class<?> classs = null;
 		try {
 			classs = Class.forName(className);
-		} catch (final ClassNotFoundException e) {
-			final Logger logger = Logger
-					.getLogger(TestServerFactory.class.getName());
-			logger.info(String.format(
-					"Class '%s' not found, use Tomcat by default (error: %s)", //$NON-NLS-1$
-					className, e.getMessage()));
-			classs = EmbeddedTomcatServer.class;
-		}
-		try {
 			return (ITestServer) classs.getDeclaredConstructor().newInstance();
 		} catch (final Exception e) {
 			throw new UtilsException(e);
