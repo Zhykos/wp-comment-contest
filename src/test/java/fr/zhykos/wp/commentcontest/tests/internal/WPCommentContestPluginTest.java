@@ -7,11 +7,13 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -2046,6 +2048,9 @@ public class WPCommentContestPluginTest {
 				.getVersion(wpInfo.getInstallDir());
 		System.out.println("-------------------------------------------------"); //$NON-NLS-1$
 		System.out.println("Tests launched by Zhykos WordPress automatic tests 0.1.0"); //$NON-NLS-1$
+		final SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");   //$NON-NLS-1$
+		final Date date = new Date(System.currentTimeMillis());  
+		System.out.println("Test date is: " + formatter.format(date));  //$NON-NLS-1$
 		System.out.println("WordPress version " + getWordPressVersion()); //$NON-NLS-1$
 		System.out.println("DBMS: " + getDBVersion()); //$NON-NLS-1$
 		System.out.println("Server: " + serverVersion); //$NON-NLS-1$
