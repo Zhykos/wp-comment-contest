@@ -12,7 +12,7 @@ import fr.zhykos.wp.commentcontest.tests.internal.utils.UtilsException;
  */
 class PluginWPRSSAggregator implements IWordPressPlugin {
 
-	private final static String REGEX = "Welcome to WP RSS Aggregator .*!"; //$NON-NLS-1$
+	private final static String REGEX = "Welcome to WP RSS Aggregator.*"; //$NON-NLS-1$
 
 	@Override
 	public String getName() {
@@ -27,10 +27,10 @@ class PluginWPRSSAggregator implements IWordPressPlugin {
 	@Override
 	public void defaultActivationAction(final WebDriver driver)
 			throws UtilsException {
-		final String h1tag = driver.findElement(By.xpath("//h1")).getText(); //$NON-NLS-1$
+		final String h1tag = driver.findElement(By.xpath("//body//div[@id='wpbody-content']//div[@class='wpra-wizard-head__title']")).getText(); //$NON-NLS-1$
 		if (!h1tag.matches(REGEX)) {
 			throw new UtilsException(String.format(
-					"Wrong H1 tag '%s'! Maybe '%s' plugin activation failed (expected H1 tag regex: '%s')", //$NON-NLS-1$
+					"Wrong title tag '%s'! Maybe '%s' plugin activation failed (expected H1 tag regex: '%s')", //$NON-NLS-1$
 					h1tag, getName(), REGEX));
 		}
 	}

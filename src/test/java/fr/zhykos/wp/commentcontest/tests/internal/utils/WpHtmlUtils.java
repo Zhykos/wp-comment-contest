@@ -30,7 +30,7 @@ public final class WpHtmlUtils {
 	// XXX Mettre le système de traduction dans une autre classe
 	public enum Translations {
 		extensions, addExtensions, activatedPluginOk, comments, editComment,
-		commentsOnArticle, articles, users, addUser, editUser
+		commentsOnArticle, articles, users, addUser, editUser, customFields
 	}
 
 	public interface IRunnableCondition {
@@ -51,6 +51,7 @@ public final class WpHtmlUtils {
 		french.put(Translations.users, "Utilisateurs"); //$NON-NLS-1$
 		french.put(Translations.addUser, "Ajouter un utilisateur"); //$NON-NLS-1$
 		french.put(Translations.editUser, "Modifier l’utilisateur %s"); //$NON-NLS-1$
+		french.put(Translations.customFields, "Champs personnalisés"); //$NON-NLS-1$
 		TRANSLATIONS.put(Locale.FRENCH, french);
 	}
 
@@ -58,7 +59,7 @@ public final class WpHtmlUtils {
 		// DO NOTHING AND MUST NOT BE CALLED
 	}
 
-	private static String getTranslation(final Translations word) {
+	public static String getTranslation(final Translations word) {
 		String translation = null;
 		Map<Translations, String> locTranslations = TRANSLATIONS
 				.get(Locale.getDefault());

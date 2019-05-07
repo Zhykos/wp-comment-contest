@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.commons.io.FileUtils;
@@ -1995,11 +1996,12 @@ public class WPCommentContestPluginTest {
 		selenium.open(wpInfo.getTestServer().getHomeURL()
 				+ "/wp-admin/post.php?post=1&action=edit"); //$NON-NLS-1$
 		selenium.waitForPageToLoad(Utils.PAGE_LOAD_TIMEOUT);
-		selenium.click("id=show-settings-link"); //$NON-NLS-1$
-		WpHtmlUtils.waitUntilVisibleStateByElementId(selenium, driver,
-				"screen-meta", true, 10000); //$NON-NLS-1$
-		if (!selenium.isChecked("id=postcustom-hide")) { //$NON-NLS-1$
-			selenium.click("id=postcustom-hide"); //$NON-NLS-1$
+		final List<WebElement> blocEditor = driver.findElements(
+				By.xpath("//div[@class='block-editor']//div[@id='editor']")); //$NON-NLS-1$
+		if (blocEditor.isEmpty()) {
+			displayCustomFieldsWordPress4Editor(driver, selenium);
+		} else {
+			displayCustomFieldsWordPress5Editor(driver, selenium);
 		}
 		WpHtmlUtils.waitUntilVisibleStateByElementId(selenium, driver,
 				"postcustom", true, 10000); //$NON-NLS-1$
@@ -2017,12 +2019,53 @@ public class WPCommentContestPluginTest {
 		Assertions.assertEquals(eltIds, customIds);
 	}
 
+	private static void displayCustomFieldsWordPress5Editor(
+			final WebDriver driver, final Selenium selenium)
+			throws UtilsException {
+		final WebElement postMoreMenu = driver.findElement(
+				By.xpath("//div[@class='edit-post-more-menu']/button")); //$NON-NLS-1$
+		postMoreMenu.click();
+		WpHtmlUtils.waitUntilVisibleStateByXPath(driver,
+				"//div[@class='components-popover__content']", true, 10000); //$NON-NLS-1$
+		final List<WebElement> menuGroups = driver.findElements(By.xpath(
+				"//div[@class='components-popover__content']/div[@class='components-menu-group']/div/button")); //$NON-NLS-1$
+		final WebElement lastButton = menuGroups.get(menuGroups.size() - 1);
+		Assertions.assertEquals("Options", //$NON-NLS-1$
+				lastButton.getAttribute("aria-label")); //$NON-NLS-1$
+		lastButton.click();
+		WpHtmlUtils.waitUntilVisibleStateByXPath(driver,
+				"//div[@class='components-modal__content']", true, 10000); //$NON-NLS-1$
+		final String customFieldTranslation = WpHtmlUtils
+				.getTranslation(Translations.customFields);
+		final List<WebElement> customFieldLabels = driver.findElements(By.xpath(
+				"//div[@class='components-modal__content']//div[@class='components-base-control__field']/label")); //$NON-NLS-1$
+		final Optional<WebElement> customFieldLabel = customFieldLabels.stream()
+				.filter(elem -> customFieldTranslation.equals(elem.getText()))
+				.findFirst();
+		Assertions.assertTrue(customFieldLabel.isPresent());
+		final String customFieldId = customFieldLabel.get().getAttribute("for"); //$NON-NLS-1$
+		if (!selenium.isChecked(ID_PREFIX + customFieldId)) {
+			driver.findElement(By.id(customFieldId)).click();
+		}
+	}
+
+	private static void displayCustomFieldsWordPress4Editor(
+			final WebDriver driver, final Selenium selenium)
+			throws UtilsException {
+		selenium.click("id=show-settings-link"); //$NON-NLS-1$
+		WpHtmlUtils.waitUntilVisibleStateByElementId(selenium, driver,
+				"screen-meta", true, 10000); //$NON-NLS-1$
+		if (!selenium.isChecked("id=postcustom-hide")) { //$NON-NLS-1$
+			selenium.click("id=postcustom-hide"); //$NON-NLS-1$
+		}
+	}
+
 	@AfterAll
 	public static void afterAll() {
 		if (wpInfo != null) {
 			try {
 				reportTests();
-				System.out.println("PASSWORD = (" + wpInfo.getPassword() + ")");
+//				System.out.println("PASSWORD = (" + wpInfo.getPassword() + ")");
 				wpInfo.getTestServer().stop();
 				// TODO Le packaging doit se faire au début pour que les tests unitaires se fassent sur le produit livré
 				// fr.zhykos.wp.commentcontest.tests.internal.utils.Utils
