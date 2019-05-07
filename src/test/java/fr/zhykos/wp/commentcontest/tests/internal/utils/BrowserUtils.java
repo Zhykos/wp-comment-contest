@@ -158,7 +158,7 @@ public final class BrowserUtils {
 		try {
 			geckoInstalled = downloadAndInstallDriver(geckoInstalled,
 					"webdriver.gecko.driver", //$NON-NLS-1$
-					"https://github.com/mozilla/geckodriver/releases/download/v0.19.1/geckodriver-v0.19.1-win64.zip", //$NON-NLS-1$
+					"https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-win64.zip", //$NON-NLS-1$
 					"geckodriver.exe"); //$NON-NLS-1$
 			result = new FirefoxDriver();
 		} catch (final Exception e) {
