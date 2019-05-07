@@ -403,10 +403,14 @@ public final class Utils {
 		} catch (final ClassNotFoundException e) {
 			throw new UtilsException(e);
 		}
+		String baseName = ""; //$NON-NLS-1$
+		if (!sqls.stream().allMatch(str -> str.contains(" DATABASE "))) { //$NON-NLS-1$
+			baseName = databaseInfo.getBaseName();
+		}
 		final String url = String.format(
 				"jdbc:mysql://%s:%d/%s?useSSL=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC", //$NON-NLS-1$
 				databaseInfo.getAddress(),
-				Integer.valueOf(databaseInfo.getPort()), databaseInfo.getBaseName());
+				Integer.valueOf(databaseInfo.getPort()), baseName);
 		try (final Connection connection = DriverManager.getConnection(url,
 				databaseInfo.getLogin(), databaseInfo.getPassword());
 				final Statement statement = connection.createStatement();) {
