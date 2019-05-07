@@ -6,10 +6,6 @@
 	<packaging>pom</packaging>
 	<name>WordPress Comment Contest plugin automatic tests</name>
 	<description>WordPress Comment Contest plugin automatic tests</description>
-	<properties>
-	<version.javax-servlet>3.1.0</version.javax-servlet>
-	<tomcat.version>8.5.34</tomcat.version>
-	</properties>
 	<dependencies>
 		<!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java -->
 		<dependency>
@@ -40,6 +36,12 @@
 			<groupId>ro.isdc.wro4j</groupId>
 			<artifactId>wro4j-maven-plugin</artifactId>
 			<version>1.8.0</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>8.0.16</version>
 		</dependency>
 	</dependencies>
 </project>
