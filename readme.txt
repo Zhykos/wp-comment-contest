@@ -2,7 +2,7 @@
 Contributors: zhykos
 Tags: comments, comment, contest, draw, concours, commentaire, zhykos
 Requires at least: 3.3
-Tested up to: 4.9.4
+Tested up to: 5.1.1
 Requires PHP: 5
 Stable tag: 3.0.0
 License: GPLv2 or later
@@ -50,6 +50,9 @@ You need PHP version 5 like WordPress.
 9. Result table and notification after saving winners
 
 == Changelog ==
+
+= 3.0.2 =
+* Misc: Check compatibility with WordPress 5.1.1
 
 = 3.0.1 =
 * Misc: Check compatibility with WordPress 4.9.8
@@ -201,15 +204,16 @@ You need PHP version 5 like WordPress.
 == Automatic tests results ==
 
 Tests launched by Zhykos WordPress automatic tests 0.1.0
-WordPress version 4.9.4
-DBMS: MySQL version 5.7.19 with JDBC mysql-connector-java-8.0.8-dmr ( Revision: 73c679a210819d6808a35a11858ab0f279ea267d )
-Server: WAMP Server with: Apache/2.4.27 (Win64)
+Test date is: 2019-05-07 at 19:09:11 CEST
+WordPress version 5.1.1
+DBMS: MySQL version 5.7.24 with JDBC mysql-connector-java-8.0.16 (Revision: 34cbc6bc61f72836e26327537a432d6db7c77de6)
+Server: WAMP Server with: Apache/2.4.37 (Win64)
 OS: Windows 10 version 10.0 amd64
 Browsers:
- - Driver ChromeDriver based on chrome version 64.0.3282.167
- - Driver FirefoxDriver based on firefox version 58.0.2
- - Driver EdgeDriver based on MicrosoftEdge version 41.16299.15.0
- - Driver OperaDriver based on chrome version 63.0.3239.132
+ - Driver ChromeDriver based on chrome version 74.0.3729.131
+ - Driver FirefoxDriver based on firefox version 66.0.4
+ - Driver EdgeDriver based on MicrosoftEdge version 44.17763.1.0
+ - Driver OperaDriver based on chrome version 73.0.3683.103
 
 == Credits ==
 
